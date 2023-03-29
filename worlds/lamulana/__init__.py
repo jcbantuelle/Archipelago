@@ -1,7 +1,7 @@
 from typing import Dict, TextIO
 from BaseClasses import Item, MultiWorld, Tutorial, Region, Entrance, Item, ItemClassification
 from worlds.AutoWorld import World, WebWorld
-from .Options import lamulana_options, starting_location_ids, is_option_enabled, get_option_value
+from .Options import lamulana_options, starting_location_ids, starting_weapon_ids, is_option_enabled, get_option_value
 
 client_version = 1
 
@@ -20,7 +20,6 @@ class LaMulanaWorld(World):
 	"""
 	Challenge the ruins in the 2012 remake of La-Mulana, a puzzle platformer that focuses
 	on exploration and combat as much as it does on solving the puzzles and mysteries of the ruins.
-	Note that the randomizer expects the player to already be familiar with all puzzle solutions.
 	"""
 	game = "La-Mulana"
 	option_definitions = lamulana_options
@@ -39,7 +38,7 @@ class LaMulanaWorld(World):
 			self.multiworld.StartWithHandScanner[self.player].value = self.multiworld.StartWithHandScanner[self.player].option_true
 		if self.multiworld.start_inventory[self.player].value.pop("Reader", 0) > 0:
 			self.multiworld.StartWithReader[self.player].value = self.multiworld.StartWithReader[self.player].option_true
-		if self.multiworld.start_inventory[self.player].value.pop("Hermes Boots", 0) > 0:
+		if self.multiworld.start_inventory[self.player].value.pop("Hermes' Boots", 0) > 0:
 			self.multiworld.StartWithHermesBoots[self.player].value = self.multiworld.StartWithHermesBoots[self.player].option_true
 		if self.multiworld.start_inventory[self.player].value.pop("Grapple Claw", 0) > 0:
 			self.multiworld.StartWithGrappleClaw[self.player].value = self.multiworld.StartWithGrappleClaw[self.player].option_true
@@ -60,7 +59,7 @@ class LaMulanaWorld(World):
 		#Give starting weapon, plane model on Goddess start, twin statue on Twin front start, flare gun on extinction start w/o the setting, maybe leather whip on Sun start if grailless and your starting weapon doesn't hit sides? etc
 
 	def create_regions(self) -> None:
-		pass
+		create_regions_and_locations(self.multiworld, self.player)
 
 	def create_items(self) -> None:
 		pass
@@ -70,9 +69,15 @@ class LaMulanaWorld(World):
 		victory_condition_2 = "NPC: Mulbruk"
 		self.multiworld.completion_condition[self.player] = lambda state: state.has_all({victory_condition_1, victory_condition_2}, self.player)
 
+	#Should be using this instead of the setattr that I did in Locations.py whoops
+	def extend_hint_information(self, hint_data: Dict[int, Dict[int,str]]):
+		pass
+
 	def write_spoiler_header(self, spoiler_handle: TextIO) -> None:
-		spoiler_handle.write(f'Starting weapon:		\n')
-		spoiler_handle.write(f'Starting area:		\n')
+		locations = {y: x for x, y in starting_location_ids.items()}
+		weapons = {y: x for x, y in starting_weapon_ids.items()}
+		spoiler_handle.write(f'Starting weapon:		{weapons[self.get_option_value("StartingWeapon")]}\n')
+		spoiler_handle.write(f'Starting area:		{locations[self.get_option_value("StartingLocation")]}\n')
 		#Maybe also transition info? It's gonna be a lot
 
 	def fill_slot_data(self) -> Dict[str, object]:

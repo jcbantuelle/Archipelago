@@ -3,7 +3,6 @@ from BaseClasses import MultiWorld, Location, CollectionState
 from .Options import is_option_enabled
 from .LogicShortcuts import LaMulanaLogicShortcuts
 from .CombatLogic import LaMulanaCombatLogic
-from .NPCLocations import get
 
 class LocationData(NamedTuple):
 	name: str
@@ -11,17 +10,33 @@ class LocationData(NamedTuple):
 	logic: Callable[[CollectionState, int], bool] = lambda state: True
 	is_event: bool = False
 
-def get_locations_by_region(world: MultiWorld, player: int) -> Dict[str, List[LocationData]]:
-	s = LaMulanaLogicShortcuts(world, player)
+#4 vanilla cursed chests
+cursed_chests = ['Crystal Skull Chest', 'Dimensional Key Chest']
+
+def roll_cursed_chests(world: MultiWorld, include_coin_chests: bool, include_trap_items: bool) -> None:
+	possible_cursed_chests = ['Birth Seal Chest', 'Feather Chest', 'Sacred Orb (Surface) Chest', 'Shell Horn Chest', 'Ankh Jewel (Gate of Guidance) Chest', 'Crucifix Chest', 'Sacred Orb (Gate of Guidance) Chest', '']
+	if include_coin_chests:
+		possible_cursed_chests.extend([])
+	if include_trap_items:
+		possible_cursed_chests.extend(['Graveyard of the Giants Trap Chest', 'Gate of Illusion Trap Chest'])
+	cursed_chests = world.random.choices(possible_cursed_chests, k=4)
+
+def get_locations_by_region(world: MultiWorld, player: int, s: LaMulanaLogicShortcuts) -> Dict[str, List[LocationData]]:
 	combat = LaMulanaCombatLogic(world, player, s)
+	
+	include_coin_chests = is_option_enabled(world, player, "RandomizeCoinChests")
+	include_trap_items = is_option_enabled(world, player, "RandomizeTrapItems")
+	if is_option_enabled(world, player, "RandomizeCursedChests"):
+		roll_cursed_chests(world, include_coin_chests, include_trap_items)
+
 	locations = {
 		"Surface [Main]": [
-			LocationData("Birth Seal", 1, lambda state: s.attack_chest(state) and state.has_all({"Origin Seal", "Helmet"}, player) and state.has_any({"Hermes' Boots", "Feather", "Bahamut Defeated"}))
-			LocationData("deathv.exe", 1, lambda state: s.attack_forward(state) and (state.has("NPC: Xelpud", player) or s.glitch_raindrop(state))),
-			LocationData("Feather", 1, lambda state: s.attack_chest(state) and state.has("Argus Defeated", player)),
-			LocationData("Map (Surface)", 1, lambda state: state.has("Hand Scanner", player)),
-			LocationData("Sacred Orb (Surface)", 1, lambda state: state.has("Helmet", player) and state.has_any({"Hermes' Boots", "Bahamut Defeated"}, player) and (attack_above(state) or attack_shuriken(state) or attack_chakram(state) or attack_bomb(state) or attack_pistol(state) or (attack_s_above(state) and attack_chest(state)) or (attack_rolling_shuriken(state) and state.has("Bahamut Defeated", player)))),
-			LocationData("Shell Horn", 1, lambda state: s.attack_chest(state)),
+			LocationData("Birth Seal Chest", 1, lambda state: s.attack_chest(state) and state.has_all({"Origin Seal", "Helmet"}, player) and state.has_any({"Hermes' Boots", "Feather", "Bahamut Defeated"}))
+			LocationData("deathv.exe Location", 1, lambda state: s.attack_forward(state) and (state.has("NPC: Xelpud", player) or s.glitch_raindrop(state))),
+			LocationData("Feather Chest", 1, lambda state: s.attack_chest(state) and state.has("Argus Defeated", player)),
+			LocationData("Map (Surface) Location", 1, lambda state: state.has("Hand Scanner", player)),
+			LocationData("Sacred Orb (Surface) Chest", 1, lambda state: state.has("Helmet", player) and state.has_any({"Hermes' Boots", "Bahamut Defeated"}, player) and (attack_above(state) or attack_shuriken(state) or attack_chakram(state) or attack_bomb(state) or attack_pistol(state) or (attack_s_above(state) and attack_chest(state)) or (attack_rolling_shuriken(state) and state.has("Bahamut Defeated", player)))),
+			LocationData("Shell Horn Chest", 1, lambda state: s.attack_chest(state)),
 			LocationData("Argus Defeated", 1, lambda state: state.has("Serpent Staff", player) and combat.argus(state), True),
 			LocationData("Surface Grail Tablet", 1, lambda state: s.state_read_grail(state), True)
 		],
@@ -60,7 +75,7 @@ def get_locations_by_region(world: MultiWorld, player: int) -> Dict[str, List[Lo
 		],
 		"Temple of the Sun [Top Entrance]": [
 			#Simplified other logic options to "Can climb watchtower" (attack-forward or flares)
-			LocationData("Map (Temple of the Sun) Chest", 1, lambda state: s.attack_chest(state) and (s.attack_forward(state) or s.attack_flare_gun(state))),
+			LocationData("Map (Temple of the Sun) Chest", 1, lambda state: s.attack_chest(state) and s.sun_watchtower(state)),
 			LocationData("Temple of the Sun Grail Tablet", 1, lambda state: s.state_read_grail(state), True)
 		],
 		"Spring in the Sky [Main]": [
@@ -152,6 +167,9 @@ def get_locations_by_region(world: MultiWorld, player: int) -> Dict[str, List[Lo
 		"Shrine of the Mother [Map]": [
 			LocationData("Map (Shrine of the Mother) Chest", 1, lambda state: s.attack_chest_any(state))
 		],
+		'Gate of Illusion [Eden]': [
+			LocationData("Illusion Unlocked", 1, lambda state: state.has('Fruit of Eden', self.player), True)
+		],
 		"Gate of Illusion [Upper]": [
 			LocationData("Cog of the Soul Chest", 1, lambda state: s.state_literacy(state) and state.can_reach("Gate of Illusion [Pot Room]", "Region", player) and state.can_reach("Gate of Illusion [Middle]", "Region", player) and s.state_lamp(state) and state.has_all({"Feather", "Ba Defeated"}, player) and s.attack_forward(state)),
 			LocationData("Mudmen Awakened", 1, lambda state: state.has_all({"Feather", "Cog of the Soul"}, player) and s.attack_forward(state), True),
@@ -193,6 +211,7 @@ def get_locations_by_region(world: MultiWorld, player: int) -> Dict[str, List[Lo
 			LocationData("Map (Temple of Moonlight) Chest", 1, lambda state: s.attack_chest_any(state))
 		],
 		"Temple of Moonlight [Pyramid]": [
+			#Not a real chest, so cannot be cursed
 			LocationData("Philosopher's Ocarina Chest", 1, lambda state: state.has("Maternity Statue", player) and (state.has("Feather", player) or s.glitch_raindrop(state)))
 		],
 		"Temple of Moonlight [Southeast]": [
@@ -265,4 +284,6 @@ def get_locations_by_region(world: MultiWorld, player: int) -> Dict[str, List[Lo
 		]
 	}
 
-	if is_option_enabled("RandomizeCoinChests"):
+	if include_coin_chests:
+
+	return locations

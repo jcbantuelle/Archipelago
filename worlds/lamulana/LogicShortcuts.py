@@ -125,15 +125,16 @@ class LaMulanaLogicShortcuts:
 	def state_extinction_light(self, state: CollectionState) -> bool:
 		return attack_flare_gun(state) or not self.flag_flare_gun_extinction
 
+	def state_lava_swim(self, state: CollectionState, amount: int) -> bool:
+		if self.flag_ice_cape_lava:
+			return self.has("Ice Cape", self.player)
+		return self.has("Ice Cape", self.player) or self.get_health_count(state) >= amount
+
 	def state_shield(self, state: CollectionState) -> bool:
 		return state.has_any({"Silver Shield", "Angel Shield"}, self.player)
 
-	def state_fairy_access(self, state: CollectionState) -> bool:
-		return state.has_all({"Isis' Pendant", "NPC: Fairy Queen"}, self.player)
-
 	def state_key_fairy_access(self, state: CollectionState) -> bool:
-		fairies_active = self.state_fairy_access(state)
-		return fairies_active and (state.has_all({"miracle.exe", "mekuri.exe"}, self.player) or not flag_key_fairy_combo_required)
+		return state.has('Fairies Unlocked') and (state.has_all({"miracle.exe", "mekuri.exe"}, self.player) or not flag_key_fairy_combo_required)
 
 	def state_read_grail(self, state: CollectionState) -> bool:
 		return self.flag_autoscan or state.has_all({"Hand Scanner", "reader.exe"}, self.player)
@@ -170,7 +171,7 @@ class LaMulanaLogicShortcuts:
 	def glitch_lamp(self, state: CollectionState) -> bool:
 		return self.flag_lamp_glitch and self.state_lamp(state)
 
-	def boss_count(self, state: CollectionState) -> bool:
+	def guardian_count(self, state: CollectionState) -> bool:
 		counter = 0
 		for boss in ['Amphisbaena Defeated', 'Sakit Defeated', 'Ellmac Defeated', 'Bahamut Defeated', 'Viy Defeated', 'Palenque Defeated', 'Baphomet Defeated', 'Tiamat Defeated']:
 			if state.has(boss, self.player):

@@ -18,7 +18,8 @@ starting_location_ids = {
 	'goddess': 12,
 	'ruin': 13,
 	'birth': 14,
-	'twin (back)': 15
+	'twin (back)': 15,
+	'gate of time (surface)': 16
 }
 
 starting_weapon_ids = {
@@ -37,17 +38,13 @@ starting_weapon_ids = {
 	'pistol': 12
 }
 
-class ShopRandomization(Toggle):
+class RandomizeShops(Toggle):
 	"If on, randomizes all shop items. If off, unique shop items are still randomized"
 	display_name = "Randomize all shop items"
 
-class ProvocativeBathingSuit(Choice):
-	"In Item Pool: The provocative bathing suit is in the item pool, but Hell Temple is not required. Hell Temple: The final reward for beating Hell Temple may be required"
-	display_name = "Hell Temple Reward"
-	option_off: 0
-	option_in_item_pool = 1
-	option_hell_temple = 2
-	alias_true: 1
+class RandomizeNPCs(Toggle):
+	"Randomizes all NPCs and shop locations"
+	display_name = "Randomize NPC/shop doors"
 
 class RandomizeCoinChests(Toggle):
 	"Randomizes all coin chests"
@@ -57,6 +54,18 @@ class RandomizeTrapItems(Toggle):
 	"Randomizes the 4 trap items and locations"
 	display_name = "Randomize Trap Items"
 
+class RandomizeSeals(Toggle):
+	"Individually randomizes which seal is required to break each wall seal"
+	display_name = "Randomize seals"
+
+class ProvocativeBathingSuit(Choice):
+	"In Item Pool: The provocative bathing suit is in the item pool, but Hell Temple is not required. Hell Temple: The final reward for beating Hell Temple may be required"
+	display_name = "Hell Temple Reward"
+	option_off: 0
+	option_in_item_pool = 1
+	option_hell_temple = 2
+	alias_true: 1
+
 class RandomizeCursedChests(Toggle):
 	"If on, 4 random chests will be cursed instead of the 4 vanilla cursed chests"
 	display_name = "Randomize Cursed Chests"
@@ -64,14 +73,6 @@ class RandomizeCursedChests(Toggle):
 class RandomizeDracuetsShop(Toggle):
 	"Randomize Dracuet's shop in Hell Temple. If NPC rando is on, includes the Hell Temple shop in the randomized NPC pool"
 	display_name = "Randomize Dracuet's Shop"
-
-class RandomizeNPCs(Toggle):
-	"Randomizes all NPCs and shop locations"
-	display_name = "Randomize NPC/shop doors"
-
-class RandomizeSeals(Toggle):
-	"Individually randomizes which seal is required to break each wall seal"
-	display_name = "Randomize seals"
 
 class StartingLocation(Choice):
 	"Set or randomize your starting location"
@@ -92,6 +93,7 @@ class StartingLocation(Choice):
 	option_tower_of_ruin = starting_location_ids['ruin']
 	option_chamber_of_birth = starting_location_ids['birth']
 	option_twin_labs_back = starting_location_ids['twin (back)']
+	option_gate_of_time_surface = starting_location_ids['gate of time (surface)']
 
 class StartingWeapon(Choice):
 	"Set or randomize your starting weapon"
@@ -129,10 +131,6 @@ class StartWithReader(Toggle):
 class StartWithHermesBoots(Toggle):
 	"Start with boots to go fast right away"
 	display_name = "Start with Hermes' Boots"
-
-class StartWithTextTrax(Toggle):
-	"TextTrax helps record shop inventories and NPC locations, so that info can be recorded in-game from the beginning"
-	display_name = "Start with TextTrax"
 
 class RandomizeTransitions(Choice):
 	"Randomizes transitions between areas. \"On\" does not include one-way transitions, whereas \"Full\" includes one-way transitions"
@@ -191,12 +189,13 @@ class LampGlitchInLogic(Toggle):
 	display_name = "Lamp Glitch In Logic"
 
 lamulana_options = {
-	"ShopRandomization": ShopRandomization,
-	"ProvocativeBathingSuit": ProvocativeBathingSuit,
+	"RandomizeShops": RandomizedShops,
+	"RandomizeNPCs": RandomizeNPCs,
 	"RandomizeCoinChests": RandomizeCoinChests,
+	"RandomizeTrapItems": RandomizeTrapItems,
+	"ProvocativeBathingSuit": ProvocativeBathingSuit,
 	"RandomizeCursedChests": RandomizeCursedChests,
 	"RandomizeDracuetsShop": RandomizeDracuetsShop,
-	"RandomizeNPCs": RandomizeNPCs,
 	"RandomizeSeals": RandomizeSeals,
 	"StartingLocation": StartingLocation,
 	"StartingWeapon": StartingWeapon,
@@ -205,7 +204,6 @@ lamulana_options = {
 	"StartWithHandScanner": StartWithHandScanner,
 	"StartWithReader": StartWithReader,
 	"StartWithHermesBoots": StartWithHermesBoots,
-	"StartWithTextTrax": StartWithTextTrax,
 	"RandomizeTransitions": RandomizeTransitions,
 	"RandomizeDoors": RandomizeDoors,
 	"RequireIceCape": RequireIceCape,
@@ -215,7 +213,8 @@ lamulana_options = {
 	"HardCombatLogic": HardCombatLogic,
 	"SubweaponOnly": SubweaponOnly,
 	"RaindropsInLogic": RaindropsInLogic,
-	"CatPausingInLogic": CatPausingInLogic
+	"CatPausingInLogic": CatPausingInLogic,
+	"LampGlitchInLogic": LampGlitchInLogic
 }
 
 def is_option_enabled(world: MultiWorld, player: int, name: str) -> bool:
