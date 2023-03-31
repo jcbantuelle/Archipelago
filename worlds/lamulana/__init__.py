@@ -2,6 +2,8 @@ from typing import Dict, TextIO
 from BaseClasses import Item, MultiWorld, Tutorial, Region, Entrance, Item, ItemClassification
 from worlds.AutoWorld import World, WebWorld
 from .Options import lamulana_options, starting_location_ids, starting_weapon_ids, is_option_enabled, get_option_value
+from .WorldState import LaMulanaWorldState
+from .NPCs import get_npc_checks, get_npc_entrance_room_names
 
 client_version = 1
 
@@ -26,6 +28,8 @@ class LaMulanaWorld(World):
 	web = LaMulanaWebWorld()
 	required_client_version = (0, 3, 100) #Placeholder version number
 	
+	worldstate: LaMulanaWorldState
+
 	def __init__(self, world : MultiWorld, player: int):
 		super().init(world, player)
 		#Anything else that needs done
@@ -59,6 +63,7 @@ class LaMulanaWorld(World):
 		#Give starting weapon, plane model on Goddess start, twin statue on Twin front start, flare gun on extinction start w/o the setting, maybe leather whip on Sun start if grailless and your starting weapon doesn't hit sides? etc
 
 	def create_regions(self) -> None:
+		self.worldstate = LaMulanaWorldState(self.multiworld, self.player)
 		create_regions_and_locations(self.multiworld, self.player)
 
 	def create_items(self) -> None:
@@ -69,9 +74,19 @@ class LaMulanaWorld(World):
 		victory_condition_2 = "NPC: Mulbruk"
 		self.multiworld.completion_condition[self.player] = lambda state: state.has_all({victory_condition_1, victory_condition_2}, self.player)
 
-	#Should be using this instead of the setattr that I did in Locations.py whoops
 	def extend_hint_information(self, hint_data: Dict[int, Dict[int,str]]):
-		pass
+		if self.worldstate.npc_rando and self.worldstate.npc_mapping:
+			npc_hint_info = {}
+			room_names = get_npc_entrance_room_names()
+			npc_checks = get_npc_checks(self.multiworld, self.player)
+			reverse_map = {y: x for x, y in self.worldstate.npc_mapping.items()}
+			for npc_name, locationdata_list in npc_checks.items():
+				door_name = reverse_map[npc_name]
+				for locationdata in locationdata_list:
+					if not locationdata.is_event:
+						npc_hint_info[locationdata.code] = room_names[door_name]
+			hint_data[self.player] = npc_hint_info
+
 
 	def write_spoiler_header(self, spoiler_handle: TextIO) -> None:
 		locations = {y: x for x, y in starting_location_ids.items()}

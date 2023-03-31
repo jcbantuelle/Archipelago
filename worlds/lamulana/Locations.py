@@ -26,6 +26,8 @@ def get_locations_by_region(world: MultiWorld, player: int, s: LaMulanaLogicShor
 	
 	include_coin_chests = is_option_enabled(world, player, "RandomizeCoinChests")
 	include_trap_items = is_option_enabled(world, player, "RandomizeTrapItems")
+	include_hell_temple_reward = get_option_value(world, player, "ProvocativeBathingSuit") == 2
+
 	if is_option_enabled(world, player, "RandomizeCursedChests"):
 		roll_cursed_chests(world, include_coin_chests, include_trap_items)
 
@@ -116,6 +118,9 @@ def get_locations_by_region(world: MultiWorld, player: int, s: LaMulanaLogicShor
 		"Chamber of Extinction [Magatama]": [
 			LocationData("Ox-head & Horse-face Defeated", 1, lambda state: combat.oxhead_horseface(state), True)
 		],
+		"Chamber of Extinction [Ankh Lower]": [
+			LocationData("Hell Temple Unlocked", 1, lambda state: s.hell_temple_requirements(state), True)
+		],
 		"Twin Labyrinths [Loop]": [
 			LocationData("Ring Location", 1, lambda state: s.glitch_raindrop(state))
 		],
@@ -127,9 +132,8 @@ def get_locations_by_region(world: MultiWorld, player: int, s: LaMulanaLogicShor
 		],
 		"Twin Labyrinths [Poison 1]": [
 			LocationData("Map (Twin Labyrinths) Chest", 1, lambda state: state.has("Twin Poison Cleared") and s.attack_forward(state)),
-			LocationData("Twin Poison Cleared", 1, lambda state: state.has("Twin Statue") or state.can_reach("Twin Labyrinths [Poison 2]", "Region", player), True)
+			LocationData("Twin Poison Cleared", 1, lambda state: state.has("Twin Statue") or (state.can_reach("Twin Labyrinths [Poison 2]", "Region", player), True) and state.has('Holy Grail', player))
 		],
-		"Twin Labyrinths [Poison 2]": [],
 		"Twin Labyrinths [Upper Left]": [
 			LocationData("Ring Location", 1, lambda state: True)
 		],
@@ -159,6 +163,7 @@ def get_locations_by_region(world: MultiWorld, player: int, s: LaMulanaLogicShor
 			LocationData("Crystal Skull Chest", 1, lambda state: attack_chest(state) and state.has_all({"Life Seal", "Removed Shrine Skulls"}, player)),
 			LocationData("Diary Chest", 1, lambda state: attack_chest(state) and state.has_all({"Removed Shrine Skulls", "Talisman", "NPC: Xelpud"}, player)),
 			LocationData("Sacred Orb (Shrine of the Mother) Chest", 1, lambda state: attack_chest(state) and state.has_all({"Origin Seal", "Birth Seal", "Life Seal", "Death Seal"}, player)),
+			LocationData("Removed Shrine Skulls", 1, lambda state: state.has_all({'Dragon Bone', 'yagostr.exe', 'yagomap.exe', 'Map (Shrine of the Mother)'}, player), True)
 			#Normal shrine grail tablet doesn't matter, I think - only true shrine
 		],
 		"Shrine of the Mother [Seal]": [
@@ -285,5 +290,11 @@ def get_locations_by_region(world: MultiWorld, player: int, s: LaMulanaLogicShor
 	}
 
 	if include_coin_chests:
+		pass
+
+	if include_hell_temple_reward:
+		locations['Hell Temple [Dracuet]'] = [
+			LocationData("Hell Temple Reward", 1)
+		]
 
 	return locations

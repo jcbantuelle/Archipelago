@@ -388,3 +388,13 @@ class LaMulanaCombatLogic:
 		else:
 			if self.s.get_health_count(state) < 5:
 				return False
+
+	def hell_temple_bosses(self, state: CollectionState) -> bool:
+		if self.flag_hard_logic:
+			pass
+		else:
+			if self.s.get_health_count(state) < 8 or not s.state_lamp(state):
+				return False
+			if self.flag_subweapon_only:
+				return s.attack_ring_chakram(state) or (s.attack_pistol(state) and s.attack_bomb(state) and s.attack_earth_spear(state))
+			return state.has('Flail Whip', self.player)

@@ -2,13 +2,16 @@ from typing import List, Set, Dict, Tuple, Optional, Callable
 from BaseClasses import MultiWorld, Region, Entrance, Location
 from .Options import is_option_enabled, get_option_value
 from .Locations import get_locations_by_region
-from .NPCs import LaMulanaNPCDoor, get_npcs
+from .NPCs import LaMulanaNPCDoor, get_npc_entrances
+from .WorldState import LaMulanaWorldState
 
-def create_regions_and_locations(world: MultiWorld, player: int):
+def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaMulanaWorldState):
 	s = LaMulanaLogicShortcuts(world, player)
 
 	locations = get_locations_by_region(world, player, s)
-	npcs = get_npcs(world, player, s)
+	npcs = get_npc_entrances(world, player, worldstate, s)
+
+	create_hell_temple_regions = get_option_value(world, player, "ProvocativeBathingSuit") == 2 or is_option_enabled(world, player, "RandomizeDracuetsShop")
 
 	regions = [
 		create_region(world, player, "Menu", locations, npcs),
@@ -109,7 +112,7 @@ def create_regions_and_locations(world: MultiWorld, player: int):
 		create_region(world, player, "Gate of Time [Surface]", locations, npcs),
 	]
 
-	if get_option_value(world, player, "ProvocativeBathingSuit") == 2 or is_option_enabled(world, player, "RandomizeDracuetsShop"):
+	if create_hell_temple_regions:
 		regions.extend([
 			create_region(world, player, "Hell Temple [Entrance]", locations, npcs),
 			create_region(world, player, "Hell Temple [Shop]", locations, npcs),
@@ -201,7 +204,7 @@ def create_regions_and_locations(world: MultiWorld, player: int):
 	connect(world, player, 'Chamber of Extinction [Magatama Left]', 'Chamber of Extinction [Left Main]', lambda state: s.glitch_raindrop(state) and s.state_extinction_light(state))
 	connect(world, player, 'Chamber of Extinction [Ankh Upper]', 'Chamber of Extinction [Teleport]', lambda state: s.glitch_raindrop(state))
 	connect(world, player, 'Chamber of Birth [Southeast]', 'Chamber of Extinction [Teleport]', lambda state: s.attack_forward(state) and state.has('Feather', player))
-	connect(world, player, 'Chamber of Birth [Northeast]', 'Chamber of Extinction [Map]', lambda state: s.glitch_raindrop(state) and s.attack_forward(state))
+	connect(world, player, 'Chamber of Birth [Northeast]', 'Chamber of Extinction [Teleport]', lambda state: s.glitch_raindrop(state) and s.attack_forward(state))
 	connect(world, player, 'Chamber of Extinction [Teleport]', 'Chamber of Birth [Northeast]', lambda state: state.has('Feather', player))
 	connect(world, player, 'Chamber of Extinction [Magatama Left]', 'Chamber of Extinction [Magatama]', lambda state: state.has_any({'Holy Grail', 'Feather'}, player) or s.attack_forward(state))
 	connect(world, player, 'Chamber of Extinction [Magatama]', 'Chamber of Extinction [Magatama Left]', lambda state: state.has('Ox-head & Horse-face Defeated', player))
@@ -211,6 +214,49 @@ def create_regions_and_locations(world: MultiWorld, player: int):
 	connect(world, player, 'Chamber of Extinction [Ankh Lower]', 'Chamber of Extinction [Ankh Upper]', lambda state: state.has('Feather', player))
 	connect(world, player, 'Chamber of Extinction [Teleport]', 'Chamber of Extinction [Ankh Lower]', lambda state: s.glitch_raindrop(state) and state.has('Holy Grail', player))
 
+	connect(world, player, 'Chamber of Birth [West Entrance]', 'Chamber of Birth [West]', lambda state: state.has('Holy Grail', player))
+	connect(world, player, 'Chamber of Birth [West]', 'Chamber of Birth [Grail]', lambda state: (s.glitch_catpause(state) and state.has('Feather', player)) or (state.has_all({'Serpent Staff', 'Crystal Skull'}, player) and s.attack_chakram(state) and s.state_mobility(state)))
+	connect(world, player, 'Chamber of Birth [West]', 'Chamber of Birth [Skanda]', lambda state: s.glitch_raindrop(state) and s.attack_forward(state))
+	connect(world, player, 'Chamber of Birth [Grail]', 'Chamber of Birth [Skanda]', lambda state: state.has_all({'Serpent Staff', 'Cog of the Soul'}, player) and s.attack_chakram(state))
+	connect(world, player, 'Chamber of Birth [West]', 'Chamber of Birth [Dance]', lambda state: s.glitch_raindrop(state) or (state.has_all({'Serpent Staff', 'Holy Grail'}, player) and s.attack_chakram(state)))
+	connect(world, player, 'Chamber of Birth [Southeast]', 'Chamber of Birth [Northeast]', lambda state: state.has('Feather', player))
+	connect(world, player, 'Chamber of Birth [Northeast]', 'Chamber of Birth [Southeast]', lambda state: state.has_any({'Holy Grail', 'Feather'}, player))
+
+	connect(world, player, 'Temple of the Sun [Main]', 'Twin Labyrinths [Poison 1]', lambda state: state.has_all({'Ellmac Defeated', 'Holy Grail'}, player))
+	connect(world, player, 'Temple of the Sun [Main]', 'Twin Labyrinths [Upper Grail]', lambda state: state.has('Ellmac Defeated', player) and s.glitch_raindrop(state))
+	connect(world, player, 'Twin Labyrinths [Poison 1]', 'Twin Labyrinths [Poison 2]', lambda state: state.has('Twin Statue', player))
+	connect(world, player, 'Twin Labyrinths [Poison 2]', 'Twin Labyrinths [Poison 1]', lambda state: state.has_any({'Twin Statue', 'Twin Poison Cleared'}, player))
+	connect(world, player, 'Twin Labyrinths [Poison 1]', 'Twin Labyrinths [Upper Grail]', lambda state: state.has('Twin Poison Cleared', player))
+	connect(world, player, 'Twin Labyrinths [Upper Grail]', 'Twin Labyrinths [Jewel]', lambda state: s.glitch_raindrop(state))
+	connect(world, player, 'Twin Labyrinths [Poison 2]', 'Twin Labyrinths [Jewel]', lambda state: s.attack_forward(state) and state.has('Twin Poison Cleared', player))
+	connect(world, player, 'Twin Labyrinths [Jewel]', 'Twin Labyrinths [Katana]', lambda state: s.attack_forward(state))
+	connect(world, player, 'Twin Labyrinths [Poseidon]', 'Twin Labyrinths [Katana]', lambda state: s.glitch_raindrop(state) and s.attack_forward(state))
+	connect(world, player, 'Twin Labyrinths [Poison 2]', 'Twin Labyrinths [Poseidon]', lambda state: state.has('Twin Poison Cleared', player) or (s.glitch_raindrop(state) and s.state_frontside_warp(state)))
+	connect(world, player, 'Twin Labyrinths [Katana]', 'Twin Labyrinths [Loop]', lambda state: state.has('Holy Grail', player))
+	connect(world, player, 'Twin Labyrinths [Lower]', 'Twin Labyrinths [Loop]', lambda state: state.has('Twin Poison Cleared', player))
+	connect(world, player, 'Twin Labyrinths [Loop]', 'Twin Labyrinths [Upper Left]', lambda state: s.glitch_raindrop(state))
+	connect(world, player, 'Twin Labyrinths [Poison 1]', 'Twin Labyrinths [Upper Left]', lambda state: state.has('Twin Poison Cleared', player))
+	connect(world, player, 'Twin Labyrinths [Upper Left]', 'Twin Labyrinths [Loop]', lambda state: state.has('Twin Poison Cleared', player))
+
+	connect(world, player, 'Endless Corridor [1F]', 'Twin Labyrinths [2F]', lambda state: state.has('Key of Eternity', player) and s.attack_chest(state))
+	connect(world, player, 'Endless Corridor [2F]', 'Twin Labyrinths [1F]', lambda state: state.has('Holy Grail', player) or (state.has('Key of Eternity', player) and s.attack_chest(state)))
+	connect(world, player, 'Endless Corridor [2F]', 'Twin Labyrinths [3F Upper]', lambda state: state.has('Key of Eternity', player) or (s.glitch_raindrop(state) and s.attack_forward(state)))
+	connect(world, player, 'Endless Corridor [3F Upper]', 'Twin Labyrinths [3F Lower]', lambda state: state.has('Holy Grail', player) or s.attack_forward(state) or (s.attack_earth_spear(state) and state.has('Feather', player)))
+	connect(world, player, 'Endless Corridor [3F Lower]', 'Twin Labyrinths [4F]', lambda state: s.glitch_raindrop(state) or (state.has('Key of Eternity', player) and (state.has('Holy Grail', player) or s.attack_forward(state) or (s.attack_earth_spear(state) and state.has('Feather', player)))))
+	connect(world, player, 'Endless Corridor [4F]', 'Twin Labyrinths [5F]', lambda state: state.has('Key of Eternity', player))
+	connect(world, player, 'Endless Corridor [5F]', 'Twin Labyrinths [1F]', lambda state: s.glitch_raindrop(state))
+
+	connect(world, player, 'Dimensional Corridor [Lower]', 'Dimensional Labyrinths [Grail]', lambda state: state.has('Feather', player))
+	connect(world, player, 'Dimensional Corridor [Grail]', 'Dimensional Labyrinths [Lower]', lambda state: state.has('Feather', player))
+	connect(world, player, 'Dimensional Corridor [Grail]', 'Dimensional Labyrinths [Upper]', lambda state: state.has('Feather', player) or (state.has_all({'Dimensional Key', 'Left Side Children Defeated'}, player)))
+
+	connect(world, player, 'Shrine of the Mother [Main]', 'Shrine of the Mother [Lower]', lambda state: state.has('Feather', player) and (s.attack_forward(state) or s.attack_flare_gun(state)) and state.has_any({'Holy Grail', 'Removed Shrine Skulls'}, player))
+	connect(world, player, 'Shrine of the Mother [Main]', 'True Shrine of the Mother', lambda state: s.guardian_count(state) == 8)
+
+	if create_hell_temple_regions:
+		connect(world, player, 'Gate of Guidance [Main]', 'Hell Temple [Entrance]', lambda state: state.has_all({'Hell Temple Unlocked', 'Feather', 'Life Seal'}, player))
+		connect(world, player, 'Hell Temple [Entrance]', 'Hell Temple [Shop]', lambda state: s.attack_bomb(state) and state.has('Ring', player) and (state.has("Hermes' Boots", player) or s.state_lamp(state)))
+		connect(world, player, 'Hell Temple [Shop]', 'Hell Temple [Dracuet]', lambda state: s.state_literacy(state) and s.state_key_fairy_access(state) and state.has_all({"Hermes' Boots", 'Grapple Claw', 'guild.exe'}, player) and combat.hell_temple_bosses(state) and (s.attack_chakram(state) or s.attack_pistol(state)))
 
 def connect(world: MultiWorld, player: int, source: str, target: str, logic: Optional[Callable[CollectionState,bool]] = None):
 	source_region = world.get_region(source, player)
@@ -244,8 +290,6 @@ def create_region(world: MultiWorld, player: int, region_name: str, locations_pe
 		for npc_door in npcs_per_region[region_name]:
 			for location_data in npc_door.checks:
 				location = create_location(player, location_data, region, npc_door.logic)
-				if is_option_enabled(world, player, "RandomizeNPCs") and not location.event:
-					setattr(location, '_hint_text', "at " + location_data.name + " in " + npc_door.room_name)
 				region.locations.append(location)
 	return region
 

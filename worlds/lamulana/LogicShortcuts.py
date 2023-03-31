@@ -177,3 +177,12 @@ class LaMulanaLogicShortcuts:
 			if state.has(boss, self.player):
 				counter += 1
 		return counter
+
+	def sun_watchtower(self, state: CollectionState) -> bool:
+		return self.attack_forward(state) or self.attack_flare_gun(state)
+
+	def hell_temple_requirements(self, state: CollectionState) -> bool:
+		for region in {'Surface [Main]', 'Gate of Guidance [Main]', 'Gate of Illusion [Dracuet]', 'Gate of Time [Guidance]'}:
+			if not state.can_reach(region, 'Region', self.player):
+				return False
+		return state.has_all({'NPC: Mulbruk', 'Feather', 'Ice Cape', 'Holy Grail', 'Life Seal'}, self.player) and (self.glitch_raindrop(state) or state.has('NPC: Xelpud', self.player)) and self.get_health_count(state) >= 2 and self.attack_forward(state)
