@@ -388,6 +388,60 @@ class LaMulanaCombatLogic:
 		else:
 			if self.s.get_health_count(state) < 5:
 				return False
+			if self.s.attack_ring_chakram(state) or s.attack_pistol(state) or (s.state_shield(state) and s.attack_shuriken(state) and s.attack_chakram(state)):
+				return True
+			if self.flag_subweapon_only:
+				if not self.s.state_mobility(state) or not self.s.state_shield(state):
+					return False
+				if self.s.attack_ring_shuriken(state) and (self.s.attack_rolling_shuriken(state) or s.attack_earth_spear(state) or s.attack_caltrops(state)):
+					return True
+				if self.s.attack_rolling_shuriken(state) and (self.s.attack_earth_spear(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state)):
+					return True
+				if self.s.attack_chakram(state) and (self.s.attack_caltrops(state) or self.s.attack_earth_spear(state)):
+					return True
+				return self.s.attack_earth_spear(state) and self.s.attack_caltrops(state):
+			return self.s.attack_4(state) or (s.state_mobility(state) and s.attack_main(state))
+
+	def palenque(self, state: CollectionState) -> bool:
+		if self.flag_hard_logic:
+			pass
+		else:
+			return self.s.get_health_count(state) >= 6 and (self.s.attack_rolling_shuriken(state) or self.s.attack_chakram(state) or self.s.attack_earth_spear(state) or self.s.attack_pistol(state))
+
+	def baphomet(self, state: CollectionState) -> bool:
+		if self.flag_hard_logic:
+			pass
+		else:
+			if self.s.get_health_count(state) < 7 or not self.s.state_shield(state):
+				return False
+			if self.s.attack_ring_chakram(state) or self.s.attack_pistol(state):
+				return True
+			if self.flag_subweapon_only:
+				if self.s.attack_ring_shuriken(state) and self.s.attack_caltrops(state):
+					return True
+				return self.s.attack_rolling_shuriken(state) and self.s.attack_caltrops(state) and state.has_all({'Feather', 'Ring'}, self.player)
+			return state.has('Axe', self.player) or (self.s.attack_4(state) and state.has('Feather', self.player))
+
+	def tiamat(self, state: CollectionState) -> bool:
+		if self.flag_hard_logic:
+			pass
+		else:
+			health = self.s.get_health_count(state)
+			if self.flag_subweapon_only:
+				return health >= 10 and self.s.attack_caltrops(state) and self.s.attack_bomb(state) and self.s.attack_flare_gun(state) and state.has_all({'Feather', 'Ring', 'Angel Shield'}, self.player)
+			if health < 8:
+				return False
+			return state.has('Feather', self.player) and (state.has_any({'Flail Whip', 'Axe'}, self.player) or state.has_all({'Chain Whip', 'Angel Shield'}, self.player))
+
+	def mother(self, state: CollectionState) -> bool:
+		if self.flag_hard_logic:
+			pass
+		else:
+			if self.s.get_health_count(state) < 8 or not state.has('Feather', self.player):
+				return False
+			if self.flag_subweapon_only:
+				return self.s.attack_ring_chakram(state) and self.s.attack_flare_gun(state) and self.s.state_shield(state) and (self.s.attack_bomb(state) or self.s.attack_caltrops(state))
+			return self.s.attack_main(state)
 
 	def hell_temple_bosses(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:

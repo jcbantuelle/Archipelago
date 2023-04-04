@@ -139,13 +139,12 @@ class RandomizeTransitions(Choice):
 	option_on = 1
 	option_full = 2
 
-class RandomizeDoors(Choice):
-	"Randomizes the boss doors, non-boss doors (Extinction-Gate of Time + Dimensional-Endless Corridor), or all of them together"
+class RandomizeBacksideDoors(Choice):
+	"Randomizes the backside doors, without including non-boss doors (Extinction-Gate of Time and Dimensional-Endless Corridor). \"Full\" adds these non-boss transitions to the entrance pool"
 	display_name = "Randomize Backside Doors"
 	option_off = 0
-	option_boss_doors = 1
-	option_nonboss_doors = 2
-	option_full = 3
+	option_boss_doors_only = 1
+	option_full = 2
 
 class RequireIceCape(DefaultOnToggle):
 	"Requires the ice cape for swimming through lava. If off, you may instead need enough health to survive the swim"
@@ -205,7 +204,7 @@ lamulana_options = {
 	"StartWithReader": StartWithReader,
 	"StartWithHermesBoots": StartWithHermesBoots,
 	"RandomizeTransitions": RandomizeTransitions,
-	"RandomizeDoors": RandomizeDoors,
+	"RandomizeBacksideDoors": RandomizeBacksideDoors,
 	"RequireIceCape": RequireIceCape,
 	"RequireFlareGun": RequireFlareGun,
 	"RequireKeyFairyCombo": RequireKeyFairyCombo,

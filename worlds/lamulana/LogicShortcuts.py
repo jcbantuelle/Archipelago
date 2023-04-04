@@ -1,5 +1,6 @@
 from BaseClasses import MultiWorld, CollectionState
 from .Options import is_option_enabled, get_option_value, starting_weapon_ids, starting_location_ids
+from .WorldState import LaMulanaWorldState
 
 class LaMulanaLogicShortcuts:
 	player: int
@@ -125,6 +126,11 @@ class LaMulanaLogicShortcuts:
 	def state_extinction_light(self, state: CollectionState) -> bool:
 		return attack_flare_gun(state) or not self.flag_flare_gun_extinction
 
+	def state_water_swim(self, state: CollectionState, amount: int) -> bool:
+		if state.has('Scalesphere', self.player):
+			return True
+		return self.get_health_count >= amount
+
 	def state_lava_swim(self, state: CollectionState, amount: int) -> bool:
 		if self.flag_ice_cape_lava:
 			return self.has("Ice Cape", self.player)
@@ -180,6 +186,36 @@ class LaMulanaLogicShortcuts:
 
 	def sun_watchtower(self, state: CollectionState) -> bool:
 		return self.attack_forward(state) or self.attack_flare_gun(state)
+
+	def bronze_mirror_chest_logic(self, state: CollectionState) -> bool:
+		if self.glitch_raindrop(state) and (self.attack_rolling_shuriken(state) or self.attack_earth_spear(state) or self.attack_bomb(state)):
+			return True
+		reach_extinction_map = state.can_reach('Chamber of Extinction [Map]', self.player)
+		if self.glitch_lamp(state) and (reach_extinction_map or state.has('Holy Grail', self.player)) and (self.attack_forward(state) or self.attack_flare_gun(state)):
+			return True
+		if self.glitch_catpause(state) and reach_extinction_map and state.has('Feather', player) and self.attack_chest(state):
+			return True
+		return reach_extinction_map and state.has('Flooded Temple of the Sun', self.player) and (self.attack_forward(state) or self.attack_flare_gun(state))
+
+	def spring_npc(self, state: CollectionState) -> bool:
+		can_escape = state.has_any({'Leather Whip', 'Chain Whip', 'Flail Whip', 'Axe', 'Holy Grail'}, self.player) or self.state_shield(state) or self.attack_shuriken(state) or self.attack_flare_gun(state) or self.attack_caltrops(state) or (self.state_water_swim(state, 1) and self.attack_chest(state))
+		if not can_escape:
+			return False
+		if self.attack_earth_spear(state) or self.attack_bomb(state) or self.attack_caltrops(state) or self.attack_flare_gun(state) or state.has_any({'Knife', 'Axe', 'Katana'}, self.player):
+			return True
+		return (state.has('Helmet', self.player), or self.state_water_swim(state, 1)) and state.has_any({'Leather Whip', 'Chain Whip', 'Flail Whip', 'Key Sword'}, self.player)
+
+
+	def endless_oneway_open(self, state: CollectionState, worldstate: LaMulanaWorldState) -> bool:
+		if worldstate.include_oneways:
+			if worldstate.transition_map['Endless Corridor Left'] == 'Chamber of Birth Right':
+				return state.has('Skanda Defeated', self.player)
+			if worldstate.transition_map['Endless Corridor Left'] in ['Gate of Illusion Right 1', 'Gate of Illusion Right 2']:
+				return state.has('Illusion Unlocked', self.player)
+		return True
+
+	def nuwa_access(self, state: CollectionState) -> bool:
+		return state.has_all({'NPC: Philosopher Alsedana', 'Feather', 'Death Seal'}, self.player)
 
 	def hell_temple_requirements(self, state: CollectionState) -> bool:
 		for region in {'Surface [Main]', 'Gate of Guidance [Main]', 'Gate of Illusion [Dracuet]', 'Gate of Time [Guidance]'}:

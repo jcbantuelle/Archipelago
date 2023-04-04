@@ -32,7 +32,7 @@ class LaMulanaWorld(World):
 
 	def __init__(self, world : MultiWorld, player: int):
 		super().init(world, player)
-		#Anything else that needs done
+		self.worldstate = LaMulanaWorldState(self.multiworld, self.player)
 
 	def generate_early(self) -> None:
 		#Do stuff that can still modify settings
@@ -63,7 +63,6 @@ class LaMulanaWorld(World):
 		#Give starting weapon, plane model on Goddess start, twin statue on Twin front start, flare gun on extinction start w/o the setting, maybe leather whip on Sun start if grailless and your starting weapon doesn't hit sides? etc
 
 	def create_regions(self) -> None:
-		self.worldstate = LaMulanaWorldState(self.multiworld, self.player)
 		create_regions_and_locations(self.multiworld, self.player)
 
 	def create_items(self) -> None:
@@ -81,10 +80,11 @@ class LaMulanaWorld(World):
 			npc_checks = get_npc_checks(self.multiworld, self.player)
 			reverse_map = {y: x for x, y in self.worldstate.npc_mapping.items()}
 			for npc_name, locationdata_list in npc_checks.items():
-				door_name = reverse_map[npc_name]
-				for locationdata in locationdata_list:
-					if not locationdata.is_event:
-						npc_hint_info[locationdata.code] = room_names[door_name]
+				if npc_name != 'Starting Shop':
+					door_name = reverse_map[npc_name]
+					for locationdata in locationdata_list:
+						if not locationdata.is_event:
+							npc_hint_info[locationdata.code] = room_names[door_name]
 			hint_data[self.player] = npc_hint_info
 
 

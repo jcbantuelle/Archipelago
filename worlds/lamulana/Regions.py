@@ -8,116 +8,120 @@ from .WorldState import LaMulanaWorldState
 def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaMulanaWorldState):
 	s = LaMulanaLogicShortcuts(world, player)
 
-	locations = get_locations_by_region(world, player, s)
+	locations = get_locations_by_region(world, player, worldstate)
 	npcs = get_npc_entrances(world, player, worldstate, s)
-
-	create_hell_temple_regions = get_option_value(world, player, "ProvocativeBathingSuit") == 2 or is_option_enabled(world, player, "RandomizeDracuetsShop")
+	cursed_chests = worldstate.cursed_chests
 
 	regions = [
-		create_region(world, player, "Menu", locations, npcs),
-		create_region(world, player, "Surface [Main]", locations, npcs),
-		create_region(world, player, "Surface [Ruin Path Upper]", locations, npcs),
-		create_region(world, player, "Surface [Ruin Path Lower]", locations, npcs),
-		create_region(world, player, "Gate of Guidance [Main]", locations, npcs),
-		create_region(world, player, "Gate of Guidance [Door]", locations, npcs),
-		create_region(world, player, "Gate of Illusion [Eden]", locations, npcs),
-		create_region(world, player, "Gate of Illusion [Lower]", locations, npcs),
-		create_region(world, player, "Gate of Illusion [Middle]", locations, npcs),
-		create_region(world, player, "Gate of Illusion [Dracuet]", locations, npcs),
-		create_region(world, player, "Gate of Illusion [Grail]", locations, npcs),
-		create_region(world, player, "Gate of Illusion [Ruin]", locations, npcs),
-		create_region(world, player, "Gate of Illusion [Upper]", locations, npcs),
-		create_region(world, player, "Gate of Illusion [Pot Room]", locations, npcs),
-		create_region(world, player, "Mausoleum of the Giants", locations, npcs),
-		create_region(world, player, "Graveyard of the Giants [West]", locations, npcs),
-		create_region(world, player, "Graveyard of the Giants [Grail]", locations, npcs),
-		create_region(world, player, "Graveyard of the Giants [East]", locations, npcs),
-		create_region(world, player, "Temple of the Sun [Top Entrance]", locations, npcs),
-		create_region(world, player, "Temple of the Sun [Grail]", locations, npcs),
-		create_region(world, player, "Temple of the Sun [Main]", locations, npcs),
-		create_region(world, player, "Temple of the Sun [West]", locations, npcs),
-		create_region(world, player, "Temple of the SUn [East]", locations, npcs),
-		create_region(world, player, "Temple of the Sun [Sphinx]", locations, npcs),
-		create_region(world, player, "Temple of Moonlight [Pyramid]", locations, npcs),
-		create_region(world, player, "Temple of Moonlight [Upper]", locations, npcs),
-		create_region(world, player, "Temple of Moonlight [Lower]", locations, npcs),
-		create_region(world, player, "Temple of Moonlight [Eden]", locations, npcs),
-		create_region(world, player, "Temple of Moonlight [Grail]", locations, npcs),
-		create_region(world, player, "Temple of Moonlight [Grapple]", locations, npcs),
-		create_region(world, player, "Temple of Moonlight [Map]", locations, npcs),
-		create_region(world, player, "Temple of Moonlight [Southeast]", locations, npcs),
-		create_region(world, player, "Spring in the Sky [Main]", locations, npcs),
-		create_region(world, player, "Spring in the Sky [Upper]", locations, npcs),
-		create_region(world, player, "Tower of the Goddess [Lower]", locations, npcs),
-		create_region(world, player, "Tower of the Goddess [Lamp]", locations, npcs),
-		create_region(world, player, "Tower of the Goddess [Grail]", locations, npcs),
-		create_region(world, player, "Tower of the Goddess [Spaulder]", locations, npcs),
-		create_region(world, player, "Tower of the Goddess [Shield Statue]", locations, npcs),
-		create_region(world, player, "Inferno Cavern [Main]", locations, npcs),
-		create_region(world, player, "Inferno Cavern [Pazuzu]", locations, npcs),
-		create_region(world, player, "Inferno Cavern [Viy]", locations, npcs),
-		create_region(world, player, "Inferno Cavern [Lava]", locations, npcs),
-		create_region(world, player, "Inferno Cavern [Spikes]", locations, npcs),
-		create_region(world, player, "Tower of Ruin [Southeast]", locations, npcs),
-		create_region(world, player, "Tower of Ruin [Southwest]", locations, npcs),
-		create_region(world, player, "Tower of Ruin [Southwest Door]", locations, npcs),
-		create_region(world, player, "Tower of Ruin [La-Mulanese]", locations, npcs),
-		create_region(world, player, "Tower of Ruin [Illusion]", locations, npcs),
-		create_region(world, player, "Tower of Ruin [Grail]", locations, npcs),
-		create_region(world, player, "Tower of Ruin [Spirits]", locations, npcs),
-		create_region(world, player, "Tower of Ruin [Medicine]", locations, npcs),
-		create_region(world, player, "Tower of Ruin [Top]", locations, npcs),
-		create_region(world, player, "Chamber of Extinction [Map]", locations, npcs),
-		create_region(world, player, "Chamber of Extinction [Main]", locations, npcs),
-		create_region(world, player, "Chamber of Extinction [Left Main]", locations, npcs),
-		create_region(world, player, "Chamber of Extinction [Teleport]", locations, npcs),
-		create_region(world, player, "Chamber of Extinction [Magatama Left]", locations, npcs),
-		create_region(world, player, "Chamber of Extinction [Magatama Right]", locations, npcs),
-		create_region(world, player, "Chamber of Extinction [Magatama]", locations, npcs),
-		create_region(world, player, "Chamber of Extinction [Ankh Upper]", locations, npcs),
-		create_region(world, player, "Chamber of Extinction [Ankh Lower]", locations, npcs),
-		create_region(world, player, "Chamber of Birth [West Entrance]", locations, npcs),
-		create_region(world, player, "Chamber of Birth [West]", locations, npcs),
-		create_region(world, player, "Chamber of Birth [Grail]", locations, npcs),
-		create_region(world, player, "Chamber of Birth [Skanda]", locations, npcs),
-		create_region(world, player, "Chamber of Birth [Dance]", locations, npcs),
-		create_region(world, player, "Chamber of Birth [Northeast]", locations, npcs),
-		create_region(world, player, "Chamber of Birth [Southeast]", locations, npcs),
-		create_region(world, player, "Twin Labyrinths [Loop]", locations, npcs),
-		create_region(world, player, "Twin Labyrinths [Lower]", locations, npcs),
-		create_region(world, player, "Twin Labyrinths [Poison 1]", locations, npcs),
-		create_region(world, player, "Twin Labyrinths [Poison 2]", locations, npcs),
-		create_region(world, player, "Twin Labyrinths [Upper Grail]", locations, npcs),
-		create_region(world, player, "Twin Labyrinths [Jewel]", locations, npcs),
-		create_region(world, player, "Twin Labyrinths [Katana]", locations, npcs),
-		create_region(world, player, "Twin Labyrinths [Poseidon]", locations, npcs),
-		create_region(world, player, "Twin Labyrinths [Upper Left]", locations, npcs),
-		create_region(world, player, "Endless Corridor [1F]", locations, npcs),
-		create_region(world, player, "Endless Corridor [2F]", locations, npcs),
-		create_region(world, player, "Endless Corridor [3F Upper]", locations, npcs),
-		create_region(world, player, "Endless Corridor [3F Lower]", locations, npcs),
-		create_region(world, player, "Endless Corridor [4F]", locations, npcs),
-		create_region(world, player, "Endless Corridor [5F]", locations, npcs),
-		create_region(world, player, "Dimensional Corridor [Lower]", locations, npcs),
-		create_region(world, player, "Dimensional Corridor [Grail]", locations, npcs),
-		create_region(world, player, "Dimensional Corridor [Upper]", locations, npcs),
-		create_region(world, player, "Shrine of the Mother [Main]", locations, npcs),
-		create_region(world, player, "Shrine of the Mother [Lower]", locations, npcs),
-		create_region(world, player, "Shrine of the Mother [Seal]", locations, npcs),
-		create_region(world, player, "Shrine of the Mother [Map]", locations, npcs),
-		create_region(world, player, "True Shrine of the Mother", locations, npcs),
-		create_region(world, player, "Gate of Time [Mausoleum Lower]", locations, npcs),
-		create_region(world, player, "Gate of Time [Mausoleum Upper]", locations, npcs),
-		create_region(world, player, "Gate of Time [Guidance]", locations, npcs),
-		create_region(world, player, "Gate of Time [Surface]", locations, npcs),
+		create_region(world, player, "Menu", locations, npcs, cursed_chests),
+		create_region(world, player, "Surface [Main]", locations, npcs, cursed_chests),
+		create_region(world, player, "Surface [Ruin Path Upper]", locations, npcs, cursed_chests),
+		create_region(world, player, "Surface [Ruin Path Lower]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Guidance [Main]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Guidance [Door]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Illusion [Eden]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Illusion [Lower]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Illusion [Middle]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Illusion [Dracuet]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Illusion [Grail]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Illusion [Ruin]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Illusion [Upper]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Illusion [Pot Room]", locations, npcs, cursed_chests),
+		create_region(world, player, "Mausoleum of the Giants", locations, npcs, cursed_chests),
+		create_region(world, player, "Graveyard of the Giants [West]", locations, npcs, cursed_chests),
+		create_region(world, player, "Graveyard of the Giants [Grail]", locations, npcs, cursed_chests),
+		create_region(world, player, "Graveyard of the Giants [East]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of the Sun [Top Entrance]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of the Sun [Grail]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of the Sun [Main]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of the Sun [West]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of the SUn [East]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of the Sun [Sphinx]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of Moonlight [Pyramid]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of Moonlight [Upper]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of Moonlight [Lower]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of Moonlight [Eden]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of Moonlight [Grail]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of Moonlight [Grapple]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of Moonlight [Map]", locations, npcs, cursed_chests),
+		create_region(world, player, "Temple of Moonlight [Southeast]", locations, npcs, cursed_chests),
+		create_region(world, player, "Spring in the Sky [Main]", locations, npcs, cursed_chests),
+		create_region(world, player, "Spring in the Sky [Upper]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of the Goddess [Lower]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of the Goddess [Lamp]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of the Goddess [Grail]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of the Goddess [Spaulder]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of the Goddess [Shield Statue]", locations, npcs, cursed_chests),
+		create_region(world, player, "Inferno Cavern [Main]", locations, npcs, cursed_chests),
+		create_region(world, player, "Inferno Cavern [Pazuzu]", locations, npcs, cursed_chests),
+		create_region(world, player, "Inferno Cavern [Viy]", locations, npcs, cursed_chests),
+		create_region(world, player, "Inferno Cavern [Lava]", locations, npcs, cursed_chests),
+		create_region(world, player, "Inferno Cavern [Spikes]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of Ruin [Southeast]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of Ruin [Southwest]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of Ruin [Southwest Door]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of Ruin [La-Mulanese]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of Ruin [Illusion]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of Ruin [Grail]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of Ruin [Spirits]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of Ruin [Medicine]", locations, npcs, cursed_chests),
+		create_region(world, player, "Tower of Ruin [Top]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Extinction [Map]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Extinction [Main]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Extinction [Left Main]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Extinction [Teleport]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Extinction [Magatama Left]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Extinction [Magatama Right]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Extinction [Magatama]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Extinction [Ankh Upper]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Extinction [Ankh Lower]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Birth [West Entrance]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Birth [West]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Birth [Grail]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Birth [Skanda]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Birth [Dance]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Birth [Northeast]", locations, npcs, cursed_chests),
+		create_region(world, player, "Chamber of Birth [Southeast]", locations, npcs, cursed_chests),
+		create_region(world, player, "Twin Labyrinths [Loop]", locations, npcs, cursed_chests),
+		create_region(world, player, "Twin Labyrinths [Lower]", locations, npcs, cursed_chests),
+		create_region(world, player, "Twin Labyrinths [Poison 1]", locations, npcs, cursed_chests),
+		create_region(world, player, "Twin Labyrinths [Poison 2]", locations, npcs, cursed_chests),
+		create_region(world, player, "Twin Labyrinths [Upper Grail]", locations, npcs, cursed_chests),
+		create_region(world, player, "Twin Labyrinths [Jewel]", locations, npcs, cursed_chests),
+		create_region(world, player, "Twin Labyrinths [Katana]", locations, npcs, cursed_chests),
+		create_region(world, player, "Twin Labyrinths [Poseidon]", locations, npcs, cursed_chests),
+		create_region(world, player, "Twin Labyrinths [Upper Left]", locations, npcs, cursed_chests),
+		create_region(world, player, "Endless Corridor [1F]", locations, npcs, cursed_chests),
+		create_region(world, player, "Endless Corridor [2F]", locations, npcs, cursed_chests),
+		create_region(world, player, "Endless Corridor [3F Upper]", locations, npcs, cursed_chests),
+		create_region(world, player, "Endless Corridor [3F Lower]", locations, npcs, cursed_chests),
+		create_region(world, player, "Endless Corridor [4F]", locations, npcs, cursed_chests),
+		create_region(world, player, "Endless Corridor [5F]", locations, npcs, cursed_chests),
+		create_region(world, player, "Dimensional Corridor [Lower]", locations, npcs, cursed_chests),
+		create_region(world, player, "Dimensional Corridor [Grail]", locations, npcs, cursed_chests),
+		create_region(world, player, "Dimensional Corridor [Upper]", locations, npcs, cursed_chests),
+		create_region(world, player, "Shrine of the Mother [Main]", locations, npcs, cursed_chests),
+		create_region(world, player, "Shrine of the Mother [Lower]", locations, npcs, cursed_chests),
+		create_region(world, player, "Shrine of the Mother [Seal]", locations, npcs, cursed_chests),
+		create_region(world, player, "Shrine of the Mother [Map]", locations, npcs, cursed_chests),
+		create_region(world, player, "True Shrine of the Mother", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Time [Mausoleum Lower]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Time [Mausoleum Upper]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Time [Guidance]", locations, npcs, cursed_chests),
+		create_region(world, player, "Gate of Time [Surface]", locations, npcs, cursed_chests),
 	]
 
-	if create_hell_temple_regions:
+	if get_option_value(world, player, "ProvocativeBathingSuit") == 2 or is_option_enabled(world, player, "RandomizeDracuetsShop")
 		regions.extend([
-			create_region(world, player, "Hell Temple [Entrance]", locations, npcs),
-			create_region(world, player, "Hell Temple [Shop]", locations, npcs),
-			create_region(world, player, "Hell Temple [Dracuet]", locations, npcs),
+			create_region(world, player, "Hell Temple [Entrance]", locations, npcs, cursed_chests),
+			create_region(world, player, "Hell Temple [Shop]", locations, npcs, cursed_chests),
 		])
+	
+	if get_option_value(world, player, "ProvocativeBathingSuit") == 2:
+		regions.extend([
+			create_region(world, player, "Hell Temple [Dracuet]", locations, npcs, cursed_chests)
+		])
+
 
 	world.regions += regions
 
@@ -155,6 +159,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	connect(world, player, 'Temple of the Sun [Main]', 'Temple of the Sun [Top Entrance]', lambda state: s.sun_watchtower(state))
 	connect(world, player, 'Temple of the Sun [Main]', 'Temple of the Sun [East]', lambda state: state.has("Hermes' Boots", player))
 	connect(world, player, 'Temple of the Sun [Main]', 'Temple of the Sun [Sphinx]', lambda state: state.has_all({"Hermes' Boots", 'Feather'}, player))
+	connect(world, player, 'Temple of the Sun [Sphinx]', 'Temple of the Sun [East]', lambda state: state.has('Holy Grail', player) or s.sun_watchtower(state))
 	connect(world, player, 'Temple of the Sun [East]', 'Temple of the Sun [Main]', lambda state: state.has_any({'Holy Grail', "Hermes' Boots"}, player))
 	connect(world, player, 'Temple of the Sun [Main]', 'Temple of Moonlight [Pyramid]', lambda state: state.has('Holy Grail', state) and (s.attack_above(state) or s.attack_s_above(state)))
 
@@ -172,6 +177,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 
 	connect(world, player, 'Spring in the Sky [Main]', 'Spring in the Sky [Upper]', lambda state: state.has('Helmet', player))
 	connect(world, player, 'Spring in the Sky [Upper]', 'Surface [Main]', lambda state: state.has('Holy Grail', player) and (state.has('Bahamut Defeated', player) or s.glitch_lamp(state)))
+	connect(world, player, 'Spring in the Sky [Main]', 'Temple of the Sun [Sphinx]', lambda state: state.has_all({'Flooded Temple of the Sun', 'Holy Grail'}, player))
 
 	connect(world, player, 'Tower of the Goddess [Grail]', 'Tower of the Goddess [Lower]', lambda state: state.has_any({'Holy Grail', 'Feather'}, player))
 	connect(world, player, 'Tower of the Goddess [Lamp]', 'Tower of the Goddess [Lower]', lambda state: s.attack_forward(state) or state.has_all({'Feather', 'Holy Grail'}, player))
@@ -190,12 +196,14 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	connect(world, player, 'Tower of Ruin [Southwest]', 'Tower of Ruin [Southeast]', lambda state: s.state_mobility(state) or s.state_lava_swim(state, 1))
 	connect(world, player, 'Tower of Ruin [Grail]', 'Tower of Ruin [Southwest]', lambda state: state.has('Holy Grail', player))
 	connect(world, player, 'Tower of Ruin [Southwest]', 'Tower of Ruin [Southwest Door]', lambda state: s.attack_earth_spear(state) or s.glitch_raindrop(state))
+	connect(world, player, 'Tower of Ruin [Southwest Door]', 'Tower of Ruin [Southwest]', lambda state: state.has('Holy Grail', player) or s.attack_earth_spear(state) or s.glitch_raindrop(state))
 	connect(world, player, 'Tower of Ruin [Southwest]', 'Tower of Ruin [La-Mulanese]', lambda state: state.has_all({'Thunderbird Defeated', 'Feather'}, player))
 	connect(world, player, 'Tower of Ruin [Southwest]', 'Tower of Ruin [Grail]', lambda state: state.has_all({'Thunderbird Defeated', 'Feather'}, player) and s.attack_forward(state))
 	connect(world, player, 'Tower of Ruin [Illusion]', 'Tower of Ruin [Grail]', lambda state: s.attack_forward(state))
 	connect(world, player, 'Tower of Ruin [Spirits]', 'Tower of Ruin [Grail]', lambda state: state.has('Holy Grail', player))
 	connect(world, player, 'Tower of Ruin [Medicine]', 'Tower of Ruin [Spirits]', lambda state: s.state_lava_swim(state, 3) and (state.has('Holy Grail', player) or s.state_lava_swim(state, 5)))
 	connect(world, player, 'Tower of Ruin [Top]', 'Tower of Ruin [Medicine]', lambda state: state.has('Holy Grail', player))
+	connect(world, player, 'Tower of Ruin [Top]', 'Tower of Ruin [Spirits]', lambda state: s.nuwa_access(state))
 
 	connect(world, player, 'Chamber of Extinction [Left Main]', 'Chamber of Extinction [Map]', lambda state: s.state_extinction_light(state) and s.glitch_raindrop(state))
 	connect(world, player, 'Chamber of Extinction [Map]', 'Chamber of Extinction [Main]', lambda state: s.state_extinction_light(state) and state.has('Holy Grail', player))
@@ -253,6 +261,9 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	connect(world, player, 'Shrine of the Mother [Main]', 'Shrine of the Mother [Lower]', lambda state: state.has('Feather', player) and (s.attack_forward(state) or s.attack_flare_gun(state)) and state.has_any({'Holy Grail', 'Removed Shrine Skulls'}, player))
 	connect(world, player, 'Shrine of the Mother [Main]', 'True Shrine of the Mother', lambda state: s.guardian_count(state) == 8)
 
+	connect(world, player, 'Gate of Time [Mausoleum Lower]', 'Gate of Time [Mausoleum Upper]', lambda state: state.has('Feather', player))
+	connect(world, player, 'Gate of Time [Mausoleum Upper]', 'Gate of Time [Mausoleum Lower]', lambda state: state.has_any({'Holy Grail', 'Feather'}, player))
+
 	if create_hell_temple_regions:
 		connect(world, player, 'Gate of Guidance [Main]', 'Hell Temple [Entrance]', lambda state: state.has_all({'Hell Temple Unlocked', 'Feather', 'Life Seal'}, player))
 		connect(world, player, 'Hell Temple [Entrance]', 'Hell Temple [Shop]', lambda state: s.attack_bomb(state) and state.has('Ring', player) and (state.has("Hermes' Boots", player) or s.state_lamp(state)))
@@ -280,11 +291,12 @@ def create_location(player: int, location_data: LocationData, region: Region, ad
 		location.locked = True
 	return location
 
-def create_region(world: MultiWorld, player: int, region_name: str, locations_per_region: Dict[str, List[LocationData]], npcs_per_region: Dict[str,LaMulanaNPCDoor]):
+def create_region(world: MultiWorld, player: int, region_name: str, locations_per_region: Dict[str, List[LocationData]], npcs_per_region: Dict[str,LaMulanaNPCDoor], cursed_chests: Optional[Set[str]] = {}):
 	region = Region(region_name, player, world)
 	if region_name in locations_per_region:
 		for location_data in locations_per_region[region_name]:
-			location = create_location(player, location_data, region)
+			cursed_logic = lambda state: state.has('Mulana Talisman', player) if location_data.name in cursed_chests else None
+			location = create_location(player, location_data, region, cursed_logic)
 			region.locations.append(location)
 	if region_name in npcs_per_region:
 		for npc_door in npcs_per_region[region_name]:

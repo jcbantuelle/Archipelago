@@ -1,6 +1,6 @@
 from typing import List, Dict, Tuple, Optional, Callable, NamedTuple
 from BaseClasses import MultiWorld, Location, CollectionState
-from .Options import is_option_enabled
+from .Options import is_option_enabled, get_option_value, starting_location_ids
 from .Locations import LocationData
 from .LogicShortcuts import LaMulanaLogicShortcuts
 from .WorldState import LaMulanaWorldState
@@ -20,186 +20,188 @@ def get_npc_checks(world: MultiWorld, player: int) -> Dict[str,List[LocationData
 	s = LaMulanaLogicShortcuts(world, player)
 	randomized_shops = is_option_enabled(world, player, "RandomizeShops")
 	return {
+		'Starting Shop': [
+			LocationData('Starting Shop Item 1', 2359200),
+			LocationData('Starting Shop Item 2', 2359201),
+			LocationData('Starting Shop Item 3', 2359202)
+		],
 		'Elder Xelpud': [
-			LocationData('NPC: Xelpud', 1, state: lambda: True, True),
-			LocationData('Xelpud xmailer.exe Gift', 1),
-			LocationData('Xelpud Mulana Talisman Gift', 1, lambda state: state.has('Diary', player))
+			LocationData('Xelpud xmailer.exe Gift', 2359203),
+			LocationData('Xelpud Mulana Talisman Gift', 2359204, lambda state: state.has('Diary', player))
+			LocationData('NPC: Xelpud', None, lambda state: True, True),
 		],
 		'Nebur': [
-			LocationData('Nebur Shop Item 1', 1),
-			LocationData('Nebur Shop Item 2', 1),
-			LocationData('Nebur Shop Item 3', 1),
-			LocationData('Nebur Shop Item - 4 Guardians', 1, lambda state: s.guardian_count(state) >= 4)
+			LocationData('Nebur Shop Item 1', 2359205),
+			LocationData('Nebur Shop Item 2', 2359206),
+			LocationData('Nebur Shop Item 3', 2359207),
+			LocationData('Nebur Shop Item - 4 Guardians', 2359208, lambda state: s.guardian_count(state) >= 4)
 		] if randomized_shops else [
-			LocationData('Nebur Shop Item - 4 Guardians', 1, lambda state: s.guardian_count(state) >= 4)
+			LocationData('Nebur Shop Item - 4 Guardians', 2359208, lambda state: s.guardian_count(state) >= 4)
 		],
 		'Sidro': [
-			LocationData('Sidro Shop Item 1', 1),
-			LocationData('Sidro Shop Item 2', 1),
-			LocationData('Sidro Shop Item 3', 1)
+			LocationData('Sidro Shop Item 1', 2359209),
+			LocationData('Sidro Shop Item 2', 2359210),
+			LocationData('Sidro Shop Item 3', 2359211)
 		] if randomized_shops else [],
 		'Modro': [
-			LocationData('Modro Shop Item 1', 1),
-			LocationData('Modro Shop Item 2', 1),
-			LocationData('Modro Shop Item 3', 1)
+			LocationData('Modro Shop Item 1', 2359212),
+			LocationData('Modro Shop Item 2', 2359213),
+			LocationData('Modro Shop Item 3', 2359214)
 		] if randomized_shops else [],
 		'Former Mekuri Master': [
-			LocationData('Former Mekuri Master mekuri.exe Gift', 1)
+			LocationData('Former Mekuri Master mekuri.exe Gift', 2359215)
 		],
 		'Penadvent of Ghost': [
-			LocationData('Penadvent of Ghost Shop Item 1', 1),
-			LocationData('Penadvent of Ghost Shop Item 2', 1),
-			LocationData('Penadvent of Ghost Shop Item 3', 1)
+			LocationData('Penadvent of Ghost Shop Item 1', 2359216),
+			LocationData('Penadvent of Ghost Shop Item 2', 2359217),
+			LocationData('Penadvent of Ghost Shop Item 3', 2359218)
 		] if randomized_shops else [],
 		'Greedy Charlie': [
-			LocationData('Greedy Charlie Shop Item 1', 1),
-			LocationData('Greedy Charlie Shop Item 2', 1),
-			LocationData('Greedy Charlie Shop Item 3', 1)
+			LocationData('Greedy Charlie Shop Item 1', 2359219),
+			LocationData('Greedy Charlie Shop Item 2', 2359220),
+			LocationData('Greedy Charlie Shop Item 3', 2359221)
 		] if randomized_shops else [],
 		'Mulbruk': [
-			LocationData('NPC: Mulbruk', 1, lambda state: True, True),
-			LocationData('Mulbruk Book of the Dead Gift', 1, lambda state: state.can_reach('Temple of Moonlight [Southeast]'))
+			LocationData('Mulbruk Book of the Dead Gift', 2359222, lambda state: state.can_reach('Temple of Moonlight [Southeast]', 'Region', player))
+			LocationData('NPC: Mulbruk', None, lambda state: True, True),
 		],
 		'Shalom III': [
-			LocationData('Shalom III Shop Item 1', 1),
-			LocationData('Shalom III Shop Item 2', 1),
-			LocationData('Shalom III Shop Item 3', 1)
+			LocationData('Shalom III Shop Item 1', 2359223),
+			LocationData('Shalom III Shop Item 2', 2359224),
+			LocationData('Shalom III Shop Item 3', 2359225)
 		] if randomized_shops else [],
 		'Usas VI': [
-			LocationData('Usas VI Shop Item 1', 1),
-			LocationData('Usas VI Shop Item 2', 1),
-			LocationData('Usas VI Shop Item 3', 1)
+			LocationData('Usas VI Shop Item 1', 2359226),
+			LocationData('Usas VI Shop Item 2', 2359227),
+			LocationData('Usas VI Shop Item 3', 2359228)
 		] if randomized_shops else [],
 		'Kingvalley I': [
-			LocationData('Kingvalley I Shop Item 1', 1),
-			LocationData('Kingvalley I Shop Item 2', 1),
-			LocationData('Kingvalley I Shop Item 3', 1)
+			LocationData('Kingvalley I Shop Item 1', 2359229),
+			LocationData('Kingvalley I Shop Item 2', 2359230),
+			LocationData('Kingvalley I Shop Item 3', 2359231)
 		] if randomized_shops else [],
 		'Philosopher Giltoriyo': [
-			LocationData('NPC: Philosopher Giltoriyo', 1, lambda state: state.has("Philosopher's Ocarina", player), True)
+			LocationData('NPC: Philosopher Giltoriyo', None, lambda state: state.has("Philosopher's Ocarina", player), True)
 		],
 		'Mr. Fishman (Original)': [
-			LocationData('Mr. Fishman (Original) Shop Item 1', 1),
-			LocationData('Mr. Fishman (Original) Shop Item 2', 1),
-			LocationData('Mr. Fishman (Original) Shop Item 3', 1)
+			LocationData('Mr. Fishman (Original) Shop Item 1', 2359232),
+			LocationData('Mr. Fishman (Original) Shop Item 2', 2359233),
+			LocationData('Mr. Fishman (Original) Shop Item 3', 2359234)
 		] if randomized_shops else [],
 		'Mr. Fishman (Alt)': [
-			LocationData('Mr. Fishman (Alt) Shop Item 1', 1),
-			LocationData('Mr. Fishman (Alt) Shop Item 2', 1),
-			LocationData('Mr. Fishman (Alt) Shop Item 3', 1)
+			LocationData('Mr. Fishman (Alt) Shop Item 1', 2359235),
+			LocationData('Mr. Fishman (Alt) Shop Item 2', 2359236),
+			LocationData('Mr. Fishman (Alt) Shop Item 3', 2359237)
 		] if randomized_shops else [],
 		'Hot-blooded Nemesistwo': [
-			LocationData('Hot-blooded Nemesistwo Shop Item 1', 1),
-			LocationData('Hot-blooded Nemesistwo Shop Item 2', 1),
-			LocationData('Hot-blooded Nemesistwo Shop Item 3', 1)
+			LocationData('Hot-blooded Nemesistwo Shop Item 1', 2359238),
+			LocationData('Hot-blooded Nemesistwo Shop Item 2', 2359239),
+			LocationData('Hot-blooded Nemesistwo Shop Item 3', 2359240)
 		] if randomized_shops else [],
 		'Operator Combaker': [
-			LocationData('Operator Combaker Shop Item 1', 1),
-			LocationData('Operator Combaker Shop Item 2', 1),
-			LocationData('Operator Combaker Shop Item 3', 1)
+			LocationData('Operator Combaker Shop Item 1', 2359241),
+			LocationData('Operator Combaker Shop Item 2', 2359242),
+			LocationData('Operator Combaker Shop Item 3', 2359243)
 		] if randomized_shops else [],
 		'Yiegah Kungfu': [
-			LocationData('Yiegah Kungfu Shop Item 1', 1),
-			LocationData('Yiegah Kungfu Shop Item 2', 1),
-			LocationData('Yiegah Kungfu Shop Item 3', 1),
-			LocationData('NPC: Yiegah Kungfu', 1, lambda state: True, True)
+			LocationData('Yiegah Kungfu Shop Item 1', 2359244),
+			LocationData('Yiegah Kungfu Shop Item 2', 2359245),
+			LocationData('Yiegah Kungfu Shop Item 3', 2359246),
+			LocationData('NPC: Yiegah Kungfu', None, lambda state: True, True)
 		] if randomized_shops else [
-			LocationData('NPC: Yiegah Kungfu', 1, lambda state: True, True)
+			LocationData('NPC: Yiegah Kungfu', None, lambda state: True, True)
 		],
 		'Yiear Kungfu': [
-			LocationData('Yiear Kungfu Shop Item 1', 1),
-			LocationData('Yiear Kungfu Shop Item 2', 1),
-			LocationData('Yiear Kungfu Shop Item 3', 1)
+			LocationData('Yiear Kungfu Shop Item 1', 2359247),
+			LocationData('Yiear Kungfu Shop Item 2', 2359248),
+			LocationData('Yiear Kungfu Shop Item 3', 2359249)
 		] if randomized_shops else [],
 		'Arrogant Sturdy Snake': [
-			LocationData('Arrogant Sturdy Snake Shop Item 1', 1),
-			LocationData('Arrogant Sturdy Snake Shop Item 2', 1),
-			LocationData('Arrogant Sturdy Snake Shop Item 3', 1)
+			LocationData('Arrogant Sturdy Snake Shop Item 1', 2359250),
+			LocationData('Arrogant Sturdy Snake Shop Item 2', 2359251),
+			LocationData('Arrogant Sturdy Snake Shop Item 3', 2359252)
 		] if randomized_shops else [],
 		'Arrogant Metagear': [
-			LocationData('Arrogant Metagear Shop Item 1', 1),
-			LocationData('Arrogant Metagear Shop Item 2', 1),
-			LocationData('Arrogant Metagear Shop Item 3', 1)
+			LocationData('Arrogant Metagear Shop Item 1', 2359253),
+			LocationData('Arrogant Metagear Shop Item 2', 2359254),
+			LocationData('Arrogant Metagear Shop Item 3', 2359255)
 		] if randomized_shops else [],
 		'Fairy Queen': [
 			LocationData('Fairies Unlocked', 1, lambda state: state.has("Isis' Pendant", player), True)
 		],
 		'Affected Knimare': [
-			LocationData('Affected Knimare Shop Item 1', 1),
-			LocationData('Affected Knimare Shop Item 2', 1),
-			LocationData('Affected Knimare Shop Item 3', 1)
+			LocationData('Affected Knimare Shop Item 1', 2359256),
+			LocationData('Affected Knimare Shop Item 2', 2359257),
+			LocationData('Affected Knimare Shop Item 3', 2359258)
 		] if randomized_shops else [],
 		'Mr. Slushfund': [
-			LocationData('Mr. Slushfund Pepper Gift', 1),
-			LocationData('Mr. Slushfund Anchor Gift', 1, lambda state: state.has('Treasures', player))
+			LocationData('Mr. Slushfund Pepper Gift', 2359259),
+			LocationData('Mr. Slushfund Anchor Gift', 2359260, lambda state: state.has('Treasures', player))
 		],
 		'Priest Alest': [
-			LocationData('Priest Alest Mini Doll Gift', 1)
+			LocationData('Priest Alest Mini Doll Gift', 2359261)
 		],
 		'Mover Athleland': [
-			LocationData('Mover Athleland Shop Item 1', 1),
-			LocationData('Mover Athleland Shop Item 2', 1),
-			LocationData('Mover Athleland Shop Item 3', 1)
+			LocationData('Mover Athleland Shop Item 1', 2359262),
+			LocationData('Mover Athleland Shop Item 2', 2359263),
+			LocationData('Mover Athleland Shop Item 3', 2359264)
 		] if randomized_shops else [],
 		'Giant Mopiran': [
-			LocationData('Giant Mopiran Shop Item 1', 1),
-			LocationData('Giant Mopiran Shop Item 2', 1),
-			LocationData('Giant Mopiran Shop Item 3', 1)
+			LocationData('Giant Mopiran Shop Item 1', 2359265),
+			LocationData('Giant Mopiran Shop Item 2', 2359266),
+			LocationData('Giant Mopiran Shop Item 3', 2359267)
 		] if randomized_shops else [],
 		'Philosopher Alsedana': [
-			LocationData('NPC: Philosopher Alsedana', 1, lambda state: state.has("Philosopher's Ocarina", player), True)
+			LocationData('NPC: Philosopher Alsedana', None, lambda state: state.has("Philosopher's Ocarina", player), True)
 		],
 		'Kingvalley II': [
-			LocationData('Kingvalley II Shop Item 1', 1),
-			LocationData('Kingvalley II Shop Item 2', 1),
-			LocationData('Kingvalley II Shop Item 3', 1)
+			LocationData('Kingvalley II Shop Item 1', 2359268),
+			LocationData('Kingvalley II Shop Item 2', 2359269),
+			LocationData('Kingvalley II Shop Item 3', 2359270)
 		] if randomized_shops else [],
 		'Philosopher Samaranta': [
-			LocationData('NPC: Philosopher Samaranta', 1, lambda state: state.has("Philosopher's Ocarina", player), True)
+			LocationData('NPC: Philosopher Samaranta', None, lambda state: state.has("Philosopher's Ocarina", player), True)
 		],
 		'Energetic Belmont': [
-			LocationData('Energetic Belmont Shop Item 1', 1),
-			LocationData('Energetic Belmont Shop Item 2', 1),
-			LocationData('Energetic Belmont Shop Item 3', 1)
+			LocationData('Energetic Belmont Shop Item 1', 2359271),
+			LocationData('Energetic Belmont Shop Item 2', 2359272),
+			LocationData('Energetic Belmont Shop Item 3', 2359273)
 		] if randomized_shops else [],
 		'Mechanical Efspi': [
-			LocationData('Mechanical Efspi Shop Item 1', 1),
-			LocationData('Mechanical Efspi Shop Item 2', 1),
-			LocationData('Mechanical Efspi Shop Item 3', 1)
+			LocationData('Mechanical Efspi Shop Item 1', 2359274),
+			LocationData('Mechanical Efspi Shop Item 2', 2359275),
+			LocationData('Mechanical Efspi Shop Item 3', 2359276)
 		] if randomized_shops else [],
 		'Mudman Qubert': [
-			LocationData('Mudman Qubert Shop Item 1', 1),
-			LocationData('Mudman Qubert Shop Item 2', 1),
-			LocationData('Mudman Qubert Shop Item 3', 1)
+			LocationData('Mudman Qubert Shop Item 1', 2359277),
+			LocationData('Mudman Qubert Shop Item 2', 2359278),
+			LocationData('Mudman Qubert Shop Item 3', 2359279)
 		] if randomized_shops else [],
 		'Philosopher Fobos': [
-			LocationData('NPC: Philosopher Fobos', 1, lambda state: state.has("Philosopher's Ocarina", player), True)
+			LocationData('NPC: Philosopher Fobos', None, lambda state: state.has("Philosopher's Ocarina", player), True)
 		],
 		'Tailor Dracuet': [
-			LocationData('Tailor Dracuet Shop Item 1', 1),
-			LocationData('Tailor Dracuet Shop Item 2', 1),
-			LocationData('Tailor Dracuet Shop Item 3', 1)
+			LocationData('Tailor Dracuet Shop Item 1', 2359280),
+			LocationData('Tailor Dracuet Shop Item 2', 2359281),
+			LocationData('Tailor Dracuet Shop Item 3', 2359282)
 		] if randomized_shops else []
 	}
-
-
-def spring_npc(state: CollectionState, s: LaMulanaLogicShortcuts) -> bool:
-	can_escape = s.state_shield(state) or s.attack_shuriken(state) or s.attack_flare_gun(state) or s.attack_caltrops(state) or state.has_any({'Leather Whip', 'Chain Whip', 'Flail Whip', 'Axe', 'Holy Grail'}, player)
-	if not can_escape:
-		return False
-	if s.attack_earth_spear(state) or s.attack_bomb(state) or s.attack_caltrops(state) or s.attack_flare_gun(state) or state.has_any({'Knife', 'Axe', 'Katana'}, player):
-		return True
-	return state.has_any({'Helmet', 'Scalesphere', 'Sacred Orb'}, player) and state.has_any({'Leather Whip', 'Chain Whip', 'Flail Whip', 'Key Sword'}, player)
 
 
 def get_npc_entrances(world: MultiWorld, player: int, worldstate: LaMulanaWorldState, s: LaMulanaLogicShortcuts) -> Dict[str,List[LaMulanaNPCDoor]]:
 	npc_checks = get_npc_checks(world, player)
 	if worldstate.npc_rando and worldstate.npc_mapping:
-		get_entrance_checks = lambda door: npc_checks[worldstate.npc_mapping[door]] if worldstate.npc_mapping[door] in npc_checks else [] 
+		get_entrance_checks = lambda door: npc_checks[worldstate.npc_mapping[door]] if door in worldstate.npc_mapping and worldstate.npc_mapping[door] in npc_checks else [] 
 	else:
 		get_entrance_checks = lambda door: npc_checks[door] if door in npc_checks else []
 
+	is_surface_start = get_option_value(world, player, "StartingLocation") == starting_location_ids['surface']
+
 	npc_doors = {
+		'Menu': [
+			#Starting shop exists only in non-surface starts, and isn't affected by NPC rando
+			LaMulanaNPCDoor(npc_checks['Starting Shop'])
+		] if not is_surface_start else [],
 		'Surface [Main]': [
 			LaMulanaNPCDoor(get_entrance_checks('Elder Xelpud')),
 			LaMulanaNPCDoor(get_entrance_checks('Nebur'), lambda state: state.has('NPC: Xelpud', player)),
@@ -218,7 +220,7 @@ def get_npc_entrances(world: MultiWorld, player: int, worldstate: LaMulanaWorldS
 			LaMulanaNPCDoor(get_entrance_checks('Greedy Charlie'), lambda state: s.attack_chest_any(state)),
 		],
 		'Temple of the Sun [Main]': [
-			LaMulanaNPCDoor(get_entrance_checks('Mulbruk'), lambda state: s.boss_count(state) >= 1 and state.has('Origin Seal', player)),
+			LaMulanaNPCDoor(get_entrance_checks('Mulbruk'), lambda state: s.guardian_count(state) >= 1 and state.has('Origin Seal', player)),
 			LaMulanaNPCDoor(get_entrance_checks('Shalom III'), lambda state: s.attack_shuriken(state) or s.attack_bomb(state) or s.glitch_catpause(state) or (state.has('Feather', player) and (s.attack_forward(state) or s.attack_chakram(state)))),
 			LaMulanaNPCDoor(get_entrance_checks('Usas VI')),
 			LaMulanaNPCDoor(get_entrance_checks('Kingvalley I'), lambda state: state.has_all({'Feather', 'Death Seal'}, player)),
@@ -227,7 +229,7 @@ def get_npc_entrances(world: MultiWorld, player: int, worldstate: LaMulanaWorldS
 			LaMulanaNPCDoor(get_entrance_checks('Priest Madomo')),
 		],
 		'Spring in the Sky [Main]': [
-			LaMulanaNPCDoor(get_entrance_checks('Priest Hidlyda'), lambda state: spring_npc(state)),
+			LaMulanaNPCDoor(get_entrance_checks('Priest Hidlyda'), lambda state: s.spring_npc(state)),
 			LaMulanaNPCDoor(get_entrance_checks('Philosopher Giltoriyo')),
 		],
 		'Spring in the Sky [Upper]': [
