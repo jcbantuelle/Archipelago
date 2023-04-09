@@ -1,32 +1,39 @@
-from BaseClasses import MultiWorld, CollectionState
+from BaseClasses import MultiWorld, CollectionState, Optional
 from .Options import is_option_enabled, get_option_value, starting_weapon_ids, starting_location_ids
-from .WorldState import LaMulanaWorldState
 
 class LaMulanaLogicShortcuts:
 	player: int
 
 	flag_autoscan: bool
+	flag_ancient_lamulanese: bool
 	flag_ice_cape_lava: bool
 	flag_flare_gun_extinction: bool
+	flag_key_fairy_combo_required: bool
 	flag_subweapon_only: bool
+	flag_pistol_start: bool
+	flag_raindrop: bool
+	flag_catpause: bool
+	flag_lamp_glitch: bool
 	starting_location: str
 	is_frontside_start: bool
 
-	def __init__(self, world: MultiWorld, player: int):
-		self.player = player
-		self.flag_autoscan = is_option_enabled(world, player, "AutoScanGrailTablets")
-		self.flag_ice_cape_lava = is_option_enabled(world, player, "RequireIceCape")
-		self.flag_flare_gun_extinction = is_option_enabled(world, player, "RequireFlareGun")
-		self.flag_key_fairy_combo_required = is_option_enabled(world, player, "RequireKeyFairyCombo")
-		self.flag_subweapon_only = is_option_enabled(world, player, "SubweaponOnly")
-		self.flag_pistol_start = get_option_value(world, player, "StartingWeapon") == starting_weapon_ids['pistol']
-		self.flag_raindrop = is_option_enabled(world, player, "RaindropsInLogic")
-		self.flag_catpause = is_option_enabled(world, player, "CatPausingInLogic")
-		self.flag_lamp_glitch = is_option_enabled(world, player, "LampGlitchInLogic")
-		
-		starting_location_names = {y: x for x, y in starting_location_ids.items()}
-		self.starting_location = starting_location_names.[get_option_value(world, player, "StartingLocation")]
-		self.is_frontside_start = self.starting_location in {'surface', 'guidance', 'mausoleum', 'sun', 'spring', 'inferno', 'extinction', 'twin (front)', 'endless'}
+	def __init__(self, world: Optional[MultiWorld], player: Optional[int]):
+		if world and player:
+			self.player = player
+			self.flag_autoscan = is_option_enabled(world, player, "AutoScanGrailTablets")
+			self.flag_ancient_lamulanese = is_option_enabled(world, player, "AncientLaMulaneseLearned")
+			self.flag_ice_cape_lava = is_option_enabled(world, player, "RequireIceCape")
+			self.flag_flare_gun_extinction = is_option_enabled(world, player, "RequireFlareGun")
+			self.flag_key_fairy_combo_required = is_option_enabled(world, player, "RequireKeyFairyCombo")
+			self.flag_subweapon_only = is_option_enabled(world, player, "SubweaponOnly")
+			self.flag_pistol_start = get_option_value(world, player, "StartingWeapon") == starting_weapon_ids['Pistol']
+			self.flag_raindrop = is_option_enabled(world, player, "RaindropsInLogic")
+			self.flag_catpause = is_option_enabled(world, player, "CatPausingInLogic")
+			self.flag_lamp_glitch = is_option_enabled(world, player, "LampGlitchInLogic")
+			
+			starting_location_names = {y: x for x, y in starting_location_ids.items()}
+			self.starting_location = starting_location_names[get_option_value(world, player, "StartingLocation")]
+			self.is_frontside_start = self.starting_location in {'surface', 'guidance', 'mausoleum', 'sun', 'spring', 'inferno', 'extinction', 'twin (front)', 'endless', 'gate of time (surface)'}
 
 
 	#Could add +1 if revive combo was on, but that would turn move.exe and randc.exe into progression
@@ -69,8 +76,9 @@ class LaMulanaLogicShortcuts:
 	def attack_caltrops(self, state: CollectionState) -> bool:
 		return state.has_all({"Caltrops", "Caltrops Ammo"}, self.player)
 
+	#Pistol ammo is expensive - unless it's free (pistol start or subweapon only flag), logically expect fairy access for item fairy grinding
 	def attack_pistol(self, state: CollectionState) -> bool:
-		return state.has_all({"Pistol", "Pistol Ammo"}, self.player) and (self.flag_subweapon_only or self.flag_pistol_start or self.state_fairy_access(state))
+		return state.has_all({"Pistol", "Pistol Ammo"}, self.player) and (self.flag_subweapon_only or self.flag_pistol_start or state.has('Fairies Unlocked', self.player))
 
 	def attack_main(self, state: CollectionState) -> bool:
 		return self.attack_whip(state) or state.has_any({"Knife", "Katana", "Axe", "Key Sword"}, self.player)
@@ -82,7 +90,7 @@ class LaMulanaLogicShortcuts:
 		return state.has_any({"Axe", "Knife", "Katana"}, self.player)
 
 	def attack_far(self, state: CollectionState) -> bool:
-		return self.attack_whip(state) or self.has_any({"Key Sword", "Axe"}, self.player)
+		return self.attack_whip(state) or state.has_any({"Key Sword", "Axe"}, self.player)
 
 	def attack_vertical(self, state: CollectionState) -> bool:
 		return state.has_all({"Flare Gun", "Flare Gun Ammo", "Earth Spear", "Earth Spear Ammo"}, self.player)
@@ -94,7 +102,7 @@ class LaMulanaLogicShortcuts:
 		return state.has_any({"Flail Whip", "Katana", "Axe"}, self.player) or self.attack_empowered_key_sword(state)
 
 	def attack_dps(self, state: CollectionState) -> bool:
-		return state.has_any({"Chain Whip", "Flail Whip"}, self.player) or self.attack_empowered_key_sword(state) or (state.has("Gauntlet", self.player) and state.has_any({"Axe", "Katana"}, self.player))
+		return state.has_any({"Chain Whip", "Flail Whip", "Axe", "Katana"}, self.player) or self.attack_empowered_key_sword(state)
 
 	def attack_forward(self, state: CollectionState) -> bool:
 		return self.attack_main(state) or self.attack_s_straight(state) or self.attack_rolling_shuriken(state) or self.attack_bomb(state) or self.attack_caltrops(state)
@@ -124,26 +132,29 @@ class LaMulanaLogicShortcuts:
 		return state.has_all({"Lamp of Time", "Lamp Recharge"}, self.player)
 
 	def state_extinction_light(self, state: CollectionState) -> bool:
-		return attack_flare_gun(state) or not self.flag_flare_gun_extinction
+		return self.attack_flare_gun(state) or not self.flag_flare_gun_extinction
 
 	def state_water_swim(self, state: CollectionState, amount: int) -> bool:
 		if state.has('Scalesphere', self.player):
 			return True
-		return self.get_health_count >= amount
+		return self.get_health_count(state) >= amount
 
 	def state_lava_swim(self, state: CollectionState, amount: int) -> bool:
 		if self.flag_ice_cape_lava:
-			return self.has("Ice Cape", self.player)
-		return self.has("Ice Cape", self.player) or self.get_health_count(state) >= amount
+			return state.has("Ice Cape", self.player)
+		return state.has("Ice Cape", self.player) or self.get_health_count(state) >= amount
 
 	def state_shield(self, state: CollectionState) -> bool:
 		return state.has_any({"Silver Shield", "Angel Shield"}, self.player)
 
 	def state_key_fairy_access(self, state: CollectionState) -> bool:
-		return state.has('Fairies Unlocked') and (state.has_all({"miracle.exe", "mekuri.exe"}, self.player) or not flag_key_fairy_combo_required)
+		return state.has('Fairies Unlocked', self.player) and (state.has_all({"miracle.exe", "mekuri.exe"}, self.player) or not self.flag_key_fairy_combo_required)
 
 	def state_read_grail(self, state: CollectionState) -> bool:
 		return self.flag_autoscan or state.has_all({"Hand Scanner", "reader.exe"}, self.player)
+
+	def state_ancient_lamulanese(self, state: CollectionState) -> bool:
+		return self.flag_ancient_lamulanese or (self.state_literacy(state) and state.can_reach('Tower of Ruin [La-Mulanese]', 'Region', self.player) and state.can_reach('Chamber of Birth [Northeast]', 'Region', self.player) and state.can_reach('Shrine of the Mother [Seal]', 'Region', self.player) and (state.has('Removed Shrine Skulls', self.player) or self.guardian_count == 8))
 
 	def state_frontside_warp(self, state: CollectionState) -> bool:
 		return state.has("Holy Grail", self.player) and self.state_read_grail(state) and (state.has("mirai.exe", self.player) or self.is_frontside_start)
@@ -151,19 +162,6 @@ class LaMulanaLogicShortcuts:
 	def state_backside_warp(self, state: CollectionState) -> bool:
 		return state.has("Holy Grail", self.player) and self.state_read_grail(state) and (state.has("mirai.exe", self.player) or not self.is_frontside_start)
 
-""" Combos in logic would turn them into progression items
-	def combo_revive(self, state: CollectionState) -> bool:
-		return state.has_all({"move.exe", "randc.exe"}, self.player)
-
-	def combo_whip(self, state: CollectionState) -> bool:
-		return state.has_all({"move.exe", "lamulana.exe"}, self.player)
-
-	def combo_nonwhip(self, state: CollectionState) -> bool:
-		return state.has_all({"randc.exe", "mekuri.exe"}, self.player)
-
-	def combo_iframes(self, state: CollectionState) -> bool:
-		return state.has_all({"move.exe", "deathv.exe"}, self.player)
-"""
 	#Only relevant if NPC rando is on
 	def combo_dev_npcs(self, state: CollectionState) -> bool:
 		return state.has_all({"miracle.exe", "mirai.exe"}, self.player)
@@ -177,12 +175,35 @@ class LaMulanaLogicShortcuts:
 	def glitch_lamp(self, state: CollectionState) -> bool:
 		return self.flag_lamp_glitch and self.state_lamp(state)
 
-	def guardian_count(self, state: CollectionState) -> bool:
+	def guardian_count(self, state: CollectionState) -> int:
 		counter = 0
-		for boss in ['Amphisbaena Defeated', 'Sakit Defeated', 'Ellmac Defeated', 'Bahamut Defeated', 'Viy Defeated', 'Palenque Defeated', 'Baphomet Defeated', 'Tiamat Defeated']:
+		for boss in {'Amphisbaena Defeated', 'Sakit Defeated', 'Ellmac Defeated', 'Bahamut Defeated', 'Viy Defeated', 'Palenque Defeated', 'Baphomet Defeated', 'Tiamat Defeated'}:
 			if state.has(boss, self.player):
 				counter += 1
 		return counter
+
+	def guardian_access_count(self, state: CollectionState) -> int:
+		counter = 0
+		if state.has('Amphisbaena Defeated', self.player) or state.can_reach('Gate of Guidance [Main]', 'Region', self.player):
+			counter += 1
+		if state.has('Sakit Defeated', self.player) or state.can_reach('Mausoleum of the Giants', 'Region', self.player):
+			counter += 1
+		if state.has('Ellmac Defeated', self.player) or state.can_reach('Temple of the Sun [Main]', 'Region', self.player):
+			counter += 1
+		if state.has('Bahamut Defeated', self.player) or state.can_reach('Spring in the Sky [Upper]', 'Region', self.player):
+			counter += 1
+		if state.has('Viy Defeated', self.player) or state.can_reach('Inferno Cavern [Viy]', 'Region', self.player):
+			counter += 1
+		if state.has('Palenque Defeated', self.player) or (state.has('Pochette Key', self.player) and state.can_reach('Chamber of Extinction [Ankh Lower]', 'Region', self.player)):
+			counter += 1
+		if state.has('Baphomet Defeated', self.player) or state.can_reach('Twin Labyrinths [Lower]', 'Region', self.player):
+			counter += 1
+		if state.has('Tiamat Defeated', self.player) or (state.has('Dimensional Key', self.player) and state.can_reach('Dimensional Corridor [Upper]', 'Region', self.player)):
+			counter += 1
+		return counter
+
+	def enough_ankh_jewels(self, state: CollectionState) -> bool:
+		return state.has('Ankh Jewel', self.player, self.guardian_access_count(state))
 
 	def sun_watchtower(self, state: CollectionState) -> bool:
 		return self.attack_forward(state) or self.attack_flare_gun(state)
@@ -190,10 +211,10 @@ class LaMulanaLogicShortcuts:
 	def bronze_mirror_chest_logic(self, state: CollectionState) -> bool:
 		if self.glitch_raindrop(state) and (self.attack_rolling_shuriken(state) or self.attack_earth_spear(state) or self.attack_bomb(state)):
 			return True
-		reach_extinction_map = state.can_reach('Chamber of Extinction [Map]', self.player)
+		reach_extinction_map = state.can_reach('Chamber of Extinction [Map]', 'Region', self.player)
 		if self.glitch_lamp(state) and (reach_extinction_map or state.has('Holy Grail', self.player)) and (self.attack_forward(state) or self.attack_flare_gun(state)):
 			return True
-		if self.glitch_catpause(state) and reach_extinction_map and state.has('Feather', player) and self.attack_chest(state):
+		if self.glitch_catpause(state) and reach_extinction_map and state.has('Feather', self.player) and self.attack_chest(state):
 			return True
 		return reach_extinction_map and state.has('Flooded Temple of the Sun', self.player) and (self.attack_forward(state) or self.attack_flare_gun(state))
 
@@ -203,19 +224,32 @@ class LaMulanaLogicShortcuts:
 			return False
 		if self.attack_earth_spear(state) or self.attack_bomb(state) or self.attack_caltrops(state) or self.attack_flare_gun(state) or state.has_any({'Knife', 'Axe', 'Katana'}, self.player):
 			return True
-		return (state.has('Helmet', self.player), or self.state_water_swim(state, 1)) and state.has_any({'Leather Whip', 'Chain Whip', 'Flail Whip', 'Key Sword'}, self.player)
+		return (state.has('Helmet', self.player) or self.state_water_swim(state, 1)) and state.has_any({'Leather Whip', 'Chain Whip', 'Flail Whip', 'Key Sword'}, self.player)
 
-
-	def endless_oneway_open(self, state: CollectionState, worldstate: LaMulanaWorldState) -> bool:
+	def endless_oneway_open(self, state: CollectionState, worldstate) -> bool:
 		if worldstate.include_oneways:
-			if worldstate.transition_map['Endless Corridor Left'] == 'Chamber of Birth Right':
+			if worldstate.transition_map['Endless L1'] == 'Birth R1':
 				return state.has('Skanda Defeated', self.player)
-			if worldstate.transition_map['Endless Corridor Left'] in ['Gate of Illusion Right 1', 'Gate of Illusion Right 2']:
+			if worldstate.transition_map['Endless L1'] in ['Illusion R1', 'Illusion R2']:
 				return state.has('Illusion Unlocked', self.player)
 		return True
 
+	def moonlight_face(self, state: CollectionState) -> bool:
+		return self.attack_caltrops(state) or self.attack_shuriken(state) or self.attack_rolling_shuriken(state) or self.attack_chakram(state) or self.attack_bomb(state) or self.attack_pistol(state)
+
 	def nuwa_access(self, state: CollectionState) -> bool:
 		return state.has_all({'NPC: Philosopher Alsedana', 'Feather', 'Death Seal'}, self.player)
+
+	def all_mantras(self, state: CollectionState) -> bool:
+		for region in {'Gate of Guidance [Main]', 'Graveyard of the Giants [East]', 'Graveyard of the Giants [West]', 'Temple of the Sun [Sphinx]', 'Temple of Moonlight [Southeast]', 'Tower of the Goddess [Lower]', 'Tower of Ruin [Spirits]', 'Inferno Cavern [Spikes]'}:
+			if not state.can_reach(region, 'Region', self.player):
+				return False
+		if not self.glitch_lamp(state):
+			for region in {'Twin Labyrinths [Lower]', 'Chamber of Extinction [Magatama Left]', 'Chamber of Birth [Northeast]', 'Endless Corridor [1F]'}:
+				if not state.can_reach(region, 'Region', self.player):
+					return False
+		return state.has_all({'Hand Scanner', 'reader.exe', 'Djed Pillar', 'mantra.exe', 'Feather', 'Viy Defeated'}, self.player) and self.state_ancient_lamulanese(state) and (self.glitch_lamp(state) or state.has('NPC: Samaranta', self.player))
+
 
 	def hell_temple_requirements(self, state: CollectionState) -> bool:
 		for region in {'Surface [Main]', 'Gate of Guidance [Main]', 'Gate of Illusion [Dracuet]', 'Gate of Time [Guidance]'}:

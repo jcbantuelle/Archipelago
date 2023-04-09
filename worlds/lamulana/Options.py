@@ -3,16 +3,16 @@ from BaseClasses import MultiWorld
 from Options import Toggle, DefaultOnToggle, DeathLink, Choice, Range, Option, OptionDict, OptionList
 
 starting_location_ids = {
-	'surface': 0
-	'guidance': 1
-	'mausoleum': 2
-	'sun': 3
-	'spring': 4
+	'surface': 0,
+	'guidance': 1,
+	'mausoleum': 2,
+	'sun': 3,
+	'spring': 4,
 	'inferno': 5,
 	'extinction': 6,
-	'twin (front)': 7
+	'twin (front)': 7,
 	'endless': 8,
-	'illusion': 9
+	'illusion': 9,
 	'graveyard': 10,
 	'moonlight': 11,
 	'goddess': 12,
@@ -23,24 +23,31 @@ starting_location_ids = {
 }
 
 starting_weapon_ids = {
-	'leather whip': 0
-	'knife': 1
-	'key sword': 2
-	'axe': 3
-	'katana': 4
-	'shuriken': 5
-	'rolling shuriken': 6
-	'earth spear': 7
-	'flare gun': 8
-	'bomb': 9
-	'chakram': 10
-	'caltrops': 11
-	'pistol': 12
+	'Leather Whip': 0,
+	'Knife': 1,
+	'Key Sword': 2,
+	'Axe': 3,
+	'Katana': 4,
+	'Shuriken': 5,
+	'Rolling Shuriken': 6,
+	'Earth Spear': 7,
+	'Flare Gun': 8,
+	'Bomb': 9,
+	'Chakram': 10,
+	'Caltrops': 11,
+	'Pistol': 12
 }
 
-class RandomizeShops(Toggle):
-	"If on, randomizes all shop items. If off, unique shop items are still randomized"
-	display_name = "Randomize all shop items"
+starting_location_names = {y: x for x, y in starting_location_ids.items()}
+starting_weapon_names = {y: x for x, y in starting_weapon_ids.items()}
+
+
+class ShopDensity(Range):
+	"The amount of randomized items placed in shops, with the remainder filled by ammo and weights. If set to 0, the only randomized item in a shop is Nebur's 4 guardian item"
+	range_start = 0
+	range_end = 50
+	default = 30
+	display_name = "Shop Item Density"
 
 class RandomizeNPCs(Toggle):
 	"Randomizes all NPCs and shop locations"
@@ -58,21 +65,24 @@ class RandomizeSeals(Toggle):
 	"Individually randomizes which seal is required to break each wall seal"
 	display_name = "Randomize seals"
 
-class ProvocativeBathingSuit(Choice):
-	"In Item Pool: The provocative bathing suit is in the item pool, but Hell Temple is not required. Hell Temple: The final reward for beating Hell Temple may be required"
-	display_name = "Hell Temple Reward"
-	option_off: 0
-	option_in_item_pool = 1
-	option_hell_temple = 2
-	alias_true: 1
-
 class RandomizeCursedChests(Toggle):
-	"If on, 4 random chests will be cursed instead of the 4 vanilla cursed chests"
+	"If on, a random number of chests will be cursed and require the Mulana Talisman to open instead of the 4 usual cursed chests"
 	display_name = "Randomize Cursed Chests"
+
+class CursedChestCount(Range):
+	"The number of chests that will be cursed and require the Mulana Talisman to open."
+	display_name = "Number of Cursed Chests"
+	range_start = 0
+	range_end = 94
+	default = 4
 
 class RandomizeDracuetsShop(Toggle):
 	"Randomize Dracuet's shop in Hell Temple. If NPC rando is on, includes the Hell Temple shop in the randomized NPC pool"
 	display_name = "Randomize Dracuet's Shop"
+
+class HellTempleReward(Toggle):
+	"The final reward for beating Hell Temple may be required. A treasure that should not have been created - do not do this unless you know what it entails."
+	display_name = "Hell Temple Final Reward"
 
 class StartingLocation(Choice):
 	"Set or randomize your starting location"
@@ -84,7 +94,7 @@ class StartingLocation(Choice):
 	option_spring_in_the_sky = starting_location_ids['spring']
 	option_inferno_cavern = starting_location_ids['inferno']
 	option_chamber_of_extinction = starting_location_ids['extinction']
-	option_twin_labs_front = starting_location_ids['twin (front)']
+	option_twin_labyrinths_front = starting_location_ids['twin (front)']
 	option_endless_corridor = starting_location_ids['endless']
 	option_gate_of_illusion = starting_location_ids['illusion']
 	option_graveyard_of_the_giants = starting_location_ids['graveyard']
@@ -92,25 +102,25 @@ class StartingLocation(Choice):
 	option_tower_of_the_goddess = starting_location_ids['goddess']
 	option_tower_of_ruin = starting_location_ids['ruin']
 	option_chamber_of_birth = starting_location_ids['birth']
-	option_twin_labs_back = starting_location_ids['twin (back)']
+	option_twin_labyrinths_back = starting_location_ids['twin (back)']
 	option_gate_of_time_surface = starting_location_ids['gate of time (surface)']
 
 class StartingWeapon(Choice):
 	"Set or randomize your starting weapon"
 	display_name = "Starting Weapon"
-	option_leather_whip = starting_weapon_ids['leather whip']
-	option_knife = starting_weapon_ids['knife']
-	option_key_sword = starting_weapon_ids['key sword']
-	option_axe = starting_weapon_ids['axe']
-	option_katana = starting_weapon_ids['katana']
-	option_shuriken = starting_weapon_ids['shuriken']
-	option_rolling_shuriken = starting_weapon_ids['rolling shuriken']
-	option_earth_spear = starting_weapon_ids['earth spear']
-	option_flare_gun = starting_weapon_ids['flare gun']
-	option_bomb = starting_weapon_ids['bomb']
-	option_chakram = starting_weapon_ids['chakram']
-	option_caltrops = starting_weapon_ids['caltrops']
-	option_pistol = starting_weapon_ids['pistol']
+	option_leather_whip = starting_weapon_ids['Leather Whip']
+	option_knife = starting_weapon_ids['Knife']
+	option_key_sword = starting_weapon_ids['Key Sword']
+	option_axe = starting_weapon_ids['Axe']
+	option_katana = starting_weapon_ids['Katana']
+	option_shuriken = starting_weapon_ids['Shuriken']
+	option_rolling_shuriken = starting_weapon_ids['Rolling Shuriken']
+	option_earth_spear = starting_weapon_ids['Earth Spear']
+	option_flare_gun = starting_weapon_ids['Flare Gun']
+	option_bomb = starting_weapon_ids['Bomb']
+	option_chakram = starting_weapon_ids['Chakram']
+	option_caltrops = starting_weapon_ids['Caltrops']
+	option_pistol = starting_weapon_ids['Pistol']
 
 class StartWithHolyGrail(DefaultOnToggle):
 	"Starting with the Holy Grail is generally recommended"
@@ -120,17 +130,13 @@ class StartWithMirai(DefaultOnToggle):
 	"Start with mirai.exe for backside warping"
 	display_name = "Start with mirai.exe"
 
-class StartWithHandScanner(Toggle):
-	"Start with the hand scanner"
-	display_name: "Start with the Hand Scanner"
-
-class StartWithReader(Toggle):
-	"Start with the reader software"
-	display_name: "Start with Reader"
-
-class StartWithHermesBoots(Toggle):
+class StartWithHermesBoots(DefaultOnToggle):
 	"Start with boots to go fast right away"
 	display_name = "Start with Hermes' Boots"
+
+class StartWithTextTrax(DefaultOnToggle):
+	"Start with bunemon.exe, which allows you to record shop inventories and NPC locations in-game"
+	display_name = "Start with TextTrax"
 
 class RandomizeTransitions(Choice):
 	"Randomizes transitions between areas. \"On\" does not include one-way transitions, whereas \"Full\" includes one-way transitions"
@@ -145,6 +151,7 @@ class RandomizeBacksideDoors(Choice):
 	option_off = 0
 	option_boss_doors_only = 1
 	option_full = 2
+	alias_true = 2
 
 class RequireIceCape(DefaultOnToggle):
 	"Requires the ice cape for swimming through lava. If off, you may instead need enough health to survive the swim"
@@ -165,6 +172,10 @@ class AutoScanGrailTablets(DefaultOnToggle):
 class AlternateMotherAnkh(DefaultOnToggle):
 	"Quality of life - If on, skips the mantra sequence to empower the key sword by adding a 9th ankh jewel. Mother's ankh will be like other bosses' and cannot be activated by an empowered key sword."
 	display_name = "Alternate Mother Ankh"
+
+class AncientLaMulaneseLearned(DefaultOnToggle):
+	"Quality of Life - Ancient La-Mulanese is learned from the start, without having to read the 3 translation tablets. Ancient La-Mulanese is required to learn mantras."
+	display_name = "Ancient La-Mulanese readable from the start"
 
 class HardCombatLogic(Toggle):
 	"If on, combat logic for bosses and room guardians is minimal - would it be theoretically possible to defeat this boss with these items at 32 HP?"
@@ -188,27 +199,28 @@ class LampGlitchInLogic(Toggle):
 	display_name = "Lamp Glitch In Logic"
 
 lamulana_options = {
-	"RandomizeShops": RandomizedShops,
+	"ShopDensity": ShopDensity,
 	"RandomizeNPCs": RandomizeNPCs,
 	"RandomizeCoinChests": RandomizeCoinChests,
 	"RandomizeTrapItems": RandomizeTrapItems,
-	"ProvocativeBathingSuit": ProvocativeBathingSuit,
 	"RandomizeCursedChests": RandomizeCursedChests,
+	"CursedChestCount": CursedChestCount,
 	"RandomizeDracuetsShop": RandomizeDracuetsShop,
+	"HellTempleReward": HellTempleReward,
 	"RandomizeSeals": RandomizeSeals,
 	"StartingLocation": StartingLocation,
 	"StartingWeapon": StartingWeapon,
 	"StartWithHolyGrail": StartWithHolyGrail,
 	"StartWithMirai": StartWithMirai,
-	"StartWithHandScanner": StartWithHandScanner,
-	"StartWithReader": StartWithReader,
 	"StartWithHermesBoots": StartWithHermesBoots,
+	"StartWithTextTrax": StartWithTextTrax,
 	"RandomizeTransitions": RandomizeTransitions,
 	"RandomizeBacksideDoors": RandomizeBacksideDoors,
 	"RequireIceCape": RequireIceCape,
 	"RequireFlareGun": RequireFlareGun,
 	"RequireKeyFairyCombo": RequireKeyFairyCombo,
 	"AlternateMotherAnkh": AlternateMotherAnkh,
+	"AncientLaMulaneseLearned": AncientLaMulaneseLearned,
 	"HardCombatLogic": HardCombatLogic,
 	"SubweaponOnly": SubweaponOnly,
 	"RaindropsInLogic": RaindropsInLogic,

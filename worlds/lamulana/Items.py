@@ -1,7 +1,7 @@
 from typing import Dict, Set, Tuple, NamedTuple
 
 class ItemData(NamedTuple):
-	item_type: str
+	category: str
 	code: int
 	progression: bool = False
 	useful: bool = False
@@ -15,7 +15,7 @@ item_table: Dict[str, ItemData] = {
 	#gonna reserve 2359003 in case we ever implement progressive whips
 	'Knife': 							ItemData('MainWeapon', 2359004, progression=True),
 	'Key Sword': 						ItemData('MainWeapon', 2359005, progression=True),
-	'Axe': 								ItemData('MainWeapon', 2359006, progression=True),
+	'Axe':								ItemData('MainWeapon', 2359006, progression=True),
 	'Katana': 							ItemData('MainWeapon', 2359007, progression=True),
 	'Shuriken': 						ItemData('Subweapon', 2359008, progression=True),
 	'Rolling Shuriken': 				ItemData('Subweapon', 2359009, progression=True),
@@ -84,7 +84,7 @@ item_table: Dict[str, ItemData] = {
 	'Sacred Orb':						ItemData('Inventory', 2359072, progression=True, count=10),
 	'Treasures': 						ItemData('Inventory', 2359073, progression=True),
 	'Mobile Super X2':					ItemData('Inventory', 2359074, useful=True),
-	'Provocative Bathing Suit':			ItemData('Inventory', 2359075, count=0) #Add count if in pool
+	'Provocative Bathing Suit':			ItemData('Inventory', 2359075),
 	'reader.exe':						ItemData('Software', 2359076, progression=True),
 	'xmailer.exe':						ItemData('Software', 2359077),
 	'yagomap.exe':						ItemData('Software', 2359078, progression=True),
@@ -92,7 +92,7 @@ item_table: Dict[str, ItemData] = {
 	'bunemon.exe':						ItemData('Software', 2359080, useful=True),
 	'bunplus.exe':						ItemData('Software', 2359081),
 	'torude.exe':						ItemData('Software', 2359082, progression=True),
-	'guild.exe':						ItemData('Software', 2359083), #progression if Hell Temple on
+	'guild.exe':						ItemData('Software', 2359083, progression=True), #progression only if Hell Temple on
 	'mantra.exe':						ItemData('Software', 2359084, progression=True),
 	'emusic.exe':						ItemData('Software', 2359085),
 	'beolamu.exe':						ItemData('Software', 2359086),
@@ -121,14 +121,14 @@ item_table: Dict[str, ItemData] = {
 	'Map (Tower of Ruin)':				ItemData('Map', 2359113),
 	'Map (Chamber of Birth)':			ItemData('Map', 2359114),
 	'Map (Dimensional Corridor)':		ItemData('Map', 2359115),
-	'Shuriken Ammo':					ItemData('ShopInventory', 2359116, count=0),
-	'Rolling Shuriken Ammo':			ItemData('ShopInventory', 2359117, count=0),
-	'Earth Spear Ammo':					ItemData('ShopInventory', 2359118, count=0),
-	'Flare Gun Ammo':					ItemData('ShopInventory', 2359119, count=0),
-	'Bomb Ammo':						ItemData('ShopInventory', 2359120, count=0),
-	'Chakram Ammo':						ItemData('ShopInventory', 2359121, count=0),
-	'Caltrops Ammo':					ItemData('ShopInventory', 2359122, count=0),
-	'Pistol Ammo':						ItemData('ShopInventory', 2359123, count=0),
+	'Shuriken Ammo':					ItemData('ShopInventory', 2359116, count=0, progression=True),
+	'Rolling Shuriken Ammo':			ItemData('ShopInventory', 2359117, count=0, progression=True),
+	'Earth Spear Ammo':					ItemData('ShopInventory', 2359118, count=0, progression=True),
+	'Flare Gun Ammo':					ItemData('ShopInventory', 2359119, count=0, progression=True),
+	'Bomb Ammo':						ItemData('ShopInventory', 2359120, count=0, progression=True),
+	'Chakram Ammo':						ItemData('ShopInventory', 2359121, count=0, progression=True),
+	'Caltrops Ammo':					ItemData('ShopInventory', 2359122, count=0, progression=True),
+	'Pistol Ammo':						ItemData('ShopInventory', 2359123, count=0, progression=True),
 	'5 Weights':						ItemData('ShopInventory', 2359124, count=0),
 	'200 coins':						ItemData('Resource', 2359125, count=0), #Escape chest is 200 right?
 	'100 coins':						ItemData('Resource', 2359126, count=0), #Adjust counts if money chests shuffled, have various distributions depending on total item pool minus starting item count
@@ -140,3 +140,11 @@ item_table: Dict[str, ItemData] = {
 	'Bat Trap':							ItemData('Trap', 2359150, trap=True, count=0),
 	'Explosive Trap':					ItemData('Trap', 2359151, trap=True, count=0),
 }
+
+shop_inventory_codes: Set[int] = {2359116, 2359117, 2359118, 2359119, 2359120, 2359121, 2359122, 2359123, 2359124}
+
+def get_items_by_category():
+	categories: Dict[str, Set[str]] = {}
+	for name, data in item_table.items():
+		categories.setdefault(data.category, set()).add(name)
+	return categories
