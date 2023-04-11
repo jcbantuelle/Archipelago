@@ -252,7 +252,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	connect(world, player, 'Chamber of Extinction [Magatama Right]', 'Chamber of Extinction [Magatama]', lambda state: state.has('Holy Grail', player) or (s.attack_chest(state) and state.has('Feather', player)))
 	connect(world, player, 'Chamber of Extinction [Ankh Upper]', 'Chamber of Extinction [Ankh Lower]', lambda state: state.has_any({'Holy Grail', 'Feather'}, player))
 	connect(world, player, 'Chamber of Extinction [Ankh Lower]', 'Chamber of Extinction [Ankh Upper]', lambda state: state.has('Feather', player))
-	connect(world, player, 'Chamber of Extinction [Teleport]', 'Chamber of Extinction [Ankh Lower]', lambda state: s.glitch_raindrop(state) and state.has('Holy Grail', player))
+	connect(world, player, 'Chamber of Extinction [Teleport]', 'Chamber of Extinction [Ankh Lower]', lambda state: s.glitch_raindrop(state))
 
 	connect(world, player, 'Chamber of Birth [West Entrance]', 'Chamber of Birth [West]', lambda state: state.has('Holy Grail', player))
 	connect(world, player, 'Chamber of Birth [West]', 'Chamber of Birth [Grail]', lambda state: (s.glitch_catpause(state) and state.has('Feather', player)) or (state.has_all({'Serpent Staff', 'Crystal Skull'}, player) and s.attack_chakram(state) and s.state_mobility(state)))

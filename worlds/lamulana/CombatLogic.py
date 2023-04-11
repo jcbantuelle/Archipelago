@@ -64,7 +64,7 @@ class LaMulanaCombatLogic:
 			pass
 		else:
 			health = self.s.get_health_count(state)
-			return state.has_any({"Axe", "Chain Whip", "Flail Whip"}, self.player) or self.s.attack_empowered_key_sword(state) or (health >= 1 and state.has("Katana", self.player)) or (health >= 2 and state.has_any({"Knife", "Key Sword", "Leather Whip"}, self.player))
+			return state.has_any({"Axe", "Chain Whip", "Flail Whip"}, self.player) or self.s.attack_empowered_key_sword(state) or (health >= 1 and state.has("Katana", self.player)) or (health >= 2 and state.has_any({"Knife", "Key Sword", "Leather Whip"}, self.player)) or self.s.attack_subweapon(state)
 
 	def centimani(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:

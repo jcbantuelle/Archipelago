@@ -308,100 +308,103 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Mushussu Defeated", None, lambda state: state.has_all({"Dimensional Key", "Angel Shield Children Defeated"}, player) and (state.has_all({"Left Side Children Defeated", "Right Side Children Defeated"}, player) or s.glitch_raindrop(state)) and combat.mushussu(state), True),
 			LocationData('Tiamat Defeated', None, lambda state: state.has_all({'Dimensional Key', 'Left Side Children Defeated', 'Right Side Children Defeated', 'Angel Shield Children Defeated', 'Ushumgallu Defeated', 'Mushussu Defeated'}, player) and combat.tiamat(state) and s.enough_ankh_jewels(state), True)
 		],
+		"Gate of Time [Surface]": [
+			LocationData("lamulana.exe Chest", 2359092, lambda state: s.attack_forward(state) or s.attack_flare_gun(state), is_cursable=True)
+		],
 		"True Shrine of the Mother": [
 			LocationData("All Grail Tablets Read", None, lambda state: state.has_all({"Surface Grail Tablet", "Gate of Guidance Grail Tablet", "Mausoleum of the Giants Grail Tablet", "Temple of the Sun Grail Tablet", "Spring in the Sky Grail Tablet", "Inferno Cavern Grail Tablet", "Chamber of Extinction Grail Tablet", "Twin Labyrinths (Front) Grail Tablet", "Endless Corridor Grail Tablet", "Gate of Illusion Grail Tablet", "Graveyard of the Giants Grail Tablet", "Temple of Moonlight Grail Tablet", "Tower of the Goddess Grail Tablet", "Tower of Ruin Grail Tablet", "Chamber of Birth Grail Tablet", "Twin Labyrinths (Back) Grail Tablet", "Dimensional Corridor Grail Tablet"}, player)),
-			LocationData("Mother Defeated", None, lambda state: state.has_all({'All Grail Tablets Read', 'Fairies Unlocked', 'Medicine of the Mind'}, player) and ((alt_mother_ankh and state.has('Ankh Jewel', player, 9)) or (not alt_mother_ankh and s.attack_empowered_key_sword(state))) and combat.mother(state))
+			LocationData("Mother Defeated", None, lambda state: state.has_all({'All Grail Tablets Read', 'Fairies Unlocked', 'Medicine of the Mind', 'Origin Seal', 'Birth Seal', 'Life Seal', 'Death Seal', 'NPC: Philosopher Fobos'}, player) and ((alt_mother_ankh and state.has('Ankh Jewel', player, 9)) or (not alt_mother_ankh and s.attack_empowered_key_sword(state))) and combat.mother(state))
 		]
 	}
 
 	if include_coin_chests:
 		locations['Surface [Main]'].extend([
-			LocationData('Surface Waterfall Coin Chest', 2359092, lambda state: s.attack_chest(state), is_cursable=True),
-			LocationData('Surface Seal Coin Chest', 2359093, lambda state: s.attack_chest(state) and state.has('Life Seal', player), is_cursable=True)
+			LocationData('Surface Waterfall Coin Chest', 2359093, lambda state: s.attack_chest(state), is_cursable=True),
+			LocationData('Surface Seal Coin Chest', 2359094, lambda state: s.attack_chest(state) and state.has('Life Seal', player), is_cursable=True)
 		])
 		locations['Surface [Ruin Path Upper]'] = [
-			LocationData('Surface Underground Path Coin Chest', 2359094, lambda state: s.attack_bomb(state), is_cursable=True)
+			LocationData('Surface Underground Path Coin Chest', 2359095, lambda state: s.attack_bomb(state), is_cursable=True)
 		]
 		locations['Mausoleum of the Giants'].extend([
-			LocationData('Mausoleum of the Giants Coin Chest', 2359095, lambda state: s.attack_shuriken(state) or s.attack_chakram(state) or s.attack_pistol(state) or (s.attack_main(state) and state.has('Feather', player)), is_cursable=True)
+			LocationData('Mausoleum of the Giants Coin Chest', 2359096, lambda state: s.attack_shuriken(state) or s.attack_chakram(state) or s.attack_pistol(state) or (s.attack_main(state) and state.has('Feather', player)), is_cursable=True)
 		])
 		locations['Temple of the Sun [Main]'].extend([
 			#weapon fairy logic
-			LocationData('Temple of the Sun Pyramid Coin Chest', 2359096, lambda state: s.attack_bomb(state) or (state.has_all({'Bomb', 'Fairies Unlocked'}, player) and s.state_frontside_warp(state)), is_cursable=True)
+			LocationData('Temple of the Sun Pyramid Coin Chest', 2359097, lambda state: s.attack_bomb(state) or (state.has_all({'Bomb', 'Fairies Unlocked'}, player) and s.state_frontside_warp(state)), is_cursable=True)
 		])
 		locations['Spring in the Sky [Main]'].extend([
-			LocationData('Spring in the Sky Coin Chest', 2359097, lambda state: s.attack_forward(state) or (s.attack_vertical(state) and (state.has('Holy Grail', player) or s.state_water_swim(state, 3))), is_cursable=True)
+			LocationData('Spring in the Sky Coin Chest', 2359098, lambda state: s.attack_forward(state) or (s.attack_vertical(state) and (state.has('Holy Grail', player) or s.state_water_swim(state, 3))), is_cursable=True)
 		])
 		locations['Inferno Cavern [Main]'].extend([
-			LocationData('Inferno Cavern Lava Coin Chest', 2359098, lambda state: s.attack_chest(state) and (s.state_lava_swim(state, 2) if state.has('Holy Grail', player) else s.state_lava_swim(state, 4)), is_cursable=True)
+			LocationData('Inferno Cavern Lava Coin Chest', 2359099, lambda state: s.attack_chest(state) and (s.state_lava_swim(state, 2) if state.has('Holy Grail', player) else s.state_lava_swim(state, 4)), is_cursable=True)
 		])
 		locations['Inferno Cavern [Spikes]'] = [
-			LocationData('Inferno Cavern Spikes Coin Chest', 2359099, lambda state: s.attack_main(state) or s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_earth_spear(state) or s.attack_flare_gun(state) or s.attack_bomb(state) or s.attack_caltrops(state) or s.attack_chakram(state), is_cursable=True)
+			LocationData('Inferno Cavern Spikes Coin Chest', 2359100, lambda state: s.attack_main(state) or s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_earth_spear(state) or s.attack_flare_gun(state) or s.attack_bomb(state) or s.attack_caltrops(state) or s.attack_chakram(state), is_cursable=True)
 		]
 		locations['Chamber of Extinction [Left Main]'].extend([
-			LocationData('Chamber of Extinction Coin Chest', 2359100, lambda state: s.attack_chest(state), is_cursable=True)
+			LocationData('Chamber of Extinction Coin Chest', 2359101, lambda state: s.attack_chest(state), is_cursable=True)
 		])
 		locations['Twin Labyrinths [Lower]'].extend([
-			LocationData('Twin Labyrinths Witches Coin Chest', 2359101, lambda state: state.has('Peryton Defeated', player) and s.attack_forward(state), is_cursable=True),
-			LocationData('Twin Labyrinths Lower Coin Chest', 2359102, lambda state: s.attack_chest_any(state), is_cursable=True)
+			LocationData('Twin Labyrinths Witches Coin Chest', 2359102, lambda state: state.has('Peryton Defeated', player) and s.attack_forward(state), is_cursable=True),
+			LocationData('Twin Labyrinths Lower Coin Chest', 2359103, lambda state: s.attack_chest_any(state), is_cursable=True)
 		])
 		locations['Twin Labyrinths [Upper Left]'] = [
-			LocationData('Twin Labyrinths Escape Coin Chest', 2359103, lambda state: state.has('Mother Defeated', player) and s.attack_chest(state), is_cursable=True)
+			LocationData('Twin Labyrinths Escape Coin Chest', 2359104, lambda state: state.has('Mother Defeated', player) and s.attack_chest(state), is_cursable=True)
 		]
 		locations['Endless Corridor [3F Upper]'].extend([
-			LocationData('Endless Corridor Coin Chest', 2359104, lambda state: s.attack_main(state), is_cursable=True)
+			LocationData('Endless Corridor Coin Chest', 2359105, lambda state: s.attack_main(state), is_cursable=True)
 		]),
 		locations['Gate of Illusion [Middle]'].extend([
-			LocationData('Gate of Illusion Katana Coin Chest', 2359105, lambda state: state.has('Katana', player), is_cursable=True)
+			LocationData('Gate of Illusion Katana Coin Chest', 2359106, lambda state: state.has('Katana', player), is_cursable=True)
 		])
 		locations['Gate of Illusion [Lower]'] = [
-			LocationData('Gate of Illusion Spikes Coin Chest', 2359106, lambda state: s.attack_chest(state), is_cursable=True)
+			LocationData('Gate of Illusion Spikes Coin Chest', 2359107, lambda state: s.attack_chest(state), is_cursable=True)
 		]
 		locations['Graveyard of the Giants [West]'].extend([
-			LocationData('Graveyard of the Giants Coin Chest', 2359107, lambda state: state.has('Feather', player) and s.attack_forward(state), is_cursable=True)
+			LocationData('Graveyard of the Giants Coin Chest', 2359108, lambda state: state.has('Feather', player) and s.attack_forward(state), is_cursable=True)
 		])
 		locations['Temple of Moonlight [Eden]'] = [
-			LocationData('Temple of Moonlight Coin Chest', 2359108, lambda state: s.attack_bomb(state) or (s.attack_caltrops(state) and state.has_any({'Feather', 'Ring'}, player)) or (state.has('Feather', player) and (s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_chakram(state) or s.attack_pistol(state))), is_cursable=True)
+			LocationData('Temple of Moonlight Coin Chest', 2359109, lambda state: s.attack_bomb(state) or (s.attack_caltrops(state) and state.has_any({'Feather', 'Ring'}, player)) or (state.has('Feather', player) and (s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_chakram(state) or s.attack_pistol(state))), is_cursable=True)
 		]
 		locations['Tower of the Goddess [Grail]'].extend([
-			LocationData('Tower of the Goddess Shield Statue Coin Chest', 2359109, lambda state: state.has_any({'Katana', 'Knife'}, player) or s.attack_caltrops(state) or s.attack_bomb(state) or (s.attack_forward(state) and (s.attack_earth_spear(state) or s.glitch_catpause(state))), is_cursable=True)
+			LocationData('Tower of the Goddess Shield Statue Coin Chest', 2359110, lambda state: state.has_any({'Katana', 'Knife'}, player) or s.attack_caltrops(state) or s.attack_bomb(state) or (s.attack_forward(state) and (s.attack_earth_spear(state) or s.glitch_catpause(state))), is_cursable=True)
 		])
 		locations['Tower of the Goddess [Lower]'].extend([
-			LocationData('Tower of the Goddess Fairy Spot Coin Chest', 2359110, lambda state: s.attack_chest_any(state), is_cursable=True)
+			LocationData('Tower of the Goddess Fairy Spot Coin Chest', 2359111, lambda state: s.attack_chest_any(state), is_cursable=True)
 		])
 		locations['Tower of Ruin [Spirits]'] = [
-			LocationData('Tower of Ruin Coin Chest', 2359111, lambda state: s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_chakram(state) or s.attack_bomb(state) or s.attack_chakram(state) or s.attack_pistol(state), is_cursable=True)
+			LocationData('Tower of Ruin Coin Chest', 2359112, lambda state: s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_chakram(state) or s.attack_bomb(state) or s.attack_chakram(state) or s.attack_pistol(state), is_cursable=True)
 		]
 		locations['Chamber of Birth [Northeast]'].extend([
-			LocationData('Chamber of Birth Ninja Coin Chest', 2359112, lambda state: s.attack_main(state) or s.attack_shuriken(state) or s.attack_bomb(state) or s.attack_chakram(state) or s.attack_caltrops(state) or s.attack_pistol(state) or (s.state_lamp(state) and (s.attack_earth_spear(state) or s.attack_flare_gun(state) or s.attack_rolling_shuriken(state))), is_cursable=True)
+			LocationData('Chamber of Birth Ninja Coin Chest', 2359113, lambda state: s.attack_main(state) or s.attack_shuriken(state) or s.attack_bomb(state) or s.attack_chakram(state) or s.attack_caltrops(state) or s.attack_pistol(state) or (s.state_lamp(state) and (s.attack_earth_spear(state) or s.attack_flare_gun(state) or s.attack_rolling_shuriken(state))), is_cursable=True)
 		])
 		locations['Chamber of Birth [Southeast]'].extend([
-			LocationData('Chamber of Birth Southeast Coin Chest', 2359113, lambda state: s.attack_forward(state), is_cursable=True)
+			LocationData('Chamber of Birth Southeast Coin Chest', 2359114, lambda state: s.attack_forward(state), is_cursable=True)
 		])
 		locations['Chamber of Birth [Dance]'] = [
-			LocationData('Chamber of Birth Dance of Life Coin Chest', 2359114, lambda state: s.attack_forward(state) or s.attack_flare_gun(state), is_cursable=True)
+			LocationData('Chamber of Birth Dance of Life Coin Chest', 2359115, lambda state: s.attack_forward(state) or s.attack_flare_gun(state), is_cursable=True)
 		]
 		locations['Dimensional Corridor [Grail]'].extend([
-			LocationData('Dimensional Corridor Coin Chest', 2359115, lambda state: s.attack_forward(state) or s.attack_flare_gun(state), is_cursable=True)
+			LocationData('Dimensional Corridor Coin Chest', 2359116, lambda state: s.attack_forward(state) or s.attack_flare_gun(state), is_cursable=True)
 		])
 
 	if include_trap_items:
 		locations['Inferno Cavern [Main]'].append(
-			LocationData('Inferno Cavern Fake Orb', 2359116)
+			LocationData('Inferno Cavern Fake Orb', 2359117)
 		)
 		locations['Twin Labyrinths [Loop]'].append(
-			LocationData('Twin Labyrinths Fake Ankh Jewel', 2359117)
+			LocationData('Twin Labyrinths Fake Ankh Jewel', 2359118)
 		)
 		locations['Gate of Illusion [Dracuet]'].append(
-			LocationData('Gate of Illusion Exploding Chest', 2359118, lambda state: s.attack_chest(state), is_cursable=True)
+			LocationData('Gate of Illusion Exploding Chest', 2359119, lambda state: s.attack_chest(state), is_cursable=True)
 		)
 		locations['Graveyard of the Giants [West]'].append(
-			LocationData('Graveyard of the Giants Trap Chest', 2359119, lambda state: s.attack_chest(state), is_cursable=True)
+			LocationData('Graveyard of the Giants Trap Chest', 2359120, lambda state: s.attack_chest(state), is_cursable=True)
 		)
 
 	if include_hell_temple_reward:
 		locations['Hell Temple [Dracuet]'] = [
-			LocationData("Hell Temple Final Reward", 2359120)
+			LocationData("Hell Temple Final Reward", 2359121)
 		]
 
 	return locations

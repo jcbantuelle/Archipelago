@@ -85,7 +85,7 @@ class LaMulanaWorldState:
 	def build_npc_mapping(self):
 		npc_names = self.get_npc_names()
 		self.npc_mapping = self.randomize_npcs(npc_names)
-		while not self.npc_rando_checks_passed(mapping):
+		while not self.npc_rando_checks_passed():
 			self.npc_mapping = self.randomize_npcs(npc_names)
 
 	def set_cursed_chests(self):

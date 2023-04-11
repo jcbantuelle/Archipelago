@@ -80,13 +80,19 @@ class LaMulanaWorld(World):
 
 	def create_items(self) -> None:
 		self.assign_event_items()
-		self.multiworld.itempool += self.generate_shop_items()
-		self.multiworld.itempool += self.generate_item_pool()
+		shop_items = self.generate_shop_items()
+		self.multiworld.itempool += shop_items
+		self.multiworld.itempool += self.generate_item_pool(len(shop_items))
+		print('Currently', len(self.multiworld.get_unfilled_locations()), 'unfilled locations in the pool')
 
 	def set_rules(self) -> None:
 		self.multiworld.completion_condition[self.player] = lambda state: state.has_all({'Mother Defeated', 'NPC: Mulbruk'}, self.player)
 
 	def extend_hint_information(self, hint_data: Dict[int, Dict[int,str]]):
+		if self.worldstate.cursed_chests:
+			for cursed_chest_name in self.worldstate.cursed_chests:
+				location = self.multiworld.get_location(cursed_chest_name, self.player)
+				setattr(location, '_hint_text', cursed_chest_name + ' (Cursed)')
 		if self.worldstate.npc_rando and self.worldstate.npc_mapping:
 			npc_hint_info = {}
 			room_names = get_npc_entrance_room_names()
@@ -100,10 +106,14 @@ class LaMulanaWorld(World):
 							npc_hint_info[locationdata.code] = room_names[door_name]
 			hint_data[self.player] = npc_hint_info
 
-
 	def write_spoiler_header(self, spoiler_handle: TextIO) -> None:
-		spoiler_handle.write(f'Starting weapon:		{starting_weapon_names[self.get_option_value("StartingWeapon")]}\n')
-		spoiler_handle.write(f'Starting area:		{starting_location_names[self.get_option_value("StartingLocation")]}\n')
+		spoiler_handle.write(f'Cursed Chests:		{self.worldstate.cursed_chests}\n')
+		if self.worldstate.npc_rando and self.worldstate.npc_mapping:
+			spoiler_handle.write(f'NPC Randomizer:\n')
+			room_names = get_npc_entrance_room_names()
+			space_count = lambda name: ' ' * (25 - len(name))  
+			for npc_door, npc_name in self.worldstate.npc_mapping.items():
+				spoiler_handle.write(f'	- {npc_name}:{space_count(npc_name)}{room_names[npc_door]}\n')
 		#Maybe also transition info? It's gonna be a lot
 
 	def fill_slot_data(self) -> Dict[str, object]:
@@ -130,8 +140,8 @@ class LaMulanaWorld(World):
 		shop_locations: Set[str] = get_shop_location_names(self.multiworld, self.player)
 
 		#Little Brother needs weights
-		self.place_locked_item('Yiear Kungfu Shop Item 1', '5 Weights')
-		shop_locations.remove('Yiear Kungfu Shop Item 1')
+		self.place_locked_item('Yiegah Kungfu Shop Item 1', '5 Weights')
+		shop_locations.remove('Yiegah Kungfu Shop Item 1')
 
 		print('StartingLocation', self.get_option_value('StartingLocation'), ' -- name: ', starting_location_names[self.get_option_value('StartingLocation')])
 		if starting_location_names[self.get_option_value('StartingLocation')] == 'surface':
@@ -156,12 +166,15 @@ class LaMulanaWorld(World):
 		local_shop_inventory_list = self.multiworld.random.sample(list(shop_locations), slot_amount)
 		print(slot_amount, 'Shop slots selected for ammo/weights:', local_shop_inventory_list)
 		#for location_name in local_shop_inventory_list:
-		for location in self.multiworld.get_locations(self.player):
+		for location in self.multiworld.get_unfilled_locations(self.player):
 			if location.address:
 				if location.name in local_shop_inventory_list:
 					add_item_rule(location, lambda item: item.player == self.player and item.code in shop_inventory_codes)
 				else:
 					add_item_rule(location, lambda item: item and not item.code in shop_inventory_codes)
+					if location.name == 'Twin Labyrinths Escape Coin Chest':
+						#local progression/chains would be a problem for the escape coin chest
+						add_item_rule(location, lambda item: item.classification != ItemClassification.progression or item.player != self.player)
 
 		#Guaranteed minimum amounts per ammo type and weights
 		ammo_types = ['Shuriken Ammo', 'Rolling Shuriken Ammo', 'Earth Spear Ammo', 'Flare Gun Ammo', 'Bomb Ammo', 'Chakram Ammo', 'Caltrops Ammo', 'Pistol Ammo']
@@ -180,7 +193,7 @@ class LaMulanaWorld(World):
 		print('final shop item pool', len(shop_item_pool), ':', shop_item_pool)
 		return shop_item_pool
 
-	def generate_item_pool(self) -> List[Item]:
+	def generate_item_pool(self, shop_item_count: int) -> List[Item]:
 		item_pool: List[Item] = []
 
 		for name, data in item_table.items():
@@ -191,8 +204,9 @@ class LaMulanaWorld(World):
 		if self.is_option_enabled('AlternateMotherAnkh'):
 			item_pool.append(self.create_item('Ankh Jewel'))
 
-		filler_pool_size = len(self.multiworld.get_unfilled_locations(self.player)) - len(self.multiworld.itempool) - len(item_pool)
+		filler_pool_size = len(self.multiworld.get_unfilled_locations(self.player)) - shop_item_count - len(item_pool)
 
+		print(len(self.multiworld.get_unfilled_locations(self.player)), 'unfilled locations - ', shop_item_count, 'items already in pool (shops) - ', len(item_pool), 'items currently being added - ', filler_pool_size, 'current filler items')
 		for i in range(filler_pool_size):
 			item_pool.append(self.create_item(self.get_filler_item(i)))
 

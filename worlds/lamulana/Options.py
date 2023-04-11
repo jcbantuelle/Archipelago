@@ -73,7 +73,7 @@ class CursedChestCount(Range):
 	"The number of chests that will be cursed and require the Mulana Talisman to open."
 	display_name = "Number of Cursed Chests"
 	range_start = 0
-	range_end = 94
+	range_end = 95
 	default = 4
 
 class RandomizeDracuetsShop(Toggle):
