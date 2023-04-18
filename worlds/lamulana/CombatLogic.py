@@ -17,29 +17,34 @@ class LaMulanaCombatLogic:
 
 	def anubis(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_rolling_shuriken(state) or self.s.attack_caltrops(state) or self.s.attack_chakram(state) or self.s.attack_pistol(state) or self.s.attack_earth_spear(state)
 		else:
-			return self.s.attack_main(state) or self.s.attack_ring_shuriken(state) or self.s.attack_rolling_shuriken(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state)
+			return self.s.attack_main(state) or self.s.attack_ring_shuriken(state) or self.s.attack_rolling_shuriken(state) or self.s.attack_caltrops(state) or self.s.attack_chakram(state) or self.s.attack_pistol(state)
 
 	def argus(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_bomb(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state):
+				return True
+			if self.s.attack_flare_gun(state) and (self.s.state_lamp(state) or self.s.get_health_count(state) >= 2 or state.has('Ring', self.player)):
+				return True
+			return self.s.state_lamp(state) and (self.s.attack_rolling_shuriken(state) or (self.s.attack_earth_spear(state) and state.has('Feather', self.player)))
 		else:
-			return self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_bomb(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state) or (self.s.state_lamp(state) and (self.s.attack_rolling_shuriken(state) or self.s.attack_flare_gun(state) or (self.s.attack_earth_spear(state) and state.has("Feather", self.player))))
+			if self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_bomb(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state):
+				return True
+			if self.s.state_lamp(state):
+				return self.s.attack_rolling_shuriken(state) or self.s.attack_flare_gun(state) or (self.s.attack_earth_spear(state) and state.has("Feather", self.player))
+			return False
 
 	def ba(self, state: CollectionState) -> bool:
-		if self.flag_hard_logic:
-			pass
-		else:
-			return self.s.attack_forward(state) or self.s.attack_s_above(state)
+		#Same hard logic
+		return self.s.attack_forward(state) or self.s.attack_s_above(state)
 
 	def backbeard_tai_sui(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_rolling_shuriken(state) or self.s.attack_vertical(state) or self.s.attack_caltrops(state)
 		else:
 			health = self.s.get_health_count(state)
 			if self.flag_subweapon_only:
-				#All of zeroth's subweapon-only logic requirements include the ring
 				if not state.has("Ring", self.player):
 					return False
 				if health >= 6:
@@ -61,14 +66,14 @@ class LaMulanaCombatLogic:
 
 	def buer(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return self.s.attack_far(state) or state.has('Katana', self.player) or self.s.attack_subweapon(state) or (state.has('Knife', self.player) and self.s.get_health_count(state) >= 2)
 		else:
 			health = self.s.get_health_count(state)
 			return state.has_any({"Axe", "Chain Whip", "Flail Whip"}, self.player) or self.s.attack_empowered_key_sword(state) or (health >= 1 and state.has("Katana", self.player)) or (health >= 2 and state.has_any({"Knife", "Key Sword", "Leather Whip"}, self.player)) or self.s.attack_subweapon(state)
 
 	def centimani(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_earth_spear(state) or self.s.attack_bomb(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state) or self.s.attack_ring_flare_gun(state) or (self.s.attack_rolling_shuriken(state) and self.s.attack_flare_gun(state))
 		else:
 			health = self.s.get_health_count(state)
 			if self.s.attack_pistol(state) or self.s.attack_ring_chakram(state) or (self.s.attack_ring_flare_gun(state) and health >= 4):
@@ -85,7 +90,7 @@ class LaMulanaCombatLogic:
 
 	def chi_you(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_rolling_shuriken(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state)
 		else:
 			health = self.s.get_health_count(state)
 			if health >= 5 and state.has("Chain Whip", self.player):
@@ -98,22 +103,40 @@ class LaMulanaCombatLogic:
 
 	def kamaitachi(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_rolling_shuriken(state) or self.s.attack_earth_spear(state) or self.s.attack_flare_gun(state) or self.s.attack_bomb(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state)
 		else:
-			if self.s.get_health_count(state) >= 4:
-				if self.s.attack_rolling_shuriken(state) or self.s.attack_ring_flare_gun(state) or (self.s.attack_earth_spear(state) and state.has("Feather", self.player)):
+			health = self.s.get_health_count(state)
+			if health >= 4:
+				if self.s.attack_main(state) or self.s.attack_rolling_shuriken(state) or self.s.attack_ring_flare_gun(state) or (self.s.attack_earth_spear(state) and state.has("Feather", self.player)):
 					return True
-			return self.s.attack_main(state) or self.s.attack_ring_shuriken(state) or self.s.attack_bomb(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state)
+			if health >= 2:
+				if self.s.attack_4(state) or self.s.attack_bomb(state) or self.s.attack_caltrops(state):
+					return True
+			return self.s.attack_5(state) or self.s.attack_ring_shuriken(state) or self.s.attack_chakram(state)  or self.s.attack_pistol(state)
 
 	def nuckelavee(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if self.s.attack_far(state) or state.has('Katana', self.player) or self.s.attack_shuriken(state) or self.s.attack_bomb(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state):
+				return True
+			if state.has('Feather', self.player) and (state.has('Knife', self.player) or self.s.attack_earth_spear(state)):
+				return True
+			return self.s.state_lamp(state) and self.s.attack_flare_gun(state)
 		else:
-			return self.s.attack_far(state) or state.has("Katana", self.player) or self.s.attack_shuriken(state) or self.s.attack_bomb(state) or self.s.attack_ring_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state) or (state.has("Feather", self.player) and (state.has("Knife", self.player) or self.s.attack_earth_spear(state))) or (self.s.state_lamp(state) and self.s.attack_flare_gun(state))
+			if self.s.attack_far(state) or state.has("Katana", self.player) or self.s.attack_shuriken(state) or self.s.attack_bomb(state) or self.s.attack_ring_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state):
+				return True
+			if state.has("Feather", self.player) and (state.has("Knife", self.player) or self.s.attack_earth_spear(state)):
+				return True
+			return self.s.state_lamp(state) and self.s.attack_flare_gun(state)
 
 	def nuwa(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if self.s.attack_pistol(state):
+				return True
+			if self.s.attack_main(state) and (self.s.state_shield(state) or self.s.state_lamp(state) or state.has('Feather', self.player)):
+				return True
+			if self.s.attack_ring_chakram(state) and state.has('Feather', self.player):
+				return True
+			return self.s.attack_chakram(state) and self.s.state_shield(state) and self.s.state_lamp(state) and state.has('Feather', self.player)
 		else:
 			health = self.s.get_health_count(state)
 			if health >= 5 and self.s.attack_ring_chakram(state) and state.has("Feather", self.player):
@@ -124,7 +147,11 @@ class LaMulanaCombatLogic:
 
 	def oxhead_horseface(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if state.has('Axe', self.player) or self.s.attack_ring_chakram(state) or self.s.attack_pistol(state):
+				return True
+			if self.s.state_shield(state) and state.has('Feather', self.player):
+				return self.s.attack_main(state) or self.s.attack_ring_shuriken(state) or self.s.attack_rolling_shuriken(state) or (self.s.attack_shuriken(state) and self.s.attack_caltrops(state))
+			return False
 		else:
 			health = self.s.get_health_count(state)
 			if state.has("Feather", self.player):
@@ -142,7 +169,11 @@ class LaMulanaCombatLogic:
 
 	def pazuzu(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if self.s.attack_far(state) or state.has('Katana', self.player) or self.s.attack_shuriken(state) or self.s.attack_chakram(state) or self.s.attack_pistol(state):
+				return True
+			if self.s.attack_earth_spear(state) and state.has('Feather', self.player):
+				return True
+			return self.s.attack_flare_gun(state) and self.s.get_health_count(state) >= 1
 		else:
 			#Lamp can be used to reach pazuzu, so for lamp combat logic, we need one of the other ways of reaching him logically
 			if self.s.attack_4(state) and self.s.state_lamp(state) and state.has_any({"Feather", "Grapple Claw"}, self.player):
@@ -158,7 +189,7 @@ class LaMulanaCombatLogic:
 
 	def peryton(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return self.s.attack_main(state) or self.s.attack_earth_spear(state) or self.s.attack_pistol(state)
 		else:
 			if self.s.attack_earth_spear(state):
 				return True
@@ -178,7 +209,7 @@ class LaMulanaCombatLogic:
 
 	def skanda(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return self.s.attack_main(state) or self.s.attack_pistol(state)
 		else:
 			health = self.s.get_health_count(state)
 			if self.flag_subweapon_only:
@@ -200,7 +231,15 @@ class LaMulanaCombatLogic:
 
 	def thunderbird(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if self.s.attack_4(state) or self.s.attack_chakram(state) or self.s.attack_pistol(state):
+				return True
+			if state.has('Feather', self.player):
+				if self.s.attack_shuriken(state) or self.s.attack_earth_spear(state) or self.s.attack_caltrops(state):
+					return True
+			if self.s.state_lamp(state):
+				if self.s.attack_main(state) or self.s.attack_earth_spear(state) or self.s.attack_ring_flare_gun(state):
+					return True
+			return False
 		else:
 			if self.s.attack_4(state) or self.s.attack_pistol(state) or (self.s.attack_chakram(state) and state.has_any({"Feather", "Ring"}, self.player)):
 				return True
@@ -220,13 +259,20 @@ class LaMulanaCombatLogic:
 
 	def vimana(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return self.s.attack_main(state) or self.s.attack_subweapon(state)
 		else:
 			return self.s.get_health_count(state) >= 2 and (self.s.attack_main(state) or self.s.attack_subweapon(state))
 
 	def zu(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if self.s.attack_main(state) or self.s.attack_earth_spear(state) or self.s.attack_ring_flare_gun(state):
+				return True
+			if self.s.get_health_count(state) >= 4 and self.s.attack_pistol(state):
+				return True
+			if self.s.state_lamp(state):
+				if self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state):
+					return True
+			return False
 		else:
 			if self.s.state_lamp(state):
 				return self.s.attack_4(state) or self.s.attack_ring_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state)
@@ -238,7 +284,9 @@ class LaMulanaCombatLogic:
 
 	def kulullu(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if state.has('Helmet', self.player) and (self.s.attack_main(state) or self.s.attack_subweapon(state)):
+				return True
+			return self.s.attack_shuriken(state) or self.s.attack_chakram(state) or self.s.attack_pistol(state)
 		else:
 			health = self.s.get_health_count(state)
 			if health >= 6 and state.has_all({"Helmet", "Chain Whip"}, self.player):
@@ -306,13 +354,58 @@ class LaMulanaCombatLogic:
 
 	def ushumgallu(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if state.has('Axe', self.player) or self.s.attack_chakram(state) or self.s.attack_pistol(state) or self.s.attack_ring_flare_gun(state):
+				return True
+			if self.s.attack_shuriken(state) and self.s.state_shield(state) and state.has('Grapple Claw', self.player):
+				return True
+			if state.has('Feather', self.player):
+				if self.s.attack_main(state) or self.s.attack_caltrops(state):
+					return True
+				if self.s.state_shield(state) and (self.s.attack_shuriken(state) or self.s.attack_rolling_shuriken(state)):
+					return True
+			return False
 		else:
-			return self.s.get_health_count(state) >= 4 and state.has("Feather", self.player) and (state.has_any({"Flail Whip", "Chain Whip", "Axe"}, self.player) or self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state) or (self.s.attack_ring_shuriken(state) and self.s.state_shield(state)) or (self.s.attack_rolling_shuriken(state) and self.s.state_shield(state)))
+			if self.s.get_health_count(state) >= 4 and state.has("Feather", self.player):
+				if state.has_any({"Flail Whip", "Chain Whip", "Axe"}, self.player) or self.s.attack_chakram(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state):
+					return True
+				if self.s.attack_ring_shuriken(state) and self.s.state_shield(state):
+					return True
+				return self.s.attack_rolling_shuriken(state) and self.s.state_shield(state)
+			return False
 
 	def mushussu(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if self.s.attack_pistol(state):
+				return True
+			if state.has('Feather', self.player) and (state.has('Flail Whip') or self.s.attack_empowered_key_sword(state)):
+				return True
+
+			health = self.s.get_health_count(state)
+			if state.has_all({'Flail Whip', "Hermes' Boots"}, self.player) and health >= 4:
+				return True
+			if state.has_all({'Axe', "Hermes' Boots"}, self.player) and health >= 6:
+				return True
+			if self.s.attack_ring_chakram(state) and health >= 2:
+				return True
+			if health >= 8:
+				if self.s.attack_chakram(state) or self.s.attack_caltrops(state):
+					return True
+				if state.has('Feather', self.player):
+					if self.s.attack_shuriken(state) and (state.has('Ring', self.player) or self.s.attack_rolling_shuriken(state) or self.s.attack_caltrops(state)):
+						return True
+					if self.s.attack_rolling_shuriken(state) and (self.s.attack_flare_gun(state) or self.s.attack_bomb(state) or self.s.attack_caltrops(state)):
+						return True
+					if self.s.attack_flare_gun(state) and self.s.attack_caltrops(state):
+						return True
+			if health >= 10:
+				if self.s.attack_ring_bomb(state):
+					return True
+				if self.s.attack_ring_flare_gun(state) and self.s.attack_bomb(state):
+					return True
+				if state.has('Feather', self.player):
+					if self.s.attack_rolling_shuriken(state) or (self.s.attack_shuriken(state) and self.s.attack_flare_gun(state)):
+						return True
+			return False
 		else:
 			health = self.s.get_health_count(state)
 			if health >= 8 and state.has("Hermes' Boots", self.player) and state.has_any({"Axe", "Flail Whip"}, self.player):
@@ -338,16 +431,19 @@ class LaMulanaCombatLogic:
 			return False
 
 	def amphisbaena(self, state: CollectionState) -> bool:
-		if self.flag_hard_logic:
-			pass
-		else:		
-			if self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_flare_gun(state) or self.s.attack_bomb(state) or self.s.attack_chakram(state) or self.s.attack_pistol(state):
-				return True
-			return (self.s.attack_rolling_shuriken(state) and state.has("Hermes' Boots", self.player)) or ((self.s.attack_earth_spear(state) or self.s.attack_caltrops(state)) and (state.has("Hermes' Boots", self.player) or self.s.state_lamp(state)))
+		#Hard logic is the same
+		if self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_flare_gun(state) or self.s.attack_bomb(state) or self.s.attack_chakram(state) or self.s.attack_pistol(state):
+			return True
+		if self.s.attack_rolling_shuriken(state) and state.has("Hermes' Boots", self.player):
+			return True
+		return (self.s.attack_earth_spear(state) or self.s.attack_caltrops(state)) and (state.has("Hermes' Boots", self.player) or self.s.state_lamp(state))
 
 	def sakit(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			#Similar logic except for health checks
+			if self.s.attack_main(state) or self.s.attack_flare_gun(state) or self.s.attack_chakram(state) or self.s.attack_pistol(state):
+				return True
+			return self.s.attack_bomb(state) and (self.s.attack_shuriken(state) or self.s.attack_caltrops(state) or state.has("Ring", self.player) or self.s.attack_rolling_shuriken(state))
 		else:
 			health = self.s.get_health_count(state)
 			if health >= 2:
@@ -358,45 +454,64 @@ class LaMulanaCombatLogic:
 
 	def ellmac(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if self.s.attack_main(state) or self.s.attack_shuriken(state) or self.s.attack_chakram(state) or self.s.attack_pistol(state):
+				return True
+			return self.s.attack_ring_bomb(state) and state.has('Feather', self.player)
 		else:
 			return self.s.get_health_count(state) >= 3 and (self.s.attack_4(state) or self.s.attack_shuriken(state) or self.s.attack_ring_chakram(state) or self.s.attack_pistol(state))
 
 	def bahamut(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return self.s.attack_main(state) or self.s.attack_flare_gun(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state)
 		else:
 			return self.s.get_health_count(state) >= 4 and (self.s.attack_main(state) or self.s.attack_flare_gun(state) or self.s.attack_caltrops(state) or self.s.attack_pistol(state))
 
 	def viy(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if self.s.attack_4(state) or self.s.attack_pistol(state) or self.s.attack_ring_chakram(state):
+				return True
+			if self.s.attack_main(state) and (self.s.attack_shuriken(state) or self.s.attack_rolling_shuriken(state) or self.s.attack_bomb(state) or self.s.attack_chakram(state) or self.s.get_health_count(state) >= 1):
+				return True
+			if self.s.attack_shuriken(state) and self.s.attack_chakram(state) and self.s.state_mobility(state) and self.s.state_shield(state):
+				return True
+			if self.flag_subweapon_only:
+				return self.viy_subweapons(state)
+			return False
 		else:
 			if self.s.get_health_count(state) < 5:
 				return False
 			if self.s.attack_ring_chakram(state) or self.s.attack_pistol(state) or (self.s.state_shield(state) and self.s.attack_shuriken(state) and self.s.attack_chakram(state)):
 				return True
 			if self.flag_subweapon_only:
-				if not self.s.state_mobility(state) or not self.s.state_shield(state):
-					return False
-				if self.s.attack_ring_shuriken(state) and (self.s.attack_rolling_shuriken(state) or self.s.attack_earth_spear(state) or self.s.attack_caltrops(state)):
-					return True
-				if self.s.attack_rolling_shuriken(state) and (self.s.attack_earth_spear(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state)):
-					return True
-				if self.s.attack_chakram(state) and (self.s.attack_caltrops(state) or self.s.attack_earth_spear(state)):
-					return True
-				return self.s.attack_earth_spear(state) and self.s.attack_caltrops(state)
+				return self.viy_subweapons(state)
 			return self.s.attack_4(state) or (self.s.state_mobility(state) and self.s.attack_main(state))
+
+	def viy_subweapons(self, state: CollectionState) -> bool:
+		if self.s.state_mobility(state) or not self.s.state_shield(state):
+			if self.s.attack_ring_shuriken(state) and (self.s.attack_rolling_shuriken(state) or self.s.attack_earth_spear(state) or self.s.attack_caltrops(state)):
+				return True
+			if self.s.attack_rolling_shuriken(state) and (self.s.attack_earth_spear(state) or self.s.attack_chakram(state) or self.s.attack_caltrops(state)):
+				return True
+			if self.s.attack_chakram(state) and (self.s.attack_caltrops(state) or self.s.attack_earth_spear(state)):
+				return True
+			return self.s.attack_earth_spear(state) and self.s.attack_caltrops(state)
+		return False
 
 	def palenque(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			return state.has_any({'Axe', 'Katana', 'Knife'}, self.player) or self.s.attack_rolling_shuriken(state) or self.s.attack_earth_spear(state) or self.s.attack_ring_chakram(state) or self.s.attack_pistol(state)
 		else:
 			return self.s.get_health_count(state) >= 6 and (self.s.attack_rolling_shuriken(state) or self.s.attack_chakram(state) or self.s.attack_earth_spear(state) or self.s.attack_pistol(state))
 
 	def baphomet(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if self.s.attack_whip(state) or state.has('Axe', self.player) or state.has_all({'Katana', 'Feather'}, self.player) or self.s.attack_chakram(state) or self.s.attack_pistol(state):
+				return True
+			if self.flag_subweapon_only:
+				if self.s.attack_shuriken(state) and (state.has('Ring', self.player) or self.s.attack_rolling_shuriken(state) or self.s.attack_caltrops(state)):
+					return True
+				return self.s.attack_rolling_shuriken(state) and self.s.attack_caltrops(state) and state.has('Feather', self.player)
+			return False
 		else:
 			if self.s.get_health_count(state) < 7 or not self.s.state_shield(state):
 				return False
@@ -410,7 +525,11 @@ class LaMulanaCombatLogic:
 
 	def tiamat(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if state.has('Feather', self.player) and state.has_any({'Leather Whip', 'Chain Whip', 'Flail Whip', 'Axe'}, self.player):
+				return True
+			if self.flag_subweapon_only:
+				return self.s.get_health_count(state) >= 8 and self.s.state_shield(state) and self.s.attack_caltrops(state) and self.s.attack_ring_flare_gun(state) and self.s.attack_bomb(state) and state.has('Feather', self.player)
+			return False
 		else:
 			health = self.s.get_health_count(state)
 			if self.flag_subweapon_only:
@@ -421,7 +540,13 @@ class LaMulanaCombatLogic:
 
 	def mother(self, state: CollectionState) -> bool:
 		if self.flag_hard_logic:
-			pass
+			if not state.has('Feather', self.player):
+				return False
+			if self.s.attack_main(state):
+				return True
+			if self.flag_subweapon_only:
+				return self.s.attack_ring_chakram(state) and self.s.attack_flare_gun(state) and self.s.state_shield(state)
+			return False
 		else:
 			if self.s.get_health_count(state) < 8 or not state.has('Feather', self.player):
 				return False

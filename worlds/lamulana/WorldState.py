@@ -1,6 +1,6 @@
 from typing import List, Dict, Set, Optional, Callable, Tuple, NamedTuple
 from BaseClasses import MultiWorld, CollectionState
-from .Options import is_option_enabled, get_option_value
+from .Options import is_option_enabled, get_option_value, starting_location_ids
 from .Locations import get_locations_by_region
 from .LogicShortcuts import LaMulanaLogicShortcuts
 
@@ -31,6 +31,7 @@ class LaMulanaWorldState:
 	include_dracuet: bool
 	npc_mapping: Dict[str,str]
 	cursed_chests: Set[str]
+	is_surface_start: bool
 
 	def __init__(self, world: MultiWorld, player: int):
 		self.world = world
@@ -44,6 +45,7 @@ class LaMulanaWorldState:
 		self.randomize_cursed_chests = is_option_enabled(world, player, "RandomizeCursedChests")
 		self.include_coin_chests = is_option_enabled(world, player, "RandomizeCoinChests")
 		self.include_trap_items = is_option_enabled(world, player, "RandomizeTrapItems")
+		self.is_surface_start = get_option_value(world, player, "StartingLocation") == starting_location_ids['surface']
 
 		self.set_cursed_chests()
 		if self.transition_rando:
@@ -67,6 +69,8 @@ class LaMulanaWorldState:
 		return {npc_list[i]: randomized_list[i] for i in range(len(npc_list))}
 
 	def npc_rando_checks_passed(self) -> bool:
+		if self.is_surface_start and not (self.npc_mapping['Elder Xelpud'] == 'Elder Xelpud' or self.npc_mapping['Former Mekuri Master'] == 'Elder Xelpud'):
+			return False
 		for surface_npc in {'Nebur', 'Sidro', 'Modro', 'Moger', 'Hiner'}:
 			if self.npc_mapping[surface_npc] == 'Elder Xelpud':
 				return False

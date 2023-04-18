@@ -48,8 +48,8 @@ item_table: Dict[str, ItemData] = {
 	'Talisman':							ItemData('Usable', 2359036, progression=True),
 	'Diary':							ItemData('Usable', 2359037, progression=True),
 	'Mulana Talisman':					ItemData('Usable', 2359038, progression=True),
-	'Waterproof Case':					ItemData('Inventory', 2359039, useful=True),
-	'Heatproof Case':					ItemData('Inventory', 2359040, useful=True),
+	'Waterproof Case':					ItemData('Inventory', 2359039),
+	'Heatproof Case':					ItemData('Inventory', 2359040),
 	'Shell Horn':						ItemData('Inventory', 2359041, useful=True),
 	'Glove':							ItemData('Inventory', 2359042, useful=True),
 	'Holy Grail':						ItemData('Inventory', 2359043, progression=True),
@@ -104,47 +104,47 @@ item_table: Dict[str, ItemData] = {
 	'miracle.exe':						ItemData('Software', 2359092, progression=True), #progression if key fairy combo or NPC rando
 	'mirai.exe':						ItemData('Software', 2359093, progression=True),
 	'lamulana.exe':						ItemData('Software', 2359094, useful=True),
-	#Small gap in IDs
-	'Map (Gate of Guidance)': 			ItemData('Map', 2359100),
-	'Map (Mausoleum of the Giants)':	ItemData('Map', 2359101),
-	'Map (Temple of the Sun)':			ItemData('Map', 2359102),
-	'Map (Spring in the Sky)':			ItemData('Map', 2359103),
-	'Map (Inferno Cavern)':				ItemData('Map', 2359104),
-	'Map (Chamber of Extinction)':		ItemData('Map', 2359105),
-	'Map (Twin Labyrinths)':			ItemData('Map', 2359106),
-	'Map (Endless Corridor)':			ItemData('Map', 2359107),
-	'Map (Shrine of the Mother)':		ItemData('Map', 2359108, progression=True),
-	'Map (Gate of Illusion)':			ItemData('Map', 2359109),
-	'Map (Graveyard of the Giants)':	ItemData('Map', 2359110),
-	'Map (Temple of Moonlight)':		ItemData('Map', 2359111),
-	'Map (Tower of the Goddess)':		ItemData('Map', 2359112),
-	'Map (Tower of Ruin)':				ItemData('Map', 2359113),
-	'Map (Chamber of Birth)':			ItemData('Map', 2359114),
-	'Map (Dimensional Corridor)':		ItemData('Map', 2359115),
-	'Shuriken Ammo':					ItemData('ShopInventory', 2359116, count=0, progression=True),
-	'Rolling Shuriken Ammo':			ItemData('ShopInventory', 2359117, count=0, progression=True),
-	'Earth Spear Ammo':					ItemData('ShopInventory', 2359118, count=0, progression=True),
-	'Flare Gun Ammo':					ItemData('ShopInventory', 2359119, count=0, progression=True),
-	'Bomb Ammo':						ItemData('ShopInventory', 2359120, count=0, progression=True),
-	'Chakram Ammo':						ItemData('ShopInventory', 2359121, count=0, progression=True),
-	'Caltrops Ammo':					ItemData('ShopInventory', 2359122, count=0, progression=True),
-	'Pistol Ammo':						ItemData('ShopInventory', 2359123, count=0, progression=True),
-	'5 Weights':						ItemData('ShopInventory', 2359124, count=0),
-	'200 coins':						ItemData('Resource', 2359125, count=0), #Escape chest is 200 right?
-	'100 coins':						ItemData('Resource', 2359126, count=0), #Adjust counts if money chests shuffled, have various distributions depending on total item pool minus starting item count
-	'50 coins':							ItemData('Resource', 2359127, count=0),
-	'30 coins':							ItemData('Resource', 2359128, count=0),
-	'10 coins':							ItemData('Resource', 2359129, count=0),
-	'1 Weight':							ItemData('Resource', 2359130, count=0),
+	'Map (Surface)':					ItemData('Map', 2359095),
+	'Map (Gate of Guidance)': 			ItemData('Map', 2359096),
+	'Map (Mausoleum of the Giants)':	ItemData('Map', 2359097),
+	'Map (Temple of the Sun)':			ItemData('Map', 2359098),
+	'Map (Spring in the Sky)':			ItemData('Map', 2359099),
+	'Map (Inferno Cavern)':				ItemData('Map', 2359100),
+	'Map (Chamber of Extinction)':		ItemData('Map', 2359101),
+	'Map (Twin Labyrinths)':			ItemData('Map', 2359102),
+	'Map (Endless Corridor)':			ItemData('Map', 2359103),
+	'Map (Shrine of the Mother)':		ItemData('Map', 2359104, progression=True),
+	'Map (Gate of Illusion)':			ItemData('Map', 2359105),
+	'Map (Graveyard of the Giants)':	ItemData('Map', 2359106),
+	'Map (Temple of Moonlight)':		ItemData('Map', 2359107),
+	'Map (Tower of the Goddess)':		ItemData('Map', 2359108),
+	'Map (Tower of Ruin)':				ItemData('Map', 2359109),
+	'Map (Chamber of Birth)':			ItemData('Map', 2359110),
+	'Map (Dimensional Corridor)':		ItemData('Map', 2359111),
+	'Shuriken Ammo':					ItemData('ShopInventory', 2359112, count=0, progression=True),
+	'Rolling Shuriken Ammo':			ItemData('ShopInventory', 2359113, count=0, progression=True),
+	'Earth Spear Ammo':					ItemData('ShopInventory', 2359114, count=0, progression=True),
+	'Flare Gun Ammo':					ItemData('ShopInventory', 2359115, count=0, progression=True),
+	'Bomb Ammo':						ItemData('ShopInventory', 2359116, count=0, progression=True),
+	'Chakram Ammo':						ItemData('ShopInventory', 2359117, count=0, progression=True),
+	'Caltrops Ammo':					ItemData('ShopInventory', 2359118, count=0, progression=True),
+	'Pistol Ammo':						ItemData('ShopInventory', 2359119, count=0, progression=True),
+	'5 Weights':						ItemData('ShopInventory', 2359120, count=0),
+	'200 coins':						ItemData('Resource', 2359121, count=0),
+	'100 coins':						ItemData('Resource', 2359122, count=0),
+	'50 coins':							ItemData('Resource', 2359123, count=0),
+	'30 coins':							ItemData('Resource', 2359124, count=0),
+	'10 coins':							ItemData('Resource', 2359125, count=0),
+	'1 Weight':							ItemData('Resource', 2359126, count=0),
 	#Gap in IDs for other possible items in pool before trap items
 	'Bat Trap':							ItemData('Trap', 2359150, trap=True, count=0),
 	'Explosive Trap':					ItemData('Trap', 2359151, trap=True, count=0),
 }
-
-shop_inventory_codes: Set[int] = {2359116, 2359117, 2359118, 2359119, 2359120, 2359121, 2359122, 2359123, 2359124}
 
 def get_items_by_category():
 	categories: Dict[str, Set[str]] = {}
 	for name, data in item_table.items():
 		categories.setdefault(data.category, set()).add(name)
 	return categories
+
+item_exclusion_order = ['Map (Surface)', 'Map (Gate of Guidance)', 'Map (Mausoleum of the Giants)', 'Map (Temple of the Sun)', 'Map (Spring in the Sky)', 'Map (Inferno Cavern)', 'Map (Chamber of Extinction)', 'Map (Twin Labyrinths)', 'Map (Endless Corridor)', 'Map (Gate of Illusion)', 'Map (Graveyard of the Giants)', 'Map (Temple of Moonlight)', 'Map (Tower of the Goddess)', 'Map (Tower of Ruin)', 'Map (Chamber of Birth)', 'Map (Dimensional Corridor)', 'beolamu.exe', 'emusic.exe', 'bunplus.exe', 'xmailer.exe', 'Waterproof Case', 'Heatproof Case', 'capstar.exe', 'Fake Silver Shield']

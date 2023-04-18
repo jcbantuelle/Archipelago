@@ -115,7 +115,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Map (Chamber of Extinction) Chest", 2359040, lambda state: s.state_extinction_light(state) and s.attack_chest_any(state), is_cursable=True)
 		],
 		"Chamber of Extinction [Left Main]": [
-			LocationData("Lamp Recharge", None, lambda state: True, True)
+			LocationData("Lamp Recharge — Chamber of Extinction", None, lambda state: True, True)
 		],
 		"Chamber of Extinction [Magatama]": [
 			LocationData("Ox-head & Horse-face Defeated", None, lambda state: combat.oxhead_horseface(state), True)
@@ -145,7 +145,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Zu Defeated", None, lambda state: combat.zu(state), True),
 			LocationData("Peryton Defeated", None, lambda state: combat.peryton(state), True),
 			LocationData("Twin Labyrinths (Back) Grail Tablet", None, lambda state: s.state_read_grail(state), True),
-			LocationData("Lamp Recharge", None, lambda state: True, True),
+			LocationData("Lamp Recharge — Twin Labyrinths", None, lambda state: True, True),
 			LocationData('Baphomet Defeated', None, lambda state: state.has_all({'Zu Defeated', 'Peryton Defeated'}, player) and combat.baphomet(state) and s.enough_ankh_jewels(state), True)
 		],
 		"Endless Corridor [1F]": [
@@ -160,7 +160,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 		],
 		"Endless Corridor [5F]": [
 			LocationData("Backbeard & Tai Sui Defeated", None, lambda state: s.state_literacy(state) and combat.backbeard_tai_sui(state), True),
-			LocationData("Lamp Recharge", None, lambda state: True, True)
+			LocationData("Lamp Recharge — Endless Corridor", None, lambda state: True, True)
 		],
 		"Shrine of the Mother [Main]": [
 			LocationData("bounce.exe Chest", 2359049, lambda state: s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_earth_spear(state) or s.attack_bomb(state) or s.attack_chakram(state) or s.attack_caltrops(state) or s.attack_pistol(state) or (s.attack_flare_gun(state) and state.has("Removed Shrine Skulls", player)), is_cursable=True),
@@ -209,12 +209,12 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Bomb Location", 2359063, lambda state: state.has_all({"Feather", "Kamaitachi Defeated"}, player)),
 			LocationData("emusic.exe Scan", 2359064, lambda state: s.attack_bomb(state) and state.has("torude.exe", player)),
 			LocationData("Kamaitachi Defeated", None, lambda state: state.has("Feather", player) and combat.kamaitachi(state), True),
-			LocationData("Lamp Recharge", None, lambda state: True, True)
+			LocationData("Lamp Recharge — Graveyard of the Giants", None, lambda state: True, True)
 		],
 		"Temple of Moonlight [Upper]": [
 			LocationData('Axe Location', 2359065, lambda state: (s.state_mobility(state) and s.attack_forward(state)) or (state.has('Grapple Claw', player) and (s.attack_shuriken(state) or s.attack_rolling_shuriken(state)))),
 			LocationData("Fruit of Eden Chest", 2359066, lambda state: s.attack_chest_any(state) and state.has("Hand Scanner", player) and state.can_reach("Temple of Moonlight [Lower]", "Region", player) and state.can_reach("Temple of Moonlight [Grapple]", "Region", player) and state.can_reach("Temple of Moonlight [Southeast]", "Region", player), is_cursable=True),
-			LocationData("Lamp Recharge", None, lambda state: True, True)
+			LocationData("Lamp Recharge — Temple of Moonlight", None, lambda state: True, True)
 		],
 		"Temple of Moonlight [Grail]":[
 			LocationData("Temple of Moonlight Grail Tablet", None, lambda state: s.state_read_grail(state), True)
@@ -246,7 +246,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Tower of the Goddess Grail Tablet", None, lambda state: s.state_read_grail(state), True)
 		],
 		"Tower of the Goddess [Lamp]": [
-			LocationData("Lamp Recharge", None, lambda state: True, True)
+			LocationData("Lamp Recharge — Tower of the Goddess", None, lambda state: True, True)
 		],
 		"Tower of Ruin [Southeast]": [
 			LocationData("Sacred Orb (Tower of Ruin) Chest", 2359076, lambda state: s.attack_chest_any(state), is_cursable=True)
@@ -261,7 +261,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 		],
 		"Tower of Ruin [Grail]": [
 			LocationData("Tower of Ruin Grail Tablet", None, lambda state: s.state_read_grail(state), True),
-			LocationData("Lamp Recharge", None, lambda state: True, True)
+			LocationData("Lamp Recharge — Tower of Ruin", None, lambda state: True, True)
 		],
 		"Tower of Ruin [Illusion]": [
 			LocationData("Map (Tower of Ruin) Chest", 2359079, lambda state: s.attack_forward(state), is_cursable=True)

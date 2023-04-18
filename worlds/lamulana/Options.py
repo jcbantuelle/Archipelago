@@ -219,6 +219,7 @@ lamulana_options = {
 	"RequireIceCape": RequireIceCape,
 	"RequireFlareGun": RequireFlareGun,
 	"RequireKeyFairyCombo": RequireKeyFairyCombo,
+	"AutoScanGrailTablets": AutoScanGrailTablets,
 	"AlternateMotherAnkh": AlternateMotherAnkh,
 	"AncientLaMulaneseLearned": AncientLaMulaneseLearned,
 	"HardCombatLogic": HardCombatLogic,

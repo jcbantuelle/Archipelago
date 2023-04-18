@@ -2,6 +2,7 @@ from typing import List, Set, Dict, Tuple, Optional, Callable
 from BaseClasses import MultiWorld, CollectionState, Region, Entrance, Location
 from .Options import is_option_enabled, get_option_value, starting_location_names
 from .LogicShortcuts import LaMulanaLogicShortcuts
+from .CombatLogic import LaMulanaCombatLogic
 from .Locations import LocationData, get_locations_by_region
 from .NPCs import LaMulanaNPCDoor, get_npc_entrances
 from .WorldState import LaMulanaWorldState, LaMulanaTransition
@@ -301,6 +302,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 		connect(world, player, 'Hell Temple [Entrance]', 'Hell Temple [Shop]', lambda state: s.attack_bomb(state) and state.has('Ring', player) and (state.has("Hermes' Boots", player) or s.state_lamp(state)))
 	
 	if is_option_enabled(world, player, "HellTempleReward"):
+		combat = LaMulanaCombatLogic(world, player, s)
 		connect(world, player, 'Hell Temple [Shop]', 'Hell Temple [Dracuet]', lambda state: s.state_literacy(state) and s.state_key_fairy_access(state) and state.has_all({"Hermes' Boots", 'Grapple Claw', 'guild.exe'}, player) and combat.hell_temple_bosses(state) and (s.attack_chakram(state) or s.attack_pistol(state)))
 
 	get_and_connect_transitions(world, player, worldstate)
