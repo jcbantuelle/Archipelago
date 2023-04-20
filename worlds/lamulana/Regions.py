@@ -174,8 +174,8 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	connect(world, player, 'Gate of Illusion [Middle]', 'Gate of Illusion [Dracuet]', lambda state: state.has('Holy Grail', player) or (state.has_all({'Illusion Unlocked', 'Anchor'}, player) and s.attack_chest(state))) #Puzzle solves itself when you go backwards, so backtracking doesn't require attack-far
 	connect(world, player, 'Gate of Illusion [Middle]', 'Gate of Illusion [Grail]')
 	connect(world, player, 'Gate of Illusion [Upper]', 'Gate of Illusion [Grail]', lambda state: state.has('Holy Grail', player))
-	connect(world, player, 'Gate of Illusion [Ruin]', 'Gate of Illusion [Grail]', lambda state: state.has('Birth Seal', player))
-	connect(world, player, 'Gate of Illusion [Grail]', 'Gate of Illusion [Ruin]', lambda state: state.has_any({'Holy Grail', 'Birth Seal'}, player))
+	connect(world, player, 'Gate of Illusion [Ruin]', 'Gate of Illusion [Grail]', lambda state: state.has(worldstate.get_seal_name('Illusion Birth'), player))
+	connect(world, player, 'Gate of Illusion [Grail]', 'Gate of Illusion [Ruin]', lambda state: state.has_any({'Holy Grail', worldstate.get_seal_name('Illusion Birth')}, player))
 	connect(world, player, 'Gate of Illusion [Grail]', 'Gate of Illusion [Pot Room]', lambda state: s.glitch_raindrop(state))
 	connect(world, player, 'Gate of Illusion [Pot Room]', 'Gate of Illusion [Upper]', lambda state: state.has('Feather', player))
 
@@ -194,7 +194,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	connect(world, player, 'Temple of the Sun [Main]', 'Temple of the Sun [Sphinx]', lambda state: state.has_all({"Hermes' Boots", 'Feather'}, player))
 	connect(world, player, 'Temple of the Sun [Sphinx]', 'Temple of the Sun [East]', lambda state: state.has('Holy Grail', player) or s.sun_watchtower(state))
 	connect(world, player, 'Temple of the Sun [East]', 'Temple of the Sun [Main]', lambda state: state.has_any({'Holy Grail', "Hermes' Boots"}, player))
-	connect(world, player, 'Temple of the Sun [Main]', 'Temple of Moonlight [Pyramid]', lambda state: state.has('Holy Grail', state) and (s.attack_above(state) or s.attack_s_above(state)))
+	connect(world, player, 'Temple of the Sun [Main]', 'Temple of Moonlight [Pyramid]', lambda state: state.has('Holy Grail', player) and (s.attack_above(state) or s.attack_s_above(state)))
 
 	connect(world, player, 'Temple of Moonlight [Pyramid]', 'Temple of Moonlight [Upper]')
 	connect(world, player, 'Temple of Moonlight [Pyramid]', 'Temple of Moonlight [Lower]', lambda state: s.glitch_raindrop(state))
@@ -205,7 +205,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	connect(world, player, 'Temple of Moonlight [Eden]', 'Temple of Moonlight [Grail]', lambda state: s.attack_chest(state) and (state.has('Holy Grail', player) or s.attack_flare_gun(state)))
 	connect(world, player, 'Temple of Moonlight [Eden]', 'Temple of Moonlight [Grapple]', lambda state: state.has_any({'Holy Grail', 'Feather'}, player) or s.attack_chest(state))
 	connect(world, player, 'Temple of Moonlight [Grapple]', 'Temple of Moonlight [Map]')
-	connect(world, player, 'Temple of Moonlight [Lower]', 'Temple of Moonlight [Southeast]', lambda state: (state.has('Birth Seal', player) or s.glitch_raindrop(state)) and (s.attack_forward(state) or s.attack_flare_gun(state)))
+	connect(world, player, 'Temple of Moonlight [Lower]', 'Temple of Moonlight [Southeast]', lambda state: (state.has(worldstate.get_seal_name('Moonlight Birth'), player) or s.glitch_raindrop(state)) and (s.attack_forward(state) or s.attack_flare_gun(state)))
 	connect(world, player, 'Temple of Moonlight [Grail]', 'Temple of Moonlight [Eden]', lambda state: s.attack_forward(state) or s.attack_vertical(state) or (s.attack_earth_spear(state) and state.has('Holy Grail', player)))
 
 	connect(world, player, 'Spring in the Sky [Main]', 'Spring in the Sky [Upper]', lambda state: state.has('Helmet', player))
@@ -220,7 +220,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	connect(world, player, 'Tower of the Goddess [Spaulder]', 'Tower of the Goddess [Grail]', lambda state: state.has('Holy Grail', player) or s.attack_forward(state))
 
 	connect(world, player, 'Inferno Cavern [Viy]', 'Inferno Cavern [Main]', lambda state: s.state_lava_swim(state, 3) and (s.attack_forward(state) or s.glitch_catpause(state)))
-	connect(world, player, 'Inferno Cavern [Main]', 'Inferno Cavern [Pazuzu]', lambda state: state.has_any({'Feather', 'Grapple Claw'}, player) or s.state_lamp(state)),
+	connect(world, player, 'Inferno Cavern [Main]', 'Inferno Cavern [Pazuzu]', lambda state: state.has(worldstate.get_seal_name('Inferno Birth'), player) and (state.has_any({'Feather', 'Grapple Claw'}, player) or s.state_lamp(state))),
 	connect(world, player, 'Inferno Cavern [Main]', 'Inferno Cavern [Viy]', lambda state: s.glitch_lamp(state) and s.attack_forward(state) and (state.has('Holy Grail', player) or s.state_lava_swim(state, 3)))
 	connect(world, player, 'Inferno Cavern [Lava]', 'Inferno Cavern [Main]', lambda state: s.state_lava_swim(state, 2))
 	connect(world, player, 'Inferno Cavern [Viy]', 'Chamber of Extinction [Ankh Upper]', lambda state: state.has_all({'Viy Defeated', 'Holy Grail'}, player))
@@ -236,7 +236,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	connect(world, player, 'Tower of Ruin [Spirits]', 'Tower of Ruin [Grail]', lambda state: state.has('Holy Grail', player))
 	connect(world, player, 'Tower of Ruin [Medicine]', 'Tower of Ruin [Spirits]', lambda state: s.state_lava_swim(state, 3) and (state.has('Holy Grail', player) or s.state_lava_swim(state, 5)))
 	connect(world, player, 'Tower of Ruin [Top]', 'Tower of Ruin [Medicine]', lambda state: state.has('Holy Grail', player))
-	connect(world, player, 'Tower of Ruin [Top]', 'Tower of Ruin [Spirits]', lambda state: s.nuwa_access(state))
+	connect(world, player, 'Tower of Ruin [Top]', 'Tower of Ruin [Spirits]', lambda state: s.nuwa_access(state, worldstate))
 
 	connect(world, player, 'Chamber of Extinction [Left Main]', 'Chamber of Extinction [Map]', lambda state: s.state_extinction_light(state) and s.glitch_raindrop(state))
 	connect(world, player, 'Chamber of Extinction [Map]', 'Chamber of Extinction [Main]', lambda state: s.state_extinction_light(state) and state.has('Holy Grail', player))
@@ -298,7 +298,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	connect(world, player, 'Gate of Time [Mausoleum Upper]', 'Gate of Time [Mausoleum Lower]', lambda state: state.has_any({'Holy Grail', 'Feather'}, player))
 
 	if is_option_enabled(world, player, "HellTempleReward") or is_option_enabled(world, player, "RandomizeDracuetsShop"):
-		connect(world, player, 'Gate of Guidance [Main]', 'Hell Temple [Entrance]', lambda state: state.has_all({'Hell Temple Unlocked', 'Feather', 'Life Seal'}, player))
+		connect(world, player, 'Gate of Guidance [Main]', 'Hell Temple [Entrance]', lambda state: state.has_all({'Hell Temple Unlocked', 'Feather', worldstate.get_seal_name('Guidance Life')}, player))
 		connect(world, player, 'Hell Temple [Entrance]', 'Hell Temple [Shop]', lambda state: s.attack_bomb(state) and state.has('Ring', player) and (state.has("Hermes' Boots", player) or s.state_lamp(state)))
 	
 	if is_option_enabled(world, player, "HellTempleReward"):

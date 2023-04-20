@@ -1,6 +1,6 @@
 from typing import List, Dict, Set, Optional, Callable, Tuple, NamedTuple
 from BaseClasses import MultiWorld, CollectionState
-from .Options import is_option_enabled, get_option_value, starting_location_ids
+from .Options import is_option_enabled, get_option_value, starting_location_ids, starting_weapon_names
 from .Locations import get_locations_by_region
 from .LogicShortcuts import LaMulanaLogicShortcuts
 
@@ -18,6 +18,8 @@ class LaMulanaDoor(NamedTuple):
 	is_oneway: bool = False
 	is_nonboss: bool = False
 
+shop_npcs = {'Nebur', 'Sidro', 'Modro', 'Penadvent of Ghost', 'Greedy Charlie', 'Shalom III', 'Usas VI', 'Kingvalley I', 'Mr. Fishman (Original)', 'Mr. Fishman (Alt)', 'Hot-blooded Nemesistwo', 'Operator Combaker', 'Yiegah Kungfu', 'Yiear Kungfu', 'Affected Knimare', 'Mover Athleland', 'Giant Mopiran', 'Kingvalley II', 'Energetic Belmont', 'Mechanical Efspi', 'Mudman Qubert', 'Tailor Dracuet'}
+
 class LaMulanaWorldState:
 	world: MultiWorld
 	player: int
@@ -31,6 +33,7 @@ class LaMulanaWorldState:
 	include_dracuet: bool
 	npc_mapping: Dict[str,str]
 	cursed_chests: Set[str]
+	seal_map: Dict[str,int]
 	is_surface_start: bool
 
 	def __init__(self, world: MultiWorld, player: int):
@@ -48,6 +51,7 @@ class LaMulanaWorldState:
 		self.is_surface_start = get_option_value(world, player, "StartingLocation") == starting_location_ids['surface']
 
 		self.set_cursed_chests()
+		self.set_seal_values()
 		if self.transition_rando:
 			self.randomize_transitions()
 		if self.door_rando:
@@ -68,16 +72,54 @@ class LaMulanaWorldState:
 		self.world.random.shuffle(randomized_list)
 		return {npc_list[i]: randomized_list[i] for i in range(len(npc_list))}
 
+	def shop_npc_found(self, npc_doors: Set[str]) -> bool:
+		shop_npc_found = False
+		for door in npc_doors:
+			if self.npc_mapping[door] in shop_npcs:
+				return True
+		return False
+
 	def npc_rando_checks_passed(self) -> bool:
-		if self.is_surface_start and not (self.npc_mapping['Elder Xelpud'] == 'Elder Xelpud' or self.npc_mapping['Former Mekuri Master'] == 'Elder Xelpud'):
-			return False
-		for surface_npc in {'Nebur', 'Sidro', 'Modro', 'Moger', 'Hiner'}:
-			if self.npc_mapping[surface_npc] == 'Elder Xelpud':
-				return False
+		if self.is_surface_start:
+			#Surface start - make sure Xelpud and a shop are accessible
+			starting_weapon = starting_weapon_names[get_option_value(self.world, self.player, 'StartingWeapon')]
+			if starting_weapon in {'Knife', 'Rolling Shuriken', 'Flare Gun', 'Bomb', 'Caltrops'}:
+				#Case: starting weapon can't break Mekuri Wall - Xelpud must be vanilla, with a shop available
+				if self.npc_mapping['Elder Xelpud'] != 'Elder Xelpud':
+					return False
+				if not self.shop_npc_found({'Nebur', 'Sidro', 'Modro', 'Moger', 'Hiner'}):
+					return False
+			else:
+				#Xelpud must be vanilla or at former mekuri master
+				if self.npc_mapping['Former Mekuri Master'] == 'Elder Xelpud':
+					#Case: subweapon that can break mekuri wall, ammo needs to be at xelpud
+					if starting_weapon in {'Shuriken', 'Chakram', 'Pistol', 'Earth Spear'}:
+						if not self.shop_npc_found({'Elder Xelpud'}):
+							return False
+					else:
+						#Case: main weapon that can break mekuri wall. Shop anywhere else
+						if not self.shop_npc_found({'Elder Xelpud', 'Nebur', 'Sidro', 'Modro', 'Moger', 'Hiner'}):
+							return False
+				elif self.npc_mapping['Elder Xelpud'] != 'Elder Xelpud':
+					return False
+				if not self.shop_npc_found({'Nebur', 'Sidro', 'Modro', 'Moger', 'Hiner'}):
+					return False
+		else:
+			#Non-surface start - just make Xelpud isn't locked behind himself
+			for surface_npc in {'Nebur', 'Sidro', 'Modro', 'Moger', 'Hiner'}:
+				if self.npc_mapping[surface_npc] == 'Elder Xelpud':
+					return False
 		if self.npc_mapping['Yiear Kungfu'] == 'Yiegah Kungfu':
 			return False
-		if 'Tailor Dracuet' in self.npc_mapping and self.npc_mapping['Tailor Dracuet'] in {'Mulbruk', 'Fairy Queen', 'Elder Xelpud'}:
+		if self.npc_mapping['Mr. Fishman (Alt)'] == 'Fairy Queen':
 			return False
+		if not self.transition_rando and not self.include_nonboss and self.npc_mapping['8-bit Elder'] == 'Fairy Queen':
+			return False
+		if 'Tailor Dracuet' in self.npc_mapping:
+			if self.npc_mapping['Tailor Dracuet'] in {'Mulbruk', 'Fairy Queen', 'Elder Xelpud'}:
+				return False
+			if self.npc_mapping['Tailor Dracuet'] == 'Yiegah Kungfu' and self.npc_mapping['Yiear Kungfu'] in {'Mulbruk', 'Fairy Queen', 'Elder Xelpud'}:
+				return False
 		return True
 
 	def get_npc_names(self):
@@ -106,6 +148,27 @@ class LaMulanaWorldState:
 			#4 vanilla cursed chests
 			self.cursed_chests = {'Crystal Skull Chest', 'Dimensional Key Chest', 'Djed Pillar Chest', 'Magatama Jewel Chest'}
 
+	def get_seal_order(self):
+		return ['Surface Origin', 'Surface Life', 'Guidance Life', 'Sun Mulbruk Origin', 'Sun Flooded Origin', 'Sun Death', 'Spring Fishman Origin', 'Spring Bahamut Origin', 'Spring Birth', 'Inferno Birth', 'Extinction Birth', 'Endless Origin', 'Illusion Birth', 'Graveyard Life', 'Moonlight Birth', 'Ruin Death', 'Dimensional Death', 'Shrine Skull Life', 'Shrine Origin', 'Shrine Birth', 'Shrine Life', 'Shrine Death', 'Mother Origin', 'Mother Birth', 'Mother Life', 'Mother Death']
+
+	def get_seal_name(self, name):
+		if not self.seal_map:
+			return None
+		seal_value = self.seal_map[name]
+		return {1: 'Origin Seal', 2: 'Birth Seal', 3: 'Life Seal', 4: 'Death Seal'}[seal_value]
+
+	def set_seal_values(self):
+		self.seal_map = {}
+		seal_rando = is_option_enabled(self.world, self.player, 'RandomizeSeals')
+		for seal_name in {'Surface Origin', 'Spring Fishman Origin', 'Spring Bahamut Origin', 'Sun Mulbruk Origin', 'Sun Flooded Origin', 'Endless Origin', 'Shrine Origin', 'Mother Origin'}:
+			self.seal_map[seal_name] = self.world.random.choice([1, 2, 3, 4]) if seal_rando else 1
+		for seal_name in {'Spring Birth', 'Inferno Birth', 'Extinction Birth', 'Illusion Birth', 'Moonlight Birth', 'Shrine Birth', 'Mother Birth'}:
+			self.seal_map[seal_name] = self.world.random.choice([1, 2, 3, 4]) if seal_rando else 2
+		for seal_name in {'Surface Life', 'Guidance Life', 'Graveyard Life', 'Shrine Life', 'Shrine Skull Life', 'Mother Life'}:
+			self.seal_map[seal_name] = self.world.random.choice([1, 2, 3, 4]) if seal_rando else 3
+		for seal_name in {'Sun Death', 'Ruin Death', 'Dimensional Death', 'Shrine Death', 'Mother Death'}:
+			self.seal_map[seal_name] = self.world.random.choice([1, 2, 3, 4]) if seal_rando else 4
+
 	def get_transitions(self):
 		s = LaMulanaLogicShortcuts(self.world, self.player)
 		transitions = {
@@ -130,8 +193,8 @@ class LaMulanaWorldState:
 				'Illusion R1':		LaMulanaTransition('Gate of Illusion [Pot Room]', 'Goddess L1', exit_logic = lambda state: state.has('Illusion Unlocked', self.player)),
 				'Illusion R2':		LaMulanaTransition('Gate of Illusion [Ruin]', 'Ruin L1', enter_logic = lambda state: state.has('Illusion Unlocked', self.player) or s.glitch_raindrop(state), exit_logic = lambda state: state.has('Illusion Unlocked', self.player)),
 				'Graveyard R1':		LaMulanaTransition('Graveyard of the Giants [Grail]', 'Pipe L1'),
-				'Sun R1':			LaMulanaTransition('Temple of the Sun [East]', 'Extinction L1', enter_logic = lambda state: state.has_all({'Flooded Temple of the Sun', 'Origin Seal'}, self.player) and s.state_mobility(state), exit_logic = lambda state: s.glitch_raindrop(state) or (s.glitch_lamp(state) and state.has('Holy Grail', self.player))),
-				'Sun R2':			LaMulanaTransition('Temple of the Sun [East]', 'Extinction L2', enter_logic = lambda state: state.has_all({'Flooded Temple of the Sun', 'Origin Seal'}, self.player) or (s.glitch_lamp(state) and state.has('Holy Grail', self.player)), exit_logic = lambda state: s.glitch_raindrop(state)),
+				'Sun R1':			LaMulanaTransition('Temple of the Sun [East]', 'Extinction L1', enter_logic = lambda state: state.has_all({'Flooded Temple of the Sun', self.get_seal_name('Sun Flooded Origin')}, self.player) and s.state_mobility(state), exit_logic = lambda state: s.glitch_raindrop(state) or (s.glitch_lamp(state) and state.has('Holy Grail', self.player))),
+				'Sun R2':			LaMulanaTransition('Temple of the Sun [East]', 'Extinction L2', enter_logic = lambda state: state.has_all({'Flooded Temple of the Sun', self.get_seal_name('Sun Flooded Origin')}, self.player) or (s.glitch_lamp(state) and state.has('Holy Grail', self.player)), exit_logic = lambda state: s.glitch_raindrop(state) or (s.glitch_lamp(state) and state.has('Holy Grail', self.player))),
 				'Inferno R1':		LaMulanaTransition('Inferno Cavern [Main]', 'Sun L1'),
 				'Ruin R1':			LaMulanaTransition('Tower of Ruin [Medicine]', 'Goddess L2'),
 				'Ruin R2':			LaMulanaTransition('Tower of Ruin [Southeast]', 'Graveyard L1'),
@@ -179,7 +242,7 @@ class LaMulanaWorldState:
 				'Twin D1':			LaMulanaTransition('Twin Labyrinths [Lower]', 'Inferno U1'),
 				'Twin D2':			LaMulanaTransition('Twin Labyrinths [Lower]', 'Moonlight U2'),
 				'Endless D1':		LaMulanaTransition('Endless Corridor [5F]', 'Shrine U1', enter_logic = lambda state: state.has('Backbeard & Tai Sui Defeated', self.player), exit_logic = lambda state: state.has('Holy Grail', self.player) or s.glitch_raindrop(state)),
-				'Dimensional D1':	LaMulanaTransition('Dimensional Corridor [Lower]', 'Twin U3', enter_logic = lambda state: state.has_all({'Feather', 'Holy Grail'}, self.player), exit_logic = lambda state: s.glitch_raindrop(state), is_oneway=True),
+				'Dimensional D1':	LaMulanaTransition('Dimensional Corridor [Lower]', 'Twin U3', enter_logic = lambda state: s.glitch_raindrop(state), is_oneway=True, exit_logic = lambda state: state.has_all({'Feather', 'Holy Grail'}, self.player)),
 				'Shrine D1':		LaMulanaTransition('Shrine of the Mother [Lower]', 'Extinction U1', exit_logic = lambda state: False),
 				'Shrine D2':		LaMulanaTransition('Shrine of the Mother [Seal]', 'Endless U1'),
 				'Shrine D3':		LaMulanaTransition('Shrine of the Mother [Map]', 'Twin U2'),

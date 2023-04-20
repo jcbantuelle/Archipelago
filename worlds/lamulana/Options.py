@@ -53,8 +53,11 @@ class RandomizeNPCs(Toggle):
 	"Randomizes all NPCs and shop locations"
 	display_name = "Randomize NPC/shop doors"
 
-class RandomizeCoinChests(Toggle):
-	"Randomizes all coin chests"
+class RandomizeCoinChests(Choice):
+	"Randomizes coin chests. Including the escape chest has the potential to create rude item chains if NPCs or seals are randomized."
+	option_off = 0
+	option_basic = 1
+	option_include_escape_chest = 2
 	display_name = "Randomize coin chests"
 
 class RandomizeTrapItems(Toggle):
@@ -81,7 +84,7 @@ class RandomizeDracuetsShop(Toggle):
 	display_name = "Randomize Dracuet's Shop"
 
 class HellTempleReward(Toggle):
-	"The final reward for beating Hell Temple may be required. A treasure that should not have been created - do not do this unless you know what it entails."
+	"The final reward for beating Hell Temple may be required. A treasure that should not have been created."
 	display_name = "Hell Temple Final Reward"
 
 class StartingLocation(Choice):
@@ -169,6 +172,10 @@ class AutoScanGrailTablets(DefaultOnToggle):
 	"Quality of life - walking past a grail tablet scans it automatically. Otherwise, Hand Scanner and reader.exe are required to warp back to it."
 	display_name = "Automatically Scan Grail Tablets"
 
+class GuardianSpecificAnkhJewels(DefaultOnToggle):
+	"If on, each guardian fight has a specific ankh jewel needed to start the fight."
+	display_name = "Guardian-specific Ankh Jewels"
+
 class AlternateMotherAnkh(DefaultOnToggle):
 	"Quality of life - If on, skips the mantra sequence to empower the key sword by adding a 9th ankh jewel. Mother's ankh will be like other bosses' and cannot be activated by an empowered key sword."
 	display_name = "Alternate Mother Ankh"
@@ -220,6 +227,7 @@ lamulana_options = {
 	"RequireFlareGun": RequireFlareGun,
 	"RequireKeyFairyCombo": RequireKeyFairyCombo,
 	"AutoScanGrailTablets": AutoScanGrailTablets,
+	"GuardianSpecificAnkhJewels": GuardianSpecificAnkhJewels,
 	"AlternateMotherAnkh": AlternateMotherAnkh,
 	"AncientLaMulaneseLearned": AncientLaMulaneseLearned,
 	"HardCombatLogic": HardCombatLogic,

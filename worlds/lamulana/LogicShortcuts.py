@@ -4,6 +4,7 @@ from .Options import is_option_enabled, get_option_value, starting_weapon_ids, s
 class LaMulanaLogicShortcuts:
 	player: int
 
+	flag_specific_ankh_jewels: bool
 	flag_autoscan: bool
 	flag_ancient_lamulanese: bool
 	flag_ice_cape_lava: bool
@@ -19,6 +20,7 @@ class LaMulanaLogicShortcuts:
 	def __init__(self, world: Optional[MultiWorld], player: Optional[int]):
 		if world and player:
 			self.player = player
+			self.flag_specific_ankh_jewels = is_option_enabled(world, player, "GuardianSpecificAnkhJewels")
 			self.flag_autoscan = is_option_enabled(world, player, "AutoScanGrailTablets")
 			self.flag_ancient_lamulanese = is_option_enabled(world, player, "AncientLaMulaneseLearned")
 			self.flag_ice_cape_lava = is_option_enabled(world, player, "RequireIceCape")
@@ -183,27 +185,10 @@ class LaMulanaLogicShortcuts:
 				counter += 1
 		return counter
 
-	#No checks for helmet/origin sigil, pochette key, or dimensional key since they could very easily be acquired out of logic
-	#Not perfect since you could reach regions out of logic, but hopefully eliminates as much locking potential as possible
-	def guardian_access_count(self, state: CollectionState) -> int:
-		counter = 0
-		guardian_regions = {
-			'Amphisbaena Defeated': 'Gate of Guidance [Main]',
-			'Sakit Defeated': 'Mausoleum of the Giants',
-			'Ellmac Defeated': 'Temple of the Sun [Main]',
-			'Bahamut Defeated': 'Spring in the Sky [Main]',
-			'Viy Defeated': 'Inferno Cavern [Viy]',
-			'Palenque Defeated': 'Chamber of Extinction [Ankh Lower]',
-			'Baphomet Defeated': 'Twin Labyrinths [Lower]',
-			'Tiamat Defeated': 'Dimensional Corridor [Upper]'
-		}
-		for guardian_event, region in guardian_regions.items():
-			if state.has(guardian_event, self.player) or state.can_reach(region, 'Region', self.player):
-				counter += 1
-		return counter
-
-	def enough_ankh_jewels(self, state: CollectionState) -> bool:
-		return state.has('Ankh Jewel', self.player, self.guardian_access_count(state))
+	def has_ankh_jewel(self, state: CollectionState, guardian: str) -> bool:
+		if self.flag_specific_ankh_jewels:
+			return state.has(f'Ankh Jewel ({guardian})', self.player)
+		return state.has('Ankh Jewel', self.player, 9 if guardian == 'Mother' else 8)
 
 	def sun_watchtower(self, state: CollectionState) -> bool:
 		return self.attack_forward(state) or self.attack_flare_gun(state)
@@ -237,8 +222,8 @@ class LaMulanaLogicShortcuts:
 	def moonlight_face(self, state: CollectionState) -> bool:
 		return self.attack_caltrops(state) or self.attack_shuriken(state) or self.attack_rolling_shuriken(state) or self.attack_chakram(state) or self.attack_bomb(state) or self.attack_pistol(state)
 
-	def nuwa_access(self, state: CollectionState) -> bool:
-		return state.has_all({'NPC: Philosopher Alsedana', 'Feather', 'Death Seal'}, self.player)
+	def nuwa_access(self, state: CollectionState, worldstate) -> bool:
+		return state.has_all({'NPC: Philosopher Alsedana', 'Feather', worldstate.get_seal_name('Ruin Death')}, self.player)
 
 	def all_mantras(self, state: CollectionState) -> bool:
 		#All the regions where you need to learn + chant mantras - excluding Illusion since that's where the event is placed
@@ -251,10 +236,10 @@ class LaMulanaLogicShortcuts:
 				if not state.can_reach(region, 'Region', self.player):
 					return False
 		#Reach, read + chant mantras, ancient la-mulanese, viy -> sun sphinx destroyed, lamp glitch or samaranta for BAHRUN
-		return state.has_all({'Hand Scanner', 'reader.exe', 'Djed Pillar', 'mantra.exe', 'Feather', 'Viy Defeated'}, self.player) and self.state_ancient_lamulanese(state) and (self.glitch_lamp(state) or state.has('NPC: Samaranta', self.player))
+		return state.has_all({'Hand Scanner', 'reader.exe', 'Djed Pillar', 'mantra.exe', 'Feather', 'Viy Defeated'}, self.player) and self.state_ancient_lamulanese(state) and (self.glitch_lamp(state) or state.has('NPC: Philosopher Samaranta', self.player))
 
 	def hell_temple_requirements(self, state: CollectionState) -> bool:
 		for region in {'Surface [Main]', 'Gate of Guidance [Main]', 'Gate of Illusion [Dracuet]', 'Gate of Time [Guidance]'}:
 			if not state.can_reach(region, 'Region', self.player):
 				return False
-		return state.has_all({'NPC: Mulbruk', 'Feather', 'Ice Cape', 'Holy Grail', 'Life Seal'}, self.player) and (self.glitch_raindrop(state) or state.has('NPC: Xelpud', self.player)) and self.get_health_count(state) >= 2 and self.attack_forward(state)
+		return state.has_all({'NPC: Mulbruk', 'Feather', 'Ice Cape', 'Holy Grail'}, self.player) and self.state_key_fairy_access(state) and (self.glitch_raindrop(state) or state.has('NPC: Xelpud', self.player)) and self.get_health_count(state) >= 2 and self.attack_forward(state)

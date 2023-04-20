@@ -53,15 +53,7 @@ class LaMulanaWorld(World):
 			self.multiworld.start_inventory[self.player].value["Hermes' Boots"] = 1
 		if self.is_option_enabled('StartWithTextTrax'):
 			self.multiworld.start_inventory[self.player].value['bunemon.exe'] = 1
-		"""	if self.multiworld.start_inventory[self.player].value.pop("Holy Grail", 0) > 0:
-			self.multiworld.StartWithHolyGrail[self.player].value = self.multiworld.StartWithHolyGrail[self.player].option_true
-		if self.multiworld.start_inventory[self.player].value.pop("mirai.exe", 0) > 0:
-			self.multiworld.StartWithMirai[self.player].value = self.multiworld.StartWithMirai[self.player].option_true
-		if self.multiworld.start_inventory[self.player].value.pop("Hermes' Boots", 0) > 0:
-			self.multiworld.StartWithHermesBoots[self.player].value = self.multiworld.StartWithHermesBoots[self.player].option_true
-		if self.multiworld.start_inventory[self.player].value.pop("bunemon.exe", 0) > 0:
-			self.multiworld.StartWithTextTrax[self.player].value = self.multiworld.StartWithTextTrax[self.player].option_true
-"""
+
 		starting_weapon = get_option_value(self.multiworld, self.player, "StartingWeapon")
 		self.multiworld.start_inventory[self.player].value[starting_weapon_names[starting_weapon]] = 1
 
@@ -87,7 +79,7 @@ class LaMulanaWorld(World):
 	def set_rules(self) -> None:
 		self.multiworld.completion_condition[self.player] = lambda state: state.has_all({'Mother Defeated', 'NPC: Mulbruk'}, self.player)
 		
-		if self.is_option_enabled('RandomizeCoinChests'):
+		if self.get_option_value('RandomizeCoinChests') == 2:
 			#local progression would be a problem for the escape coin chest - if it involves another player and loops back to us, that's fine
 			escape_location = self.multiworld.get_location('Twin Labyrinths Escape Coin Chest', self.player)
 			add_item_rule(escape_location, lambda item: item.player != self.player or item.classification != ItemClassification.progression)
@@ -114,7 +106,7 @@ class LaMulanaWorld(World):
 	def write_spoiler_header(self, spoiler_handle: TextIO) -> None:
 		spoiler_handle.write(f'Cursed Chests:		{self.worldstate.cursed_chests}\n')
 		if self.worldstate.npc_rando and self.worldstate.npc_mapping:
-			spoiler_handle.write(f'NPC Randomizer:\n')
+			spoiler_handle.write('NPC Randomizer:\n')
 			room_names = get_npc_entrance_room_names()
 			space_count = lambda name: ' ' * (25 - len(name))
 			reverse_map = {y: x for x, y in self.worldstate.npc_mapping.items()}
@@ -122,6 +114,13 @@ class LaMulanaWorld(World):
 				if npc_name in reverse_map:
 					npc_door = reverse_map[npc_name]
 					spoiler_handle.write(f'    - {npc_name}:{space_count(npc_name)}{room_names[npc_door]}\n')
+		if is_option_enabled(self.multiworld, self.player, 'RandomizeSeals'):
+			seal_names = {1: 'Origin Seal', 2: 'Birth Seal', 3: 'Life Seal', 4: 'Death Seal'}
+			spoiler_handle.write('Seal Randomizer:\n')
+			space_count = lambda name: ' ' * (25 - len(name))
+			for seal_location in self.worldstate.get_seal_order():
+				value = self.worldstate.seal_map[seal_location]
+				spoiler_handle.write(f'    - {seal_location}:{space_count(seal_location)}{seal_names[value]}\n')
 		#Maybe also transition info? It's gonna be a lot
 
 	def fill_slot_data(self) -> Dict[str, object]:
@@ -163,8 +162,20 @@ class LaMulanaWorld(World):
 			if self.is_option_enabled('RandomizeNPCs'):
 				surface_shop_slots = []
 				npc_checks = get_npc_checks(self.multiworld, self.player)
-				#Assumes Xelpud is placed on his or Former Mekuri Master's spot - which WorldState handles
-				for surface_npc_door in {'Elder Xelpud', 'Nebur', 'Sidro', 'Modro', 'Hiner', 'Moger', 'Former Mekuri Master'}:
+				if self.worldstate.npc_mapping['Former Mekuri Master'] == 'Elder Xelpud':
+					if starting_weapon in {'Shuriken', 'Chakram', 'Pistol', 'Earth Spear'}:
+						#Case: Xelpud is at Former Mekuri Master and starting subweapon that can break the wall - WorldState made sure a shop was at Xelpud
+						possible_shop_npcs = {'Elder Xelpud'}
+						print('Player', self.player, ': Xelpud at Mekuri, shop at Xelpud')
+					else:
+						#Case: main weapon that breaks mekuri wall
+						possible_shop_npcs = {'Elder Xelpud', 'Nebur', 'Sidro', 'Modro', 'Moger', 'Hiner'}
+						print('Player', self.player, ': Xelpud at Mekuri, shop anywhere')
+				else:
+					#Case: Xelpud is vanilla
+					possible_shop_npcs = {'Nebur', 'Sidro', 'Modro', 'Moger', 'Hiner'}
+					print('Player', self.player, ': Xelpud vanilla, shop anywhere')
+				for surface_npc_door in possible_shop_npcs:
 					npc_name = self.worldstate.npc_mapping[surface_npc_door]
 					if npc_name in npc_checks:
 						for location in npc_checks[npc_name]:
@@ -207,8 +218,9 @@ class LaMulanaWorld(World):
 			location = self.place_locked_item(location_name, shop_items[ndx])
 
 	def get_excluded_items(self) -> Set[str]:
-		#101 base locations (chests + NPC checks) + 24 coin chests + 4 trap items + number of randomized items in shops + 1 Hell Temple check
-		location_pool_size = 101 + (24 if self.is_option_enabled('RandomizeCoinChests') else 0) + (4 if self.is_option_enabled('RandomizeTrapItems') else 0) + self.get_option_value('ShopDensity') + (1 if self.is_option_enabled('HellTempleReward') else 0)
+		#101 base locations (chests + NPC checks) + 23 coin chests + escape chest + 4 trap items + number of randomized items in shops + 1 Hell Temple check
+		coin_chest_option = self.get_option_value('RandomizeCoinChests')
+		location_pool_size = 101 + (23 if coin_chest_option else 0) + (1 if coin_chest_option == 2 else 0) + (4 if self.is_option_enabled('RandomizeTrapItems') else 0) + self.get_option_value('ShopDensity') + (1 if self.is_option_enabled('HellTempleReward') else 0)
 
 		item_pool_size = 125
 		if self.is_option_enabled('AlternateMotherAnkh'):
@@ -239,8 +251,15 @@ class LaMulanaWorld(World):
 				item = self.create_item(name)
 				item_pool.append(item)
 
-		if self.is_option_enabled('AlternateMotherAnkh'):
-			item_pool.append(self.create_item('Ankh Jewel'))
+		if self.is_option_enabled('GuardianSpecificAnkhJewels'):
+			guardians = {'Amphisbaena', 'Sakit', 'Ellmac', 'Bahamut', 'Viy', 'Palenque', 'Baphomet', 'Tiamat'}
+			if self.is_option_enabled('AlternateMotherAnkh'):
+				guardians.add('Mother')
+			for guardian in guardians:
+				item_pool.append(self.create_item(f'Ankh Jewel ({guardian})'))
+		else:
+			for _ in range(9 if self.is_option_enabled('AlternateMotherAnkh') else 8):
+				item_pool.append(self.create_item('Ankh Jewel'))
 
 		filler_pool_size = len(self.multiworld.get_unfilled_locations(self.player)) - len(item_pool)
 
