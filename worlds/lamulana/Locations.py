@@ -59,6 +59,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Ankh Jewel (Temple of the Sun) Chest", 2359018, lambda state: s.attack_chest(state), is_cursable=True),
 			LocationData("Knife Location", 2359019, lambda state: s.attack_shuriken(state) or (s.attack_chakram(state) and state.has_any({"Feather", "Grapple Claw"}, player)) or s.attack_bomb(state) or (s.attack_flare_gun(state) and s.attack_forward(state) and state.has("Feather", player)) or s.glitch_catpause(state)),
 			LocationData("Sacred Orb (Temple of the Sun) Chest", 2359020, lambda state: s.attack_chest_any(state), is_cursable=True),
+			LocationData('Maternity Statue', None, lambda state: state.has('Woman Statue', player), True),
 			LocationData('Ellmac Defeated', None, lambda state: state.has('Holy Grail', player) and combat.ellmac(state) and s.has_ankh_jewel(state, 'Ellmac'), True)
 		],
 		"Temple of the Sun [Top Entrance]": [

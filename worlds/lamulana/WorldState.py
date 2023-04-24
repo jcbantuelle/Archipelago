@@ -18,7 +18,6 @@ class LaMulanaDoor(NamedTuple):
 	is_oneway: bool = False
 	is_nonboss: bool = False
 
-shop_npcs = {'Nebur', 'Sidro', 'Modro', 'Penadvent of Ghost', 'Greedy Charlie', 'Shalom III', 'Usas VI', 'Kingvalley I', 'Mr. Fishman (Original)', 'Mr. Fishman (Alt)', 'Hot-blooded Nemesistwo', 'Operator Combaker', 'Yiegah Kungfu', 'Yiear Kungfu', 'Affected Knimare', 'Mover Athleland', 'Giant Mopiran', 'Kingvalley II', 'Energetic Belmont', 'Mechanical Efspi', 'Mudman Qubert', 'Tailor Dracuet'}
 
 class LaMulanaWorldState:
 	world: MultiWorld
@@ -72,10 +71,28 @@ class LaMulanaWorldState:
 		self.world.random.shuffle(randomized_list)
 		return {npc_list[i]: randomized_list[i] for i in range(len(npc_list))}
 
+	def get_shop_names(self) -> Set[str]:
+		shop_npcs = {'Nebur', 'Sidro', 'Modro', 'Penadvent of Ghost', 'Greedy Charlie', 'Shalom III', 'Usas VI', 'Kingvalley I', 'Mr. Fishman (Original)', 'Mr. Fishman (Alt)', 'Hot-blooded Nemesistwo', 'Operator Combaker', 'Yiegah Kungfu', 'Yiear Kungfu', 'Arrogant Sturdy Snake', 'Arrogant Metagear', 'Affected Knimare', 'Mover Athleland', 'Giant Mopiran', 'Kingvalley II', 'Energetic Belmont', 'Mechanical Efspi', 'Mudman Qubert'}
+		if self.include_dracuet:
+			shop_npcs.add('Tailor Dracuet')
+		if not self.is_surface_start:
+			shop_npcs.add('Starting')
+		return shop_npcs
+
+	def get_shop_location_names(self) -> Set[str]:
+		locations : Set[str] = set()
+		shop_npc_names = self.get_shop_names()
+		for npc_name in shop_npc_names:
+			locations.add(f'{npc_name} Shop Item 1')
+			locations.add(f'{npc_name} Shop Item 2')
+			locations.add(f'{npc_name} Shop Item 3')
+		return locations
+
 	def shop_npc_found(self, npc_doors: Set[str]) -> bool:
 		shop_npc_found = False
+		shop_names = self.get_shop_names()
 		for door in npc_doors:
-			if self.npc_mapping[door] in shop_npcs:
+			if self.npc_mapping[door] in shop_names:
 				return True
 		return False
 
@@ -109,12 +126,22 @@ class LaMulanaWorldState:
 			for surface_npc in {'Nebur', 'Sidro', 'Modro', 'Moger', 'Hiner'}:
 				if self.npc_mapping[surface_npc] == 'Elder Xelpud':
 					return False
+				if self.npc_mapping[surface_npc] == 'Yiegah Kungfu' and self.npc_mapping['Yiear Kungfu'] == 'Elder Xelpud':
+					return False
+		#Unless fixed, the door to the Moonlight shop area does not open during escape
+		if self.npc_mapping['Kingvalley II'] == 'Mulbruk':
+			return False
 		if self.npc_mapping['Yiear Kungfu'] == 'Yiegah Kungfu':
 			return False
 		if self.npc_mapping['Mr. Fishman (Alt)'] == 'Fairy Queen':
 			return False
-		if not self.transition_rando and not self.include_nonboss and self.npc_mapping['8-bit Elder'] == 'Fairy Queen':
+		if self.npc_mapping['Mr. Fishman (Alt)'] == 'Yiegah Kungfu' and self.npc_mapping['Yiear Kungfu'] == 'Fairy Queen':
 			return False
+		if not self.transition_rando and not self.include_nonboss:
+			if self.npc_mapping['8-bit Elder'] == 'Fairy Queen':
+				return False
+			if self.npc_mapping['8-bit Elder'] == 'Yiegah Kungfu' and self.npc_mapping['Yiear Kungfu'] == 'Fairy Queen':
+				return False
 		if 'Tailor Dracuet' in self.npc_mapping:
 			if self.npc_mapping['Tailor Dracuet'] in {'Mulbruk', 'Fairy Queen', 'Elder Xelpud'}:
 				return False
@@ -123,10 +150,9 @@ class LaMulanaWorldState:
 		return True
 
 	def get_npc_names(self):
-		npc_names = ['Elder Xelpud', 'Nebur', 'Sidro', 'Modro', 'Hiner', 'Moger', 'Former Mekuri Master', 'Priest Zarnac', 'Penadvent of Ghost', 'Priest Xanado', 'Greedy Charlie', 'Mulbruk', 'Shalom III', 'Usas VI', 'Kingvalley I', 'Priest Madomo', 'Priest Hidlyda', 'Philosopher Giltoriyo', 'Mr. Fishman (Original)', 'Mr. Fishman (Alt)', 'Priest Gailious', 'Hot-blooded Nemesistwo', 'Priest Romancis', 'Priest Aramo', 'Priest Triton', 'Operator Combaker', 'Yiegah Kungfu', 'Yiear Kungfu', 'Arrogant Sturdy Snake', 'Arrogant Metagear', 'Priest Jaguarfiv', 'Fairy Queen', 'Affected Knimare', 'duplex', 'Mr. Slushfund', 'Priest Alest', 'Mover Athleland', 'Giant Mopiran', 'Giant Thexde', 'Philosopher Alsedana', 'Samieru', 'Kingvalley II', 'Philosopher Samaranta', 'Naramura', 'Energetic Belmont', 'Priest Laydoc', 'Mechanical Efspi', 'Priest Ashgine', 'Mudman Qubert', 'Philosopher Fobos', '8-bit Elder']
-		if self.include_dracuet:
-			npc_names.append('Tailor Dracuet')
-		return npc_names
+		npcs = self.get_npc_hint_order()
+		npcs.extend(['Hiner', 'Moger', 'Priest Zarnac', 'Priest Xanado', 'Priest Madomo', 'Priest Hidlyda', 'Priest Gailious', 'Priest Romancis', 'Priest Aramo', 'Priest Triton', 'Priest Jaguarfiv', 'duplex', 'Giant Thexde', 'Samieru', 'Naramura', 'Priest Laydoc', 'Priest Ashgine', '8-bit Elder'])
+		return npcs
 
 	def build_npc_mapping(self):
 		npc_names = self.get_npc_names()
@@ -148,7 +174,13 @@ class LaMulanaWorldState:
 			#4 vanilla cursed chests
 			self.cursed_chests = {'Crystal Skull Chest', 'Dimensional Key Chest', 'Djed Pillar Chest', 'Magatama Jewel Chest'}
 
-	def get_seal_order(self):
+	def get_npc_hint_order(self):
+		npcs = ['Elder Xelpud', 'Mulbruk', 'Fairy Queen', 'Philosopher Fobos', 'Philosopher Alsedana', 'Philosopher Giltoriyo', 'Philosopher Samaranta', 'Former Mekuri Master', 'Mr. Slushfund', 'Priest Alest', 'Nebur', 'Sidro', 'Modro', 'Penadvent of Ghost', 'Greedy Charlie', 'Shalom III', 'Usas VI', 'Kingvalley I', 'Mr. Fishman (Original)', 'Mr. Fishman (Alt)', 'Hot-blooded Nemesistwo', 'Operator Combaker', 'Yiegah Kungfu', 'Yiear Kungfu', 'Arrogant Sturdy Snake', 'Arrogant Metagear', 'Affected Knimare', 'Mover Athleland', 'Giant Mopiran', 'Kingvalley II', 'Energetic Belmont', 'Mechanical Efspi', 'Mudman Qubert']
+		if self.include_dracuet:
+			npcs.append('Tailor Dracuet')
+		return npcs
+
+	def get_seal_hint_order(self):
 		return ['Surface Origin', 'Surface Life', 'Guidance Life', 'Sun Mulbruk Origin', 'Sun Flooded Origin', 'Sun Death', 'Spring Fishman Origin', 'Spring Bahamut Origin', 'Spring Birth', 'Inferno Birth', 'Extinction Birth', 'Endless Origin', 'Illusion Birth', 'Graveyard Life', 'Moonlight Birth', 'Ruin Death', 'Dimensional Death', 'Shrine Skull Life', 'Shrine Origin', 'Shrine Birth', 'Shrine Life', 'Shrine Death', 'Mother Origin', 'Mother Birth', 'Mother Life', 'Mother Death']
 
 	def get_seal_name(self, name):

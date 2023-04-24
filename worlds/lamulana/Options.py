@@ -43,18 +43,16 @@ starting_weapon_names = {y: x for x, y in starting_weapon_ids.items()}
 
 
 class ShopDensity(Range):
-	"The amount of randomized items placed in shops, with the remainder filled by ammo and weights. If set to 0, the only randomized item in a shop is Nebur's 4 guardian item"
+	"""The amount of randomized items placed in shops, with the remainder filled by ammo and weights.
+	If set to 0, the only randomized item in a shop is Nebur's 4 guardian item."""
 	range_start = 0
 	range_end = 50
 	default = 30
 	display_name = "Shop Item Density"
 
-class RandomizeNPCs(Toggle):
-	"Randomizes all NPCs and shop locations"
-	display_name = "Randomize NPC/shop doors"
-
 class RandomizeCoinChests(Choice):
-	"Randomizes coin chests. Including the escape chest has the potential to create rude item chains if NPCs or seals are randomized."
+	"""Randomizes coin chests. Including the escape chest has the potential
+	to create rude item chains if NPCs or seals are randomized."""
 	option_off = 0
 	option_basic = 1
 	option_include_escape_chest = 2
@@ -69,18 +67,25 @@ class RandomizeSeals(Toggle):
 	display_name = "Randomize seals"
 
 class RandomizeCursedChests(Toggle):
-	"If on, a random number of chests will be cursed and require the Mulana Talisman to open instead of the 4 usual cursed chests"
+	"""If on, a random number of chests will be cursed and require the Mulana Talisman to open.
+	If off, CursedChestCount is be ignored and the 4 vanilla cursed chests will still be cursed."""
 	display_name = "Randomize Cursed Chests"
 
 class CursedChestCount(Range):
-	"The number of chests that will be cursed and require the Mulana Talisman to open."
+	"""The number of chests that will be cursed and require the Mulana Talisman to open.
+	The maximum number (95) corresponds to every single chest (including coin and trap chests) being cursed.
+	As a result, a random value will skew toward a higher percentage of cursed chests if these are turned off."""
 	display_name = "Number of Cursed Chests"
 	range_start = 0
 	range_end = 95
 	default = 4
 
+class RandomizeNPCs(Toggle):
+	"Randomizes all NPCs and shop locations"
+	display_name = "Randomize NPC/shop doors"
+
 class RandomizeDracuetsShop(Toggle):
-	"Randomize Dracuet's shop in Hell Temple. If NPC rando is on, includes the Hell Temple shop in the randomized NPC pool"
+	"Randomize Dracuet's shop in Hell Temple. If NPCs are randomized, includes the Hell Temple shop in the randomized NPC pool"
 	display_name = "Randomize Dracuet's Shop"
 
 class HellTempleReward(Toggle):
@@ -142,14 +147,17 @@ class StartWithTextTrax(DefaultOnToggle):
 	display_name = "Start with TextTrax"
 
 class RandomizeTransitions(Choice):
-	"Randomizes transitions between areas. \"On\" does not include one-way transitions, whereas \"Full\" includes one-way transitions"
+	"""Randomizes transitions between areas.
+	"On" does not include one-way transitions, whereas "Full" includes one-way transitions"""
 	display_name = "Randomize Transitions"
 	option_off = 0
 	option_on = 1
 	option_full = 2
+	alias_true = 2
 
 class RandomizeBacksideDoors(Choice):
-	"Randomizes the backside doors, without including non-boss doors (Extinction-Gate of Time and Dimensional-Endless Corridor). \"Full\" adds these non-boss transitions to the entrance pool"
+	"""Randomizes the backside doors, without including non-boss doors (Extinction-Gate of Time and Dimensional-Endless Corridor).
+	"Full" adds these non-boss transitions to the entrance pool"""
 	display_name = "Randomize Backside Doors"
 	option_off = 0
 	option_boss_doors_only = 1
@@ -169,7 +177,8 @@ class RequireKeyFairyCombo(DefaultOnToggle):
 	display_name = "Key Fairies expect miracle + mekuri"
 
 class AutoScanGrailTablets(DefaultOnToggle):
-	"Quality of life - walking past a grail tablet scans it automatically. Otherwise, Hand Scanner and reader.exe are required to warp back to it."
+	"""Quality of life - walking past a grail tablet scans it automatically.
+	Otherwise, Hand Scanner and reader.exe are required to warp back to it."""
 	display_name = "Automatically Scan Grail Tablets"
 
 class GuardianSpecificAnkhJewels(DefaultOnToggle):
@@ -177,20 +186,25 @@ class GuardianSpecificAnkhJewels(DefaultOnToggle):
 	display_name = "Guardian-specific Ankh Jewels"
 
 class AlternateMotherAnkh(DefaultOnToggle):
-	"Quality of life - If on, skips the mantra sequence to empower the key sword by adding a 9th ankh jewel. Mother's ankh will be like other bosses' and cannot be activated by an empowered key sword."
+	"""Quality of life - If on, skips the mantra sequence to empower the key sword by adding a 9th ankh jewel.
+	Mother's ankh will be like other bosses' and cannot be activated by an empowered key sword."""
 	display_name = "Alternate Mother Ankh"
 
 class AncientLaMulaneseLearned(DefaultOnToggle):
-	"Quality of Life - Ancient La-Mulanese is learned from the start, without having to read the 3 translation tablets. Ancient La-Mulanese is required to learn mantras."
+	"""Quality of Life - Ancient La-Mulanese is learned from the start, without having to read the 3 translation tablets.
+	Ancient La-Mulanese is required to learn mantras."""
 	display_name = "Ancient La-Mulanese readable from the start"
 
 class HardCombatLogic(Toggle):
-	"If on, combat logic for bosses and room guardians is minimal - would it be theoretically possible to defeat this boss with these items at 32 HP?"
+	"""If on, combat logic for bosses and room guardians is minimal:
+	Would it be theoretically possible to defeat this boss with these items at low HP?"""
 	display_name = "Hard Combat Logic"
 
 #Add note about what happens when you set startingweapon to a main weapon and this is on - maybe overrides it and gives a random subweapon?
 class SubweaponOnly(Toggle):
-	"If on, removes all main weapons from the item pool, and all subweapon ammo in shops is free."
+	"""If on, removes all main weapons from the item pool, and all subweapon ammo in shops is free.
+	If your starting weapon is set to a main weapon, instead replaces it with a random subweapon.
+	Also forces AlternateMotherAnkh to be on, since there is no key sword."""
 	display_name = "Subweapon Only Mode"
 
 class RaindropsInLogic(Toggle):
@@ -207,11 +221,11 @@ class LampGlitchInLogic(Toggle):
 
 lamulana_options = {
 	"ShopDensity": ShopDensity,
-	"RandomizeNPCs": RandomizeNPCs,
 	"RandomizeCoinChests": RandomizeCoinChests,
 	"RandomizeTrapItems": RandomizeTrapItems,
 	"RandomizeCursedChests": RandomizeCursedChests,
 	"CursedChestCount": CursedChestCount,
+	"RandomizeNPCs": RandomizeNPCs,
 	"RandomizeDracuetsShop": RandomizeDracuetsShop,
 	"HellTempleReward": HellTempleReward,
 	"RandomizeSeals": RandomizeSeals,

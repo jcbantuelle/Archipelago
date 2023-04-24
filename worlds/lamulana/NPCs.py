@@ -9,14 +9,6 @@ class LaMulanaNPCDoor(NamedTuple):
 	checks: List[LocationData] = []
 	logic: Optional[Callable[CollectionState,bool]] = None
 
-def get_shop_location_names(world: MultiWorld, player: int) -> Set[str]:
-	locations : Set[str] = set()
-	npc_to_checks = get_npc_checks(world, player)
-	for checks in npc_to_checks.values():
-		for check in checks:
-			if check.is_shop:
-				locations.add(check.name)
-	return locations
 
 def get_npc_checks(world: Optional[MultiWorld], player: Optional[int]) -> Dict[str,List[LocationData]]:
 	s = LaMulanaLogicShortcuts(world, player)
@@ -318,8 +310,6 @@ def get_npc_entrances(world: MultiWorld, player: int, worldstate: LaMulanaWorldS
 		]
 
 	return npc_doors
-
-npc_hint_order = ['Elder Xelpud', 'Mulbruk', 'Fairy Queen', 'Philosopher Fobos', 'Philosopher Alsedana', 'Philosopher Giltoriyo', 'Philosopher Samaranta', 'Former Mekuri Master', 'Mr. Slushfund', 'Priest Alest', 'Nebur', 'Sidro', 'Modro', 'Penadvent of Ghost', 'Greedy Charlie', 'Shalom III', 'Usas VI', 'Kingvalley I', 'Mr. Fishman (Original)', 'Mr. Fishman (Alt)', 'Hot-blooded Nemesistwo', 'Operator Combaker', 'Yiegah Kungfu', 'Yiear Kungfu', 'Arrogant Sturdy Snake', 'Arrogant Metagear', 'Affected Knimare', 'Mover Athleland', 'Giant Mopiran', 'Kingvalley II', 'Energetic Belmont', 'Mechanical Efspi', 'Mudman Qubert', 'Tailor Dracuet']
 
 def get_npc_entrance_room_names() -> Dict[str,str]:
 	return {

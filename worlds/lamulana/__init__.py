@@ -4,7 +4,7 @@ from worlds.AutoWorld import World, WebWorld
 from worlds.generic.Rules import add_item_rule
 from .Options import lamulana_options, starting_location_names, starting_weapon_names, is_option_enabled, get_option_value
 from .WorldState import LaMulanaWorldState
-from .NPCs import get_npc_checks, get_npc_entrance_room_names, get_shop_location_names, npc_hint_order
+from .NPCs import get_npc_checks, get_npc_entrance_room_names
 from .Items import item_table, get_items_by_category, item_exclusion_order
 from .Locations import get_locations_by_region
 from .Regions import create_regions_and_locations
@@ -55,7 +55,23 @@ class LaMulanaWorld(World):
 			self.multiworld.start_inventory[self.player].value['bunemon.exe'] = 1
 
 		starting_weapon = get_option_value(self.multiworld, self.player, "StartingWeapon")
-		self.multiworld.start_inventory[self.player].value[starting_weapon_names[starting_weapon]] = 1
+		starting_weapon_name = starting_weapon_names[starting_weapon]
+		main_weapons = {'Leather Whip', 'Knife', 'Key Sword', 'Axe', 'Katana'}
+		if self.is_option_enabled('SubweaponOnly') and starting_weapon_name in main_weapons:
+			#Starting weapon incompatible with subweapon-only setting - give a random starting subweapon instead
+			options = getattr(self.multiworld, 'StartingWeapon', None)
+			if options:
+				subweapon_options = [weapon_id for weapon_id, name in starting_weapon_names.items() if name not in main_weapons]
+				chosen_subweapon = self.multiworld.random.choice(subweapon_options)
+				options[self.player].value = chosen_subweapon
+				starting_weapon_name = starting_weapon_names[chosen_subweapon]
+				#Subweapon only incompatible with vanilla mother ankh
+				if not self.is_option_enabled('AlternateMotherAnkh'):
+					options = getattr(self.multiworld, 'AlternateMotherAnkh', None)
+					if options:
+						options[self.player].value = 1
+
+		self.multiworld.start_inventory[self.player].value[starting_weapon_name] = 1
 
 		starting_location = get_option_value(self.multiworld, self.player, "StartingLocation")
 		if starting_location_names[starting_location] == 'goddess':
@@ -63,7 +79,7 @@ class LaMulanaWorld(World):
 		elif starting_location_names[starting_location] == 'twin (front)':
 			self.multiworld.start_inventory[self.player].value['Twin Statue'] = 1
 		elif starting_location_names[starting_location] == 'extinction':
-			if is_option_enabled(self.multiworld, self.player, "RequireFlareGun") and starting_weapon_names[starting_weapon] != 'Flare Gun':
+			if self.is_option_enabled("RequireFlareGun") and starting_weapon_names[starting_weapon] != 'Flare Gun':
 				self.multiworld.start_inventory[self.player].value['Flare Gun'] = 1
 
 
@@ -110,15 +126,15 @@ class LaMulanaWorld(World):
 			room_names = get_npc_entrance_room_names()
 			space_count = lambda name: ' ' * (25 - len(name))
 			reverse_map = {y: x for x, y in self.worldstate.npc_mapping.items()}
-			for npc_name in npc_hint_order:
+			for npc_name in self.worldstate.get_npc_hint_order():
 				if npc_name in reverse_map:
 					npc_door = reverse_map[npc_name]
 					spoiler_handle.write(f'    - {npc_name}:{space_count(npc_name)}{room_names[npc_door]}\n')
-		if is_option_enabled(self.multiworld, self.player, 'RandomizeSeals'):
+		if self.is_option_enabled('RandomizeSeals'):
 			seal_names = {1: 'Origin Seal', 2: 'Birth Seal', 3: 'Life Seal', 4: 'Death Seal'}
 			spoiler_handle.write('Seal Randomizer:\n')
 			space_count = lambda name: ' ' * (25 - len(name))
-			for seal_location in self.worldstate.get_seal_order():
+			for seal_location in self.worldstate.get_seal_hint_order():
 				value = self.worldstate.seal_map[seal_location]
 				spoiler_handle.write(f'    - {seal_location}:{space_count(seal_location)}{seal_names[value]}\n')
 		#Maybe also transition info? It's gonna be a lot
@@ -140,26 +156,28 @@ class LaMulanaWorld(World):
 
 	def place_shop_items(self):
 		starting_weapon = starting_weapon_names[self.get_option_value('StartingWeapon')]
+		starting_location = starting_location_names[self.get_option_value('StartingLocation')]
 
 		if starting_weapon in {'Shuriken', 'Rolling Shuriken', 'Flare Gun', 'Earth Spear', 'Bomb', 'Chakram', 'Caltrops', 'Pistol'}:
 			required_subweapon_ammo = starting_weapon + ' Ammo'
 		else:
 			required_subweapon_ammo = None
 
-		shop_locations: Set[str] = get_shop_location_names(self.multiworld, self.player)
+		if starting_location == 'extinction' and self.is_option_enabled('RequireFlareGun') and starting_weapon != 'Flare Gun':
+			required_subweapon_ammo_2 = 'Flare Gun Ammo'
+		else:
+			required_subweapon_ammo_2 = None
+
+		shop_locations: Set[str] = self.worldstate.get_shop_location_names()
 
 		#Little Brother needs weights
 		lil_bro_slot = self.multiworld.random.choice(['Yiegah Kungfu Shop Item 1', 'Yiegah Kungfu Shop Item 2', 'Yiegah Kungfu Shop Item 3'])
 		self.place_locked_item(lil_bro_slot, '5 Weights')
 		shop_locations.remove(lil_bro_slot)
 
-		print('StartingLocation', self.get_option_value('StartingLocation'), ' -- name: ', starting_location_names[self.get_option_value('StartingLocation')])
-		if starting_location_names[self.get_option_value('StartingLocation')] == 'surface':
-			#Starting Shop doesn't exist in surface starts
-			shop_locations.remove('Starting Shop Item 1')
-			shop_locations.remove('Starting Shop Item 2')
-			shop_locations.remove('Starting Shop Item 3')
-			if self.is_option_enabled('RandomizeNPCs'):
+		print('StartingLocation', starting_location)
+		if self.worldstate.is_surface_start:
+			if self.worldstate.npc_rando:
 				surface_shop_slots = []
 				npc_checks = get_npc_checks(self.multiworld, self.player)
 				if self.worldstate.npc_mapping['Former Mekuri Master'] == 'Elder Xelpud':
@@ -168,7 +186,7 @@ class LaMulanaWorld(World):
 						possible_shop_npcs = {'Elder Xelpud'}
 						print('Player', self.player, ': Xelpud at Mekuri, shop at Xelpud')
 					else:
-						#Case: main weapon that breaks mekuri wall
+						#Case: main weapon that breaks mekuri wall, since WorldState makes sure other subweapons don't get Xelpud there
 						possible_shop_npcs = {'Elder Xelpud', 'Nebur', 'Sidro', 'Modro', 'Moger', 'Hiner'}
 						print('Player', self.player, ': Xelpud at Mekuri, shop anywhere')
 				else:
@@ -187,7 +205,7 @@ class LaMulanaWorld(World):
 				weight_slot = self.multiworld.random.choice(surface_shop_slots)
 				self.place_locked_item(weight_slot, '5 Weights')
 				shop_locations.remove(weight_slot)
-				if required_subweapon_ammo:
+				if required_subweapon_ammo and len(surface_shop_slots) > 1:
 					surface_shop_slots.remove(weight_slot)
 					ammo_slot = self.multiworld.random.choice(surface_shop_slots)
 					self.place_locked_item(ammo_slot, required_subweapon_ammo)
@@ -198,6 +216,9 @@ class LaMulanaWorld(World):
 			if required_subweapon_ammo:
 				self.place_locked_item('Starting Shop Item 2', required_subweapon_ammo)
 				shop_locations.remove('Starting Shop Item 2')
+			if required_subweapon_ammo_2:
+				self.place_locked_item('Starting Shop Item 3', required_subweapon_ammo_2)
+				shop_locations.remove('Starting Shop Item 3')
 
 		slot_amount = len(shop_locations) - self.get_option_value('ShopDensity')
 
@@ -225,6 +246,9 @@ class LaMulanaWorld(World):
 		item_pool_size = 125
 		if self.is_option_enabled('AlternateMotherAnkh'):
 			item_pool_size += 1
+
+		if self.is_option_enabled('SubweaponOnly'):
+			item_pool_size -= 6
 		
 		if not self.is_option_enabled('HellTempleReward'):
 			item_exclusion_order.append('guild.exe')
@@ -246,6 +270,8 @@ class LaMulanaWorld(World):
 
 		for name, data in item_table.items():
 			if excluded_items and name in excluded_items:
+				continue
+			if data.category == 'MainWeapon' and self.is_option_enabled('SubweaponOnly'):
 				continue
 			for _ in range(data.count - (self.multiworld.start_inventory[self.player].value[name] if name in self.multiworld.start_inventory[self.player].value else 0)):
 				item = self.create_item(name)
@@ -301,7 +327,7 @@ class LaMulanaWorld(World):
 	def get_filler_item(self, k: Optional[int]):
 		if k == 0:
 			return '200 coins'
-		elif k <= 2:
+		elif k and k <= 2:
 			return '100 coins'
 		return self.multiworld.random.choices(['50 coins', '30 coins', '10 coins', '1 Weight'], weights=[1, 4, 6, 2], k=1)[0]
 

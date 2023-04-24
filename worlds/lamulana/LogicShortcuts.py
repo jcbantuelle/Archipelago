@@ -135,7 +135,7 @@ class LaMulanaLogicShortcuts:
 		return state.has_all({"Lamp of Time", "Lamp Recharge"}, self.player)
 
 	def state_extinction_light(self, state: CollectionState) -> bool:
-		return self.attack_flare_gun(state) or not self.flag_flare_gun_extinction
+		return not self.flag_flare_gun_extinction or self.attack_flare_gun(state)
 
 	def state_water_swim(self, state: CollectionState, amount: int) -> bool:
 		if state.has('Scalesphere', self.player):
