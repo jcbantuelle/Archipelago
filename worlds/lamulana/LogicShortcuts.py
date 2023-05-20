@@ -150,14 +150,29 @@ class LaMulanaLogicShortcuts:
 	def state_shield(self, state: CollectionState) -> bool:
 		return state.has_any({"Silver Shield", "Angel Shield"}, self.player)
 
-	def state_key_fairy_access(self, state: CollectionState) -> bool:
-		return state.has('Fairies Unlocked', self.player) and (state.has_all({"miracle.exe", "mekuri.exe"}, self.player) or not self.flag_key_fairy_combo_required)
+	def fairy_point_reachable(self, state: CollectionState, warp_required=True, frontside=True) -> bool:
+		if not state.has('Fairies Unlocked', self.player):
+			return False
+		if warp_required and not (self.state_frontside_warp(state) if frontside else self.state_backside_warp(state)):
+			return False
+		for region in {'Spring in the Sky [Main]', 'Chamber of Extinction [Main]', 'Twin Labyrinths [Lower]', 'Endless Corridor [3F Upper]', 'Gate of Illusion [Middle]', 'Temple of Moonlight [Lower]', 'Tower of the Goddess [Lower]', 'Shrine of the Mother [Main]'}:
+			if state.can_reach(region, 'Region', self.player):
+				return True
+
+	def state_key_fairy_access(self, state: CollectionState, warp_required=True, frontside=True) -> bool:
+		return self.fairy_point_reachable(state, warp_required, frontside) and (state.has_all({"miracle.exe", "mekuri.exe"}, self.player) or not self.flag_key_fairy_combo_required)
 
 	def state_read_grail(self, state: CollectionState) -> bool:
 		return self.flag_autoscan or self.state_literacy(state)
 
 	def state_ancient_lamulanese(self, state: CollectionState) -> bool:
-		return self.flag_ancient_lamulanese or (self.state_literacy(state) and state.can_reach('Tower of Ruin [La-Mulanese]', 'Region', self.player) and state.can_reach('Chamber of Birth [Northeast]', 'Region', self.player) and state.can_reach('Shrine of the Mother [Seal]', 'Region', self.player) and (state.has('Removed Shrine Skulls', self.player) or self.guardian_count(state) == 8 or self.glitch_raindrop(state)))
+		if self.flag_ancient_lamulanese:
+			return True
+		for region in {'Tower of Ruin [La-Mulanese]', 'Chamber of Birth [Northeast]', 'Shrine of the Mother [Seal]'}:
+			if not state.can_reach(region, 'Region', self.player):
+				return False
+		move_past_shrine_skulls = state.has('Removed Shrine Skulls', self.player) or self.guardian_count(state) >= 8 or self.glitch_raindrop(state)
+		return move_past_shrine_skulls and self.state_literacy(state)
 
 	def state_frontside_warp(self, state: CollectionState) -> bool:
 		return state.has("Holy Grail", self.player) and self.state_read_grail(state) and (state.has("mirai.exe", self.player) or self.is_frontside_start)
@@ -214,16 +229,17 @@ class LaMulanaLogicShortcuts:
 	def endless_oneway_open(self, state: CollectionState, worldstate) -> bool:
 		if worldstate and worldstate.include_oneways:
 			if worldstate.transition_map['Endless L1'] == 'Birth R1':
-				return state.has('Skanda Defeated', self.player)
+				return state.has_all({'Skanda Defeated', 'Holy Grail'}, self.player)
 			if worldstate.transition_map['Endless L1'] in ['Illusion R1', 'Illusion R2']:
-				return state.has('Illusion Unlocked', self.player)
+				return state.has_all({'Illusion Unlocked', 'Holy Grail'}, self.player)
+			return state.has('Holy Grail', self.player)
 		return True
 
 	def moonlight_face(self, state: CollectionState) -> bool:
 		return self.attack_caltrops(state) or self.attack_shuriken(state) or self.attack_rolling_shuriken(state) or self.attack_chakram(state) or self.attack_bomb(state) or self.attack_pistol(state)
 
 	def nuwa_access(self, state: CollectionState, worldstate) -> bool:
-		return state.has_all({'NPC: Philosopher Alsedana', 'Feather', worldstate.get_seal_name('Ruin Death')}, self.player)
+		return state.has_all({'NPC: Philosopher Alsedana', 'Feather', worldstate.get_seal_name('Nuwa')}, self.player)
 
 	def all_mantras(self, state: CollectionState) -> bool:
 		#All the regions where you need to learn + chant mantras - excluding Illusion since that's where the event is placed
@@ -242,4 +258,7 @@ class LaMulanaLogicShortcuts:
 		for region in {'Surface [Main]', 'Gate of Guidance [Main]', 'Gate of Illusion [Dracuet]', 'Gate of Time [Guidance]'}:
 			if not state.can_reach(region, 'Region', self.player):
 				return False
-		return state.has_all({'NPC: Mulbruk', 'Feather', 'Ice Cape', 'Holy Grail'}, self.player) and self.state_key_fairy_access(state) and (self.glitch_raindrop(state) or state.has('NPC: Xelpud', self.player)) and self.get_health_count(state) >= 2 and self.attack_forward(state)
+		warpless_fairy_reachable = state.can_reach('Gate of Illusion [Middle]', 'Region', self.player)
+		if not warpless_fairy_reachable and not state.can_reach('Gate of Illusion [Grail]', 'Region', self.player):
+			return False
+		return state.has_all({'NPC: Mulbruk', 'Feather', 'Ice Cape', 'Holy Grail'}, self.player) and self.state_key_fairy_access(state, not warpless_fairy_reachable, False) and (self.glitch_raindrop(state) or state.has('NPC: Xelpud', self.player)) and self.get_health_count(state) >= 2 and self.attack_forward(state)

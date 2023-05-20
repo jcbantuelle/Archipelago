@@ -53,10 +53,11 @@ class ShopDensity(Range):
 class RandomizeCoinChests(Choice):
 	"""Randomizes coin chests. Including the escape chest has the potential
 	to create rude item chains if NPCs or seals are randomized."""
+	display_name = "Randomize coin chests"
 	option_off = 0
 	option_basic = 1
 	option_include_escape_chest = 2
-	display_name = "Randomize coin chests"
+	alias_true = 1
 
 class RandomizeTrapItems(Toggle):
 	"Randomizes the 4 trap items and locations"
@@ -73,11 +74,11 @@ class RandomizeCursedChests(Toggle):
 
 class CursedChestCount(Range):
 	"""The number of chests that will be cursed and require the Mulana Talisman to open.
-	The maximum number (95) corresponds to every single chest (including coin and trap chests) being cursed.
-	As a result, a random value will skew toward a higher percentage of cursed chests if these are turned off."""
+	The maximum number (97) corresponds to every single chest (including coin and trap chests) being cursed.
+	As a result, a random value will skew toward a higher percentage of cursed chests if coin or trap chests aren't randomized."""
 	display_name = "Number of Cursed Chests"
 	range_start = 0
-	range_end = 95
+	range_end = 97
 	default = 4
 
 class RandomizeNPCs(Toggle):
@@ -130,34 +131,45 @@ class StartingWeapon(Choice):
 	option_caltrops = starting_weapon_ids['Caltrops']
 	option_pistol = starting_weapon_ids['Pistol']
 
-class StartWithHolyGrail(DefaultOnToggle):
-	"Starting with the Holy Grail is generally recommended"
-	display_name = "Start with the Holy Grail"
+class SpecificItem(Choice):
+	value: int
+	option_start_with = 0
+	option_own_world = 1
+	option_different_world = 2
+	option_any_world = 3
+	alias_true = 3
+	alias_false = 0
 
-class StartWithMirai(DefaultOnToggle):
-	"Start with mirai.exe for backside warping"
-	display_name = "Start with mirai.exe"
+class HolyGrailShuffle(SpecificItem):
+	"Holy Grail placement. Starting with it is generally recommended."
+	display_name = "Holy Grail Shuffle"
 
-class StartWithHermesBoots(DefaultOnToggle):
-	"Start with boots to go fast right away"
-	display_name = "Start with Hermes' Boots"
+class MiraiShuffle(SpecificItem):
+	"mirai.exe placement. Starting with it lets you warp more flexibly."
+	display_name = "mirai.exe Shuffle"
 
-class StartWithTextTrax(DefaultOnToggle):
-	"Start with bunemon.exe, which allows you to record shop inventories and NPC locations in-game"
-	display_name = "Start with TextTrax"
+class HermesBootsShuffle(SpecificItem):
+	"Hermes' Boots placement. Starting with them lets you move faster from the beginning."
+	display_name = "Hermes' Boots Shuffle"
+
+class TextTraxShuffle(SpecificItem):
+	"bunemon.exe placement. Often started with as quality of life to record shop inventories and NPC locations in-game"
+	display_name = "TextTrax Shuffle"
 
 class RandomizeTransitions(Choice):
-	"""Randomizes transitions between areas.
-	"On" does not include one-way transitions, whereas "Full" includes one-way transitions"""
+	"""Randomizes transitions (ladders and side exits) between areas.
+	"Exclude Oneways" will only include transitions that usually go both ways, whereas "Full" includes one-way transitions"""
 	display_name = "Randomize Transitions"
 	option_off = 0
-	option_on = 1
+	option_exclude_oneways = 1
 	option_full = 2
 	alias_true = 2
 
 class RandomizeBacksideDoors(Choice):
-	"""Randomizes the backside doors, without including non-boss doors (Extinction-Gate of Time and Dimensional-Endless Corridor).
-	"Full" adds these non-boss transitions to the entrance pool"""
+	"""Randomizes boss door destinations, as well as the required guardian for opening each pair of connected doors.
+	"Full" adds the non-boss transitions (Extinction-Gate of Time and Dimensional-Endless Corridor) to the entrance pool.
+	"Full" also makes a door pair require a key fairy, and at least 1 door pair be open from the start
+	- unlike boss doors, these won't require the Bronze Mirror to go through."""
 	display_name = "Randomize Backside Doors"
 	option_off = 0
 	option_boss_doors_only = 1
@@ -169,11 +181,12 @@ class RequireIceCape(DefaultOnToggle):
 	display_name = "Require Ice Cape for Lava"
 
 class RequireFlareGun(DefaultOnToggle):
-	"Logically requires the flare gun to do anything in the Chamber of Extinction"
+	"Logically requires the flare gun to do anything in the main area of Chamber of Extinction."
 	display_name = "Require Flare Gun for Chamber of Extinction"
 
 class RequireKeyFairyCombo(DefaultOnToggle):
-	"Requires the software combination miracle + mekuri to summon key fairies. If off, you may need to grind for key fairies"
+	"""Requires the software combination miracle + mekuri to summon key fairies.
+	If off, you may need to grind for key fairies (5% chance)"""
 	display_name = "Key Fairies expect miracle + mekuri"
 
 class AutoScanGrailTablets(DefaultOnToggle):
@@ -231,10 +244,10 @@ lamulana_options = {
 	"RandomizeSeals": RandomizeSeals,
 	"StartingLocation": StartingLocation,
 	"StartingWeapon": StartingWeapon,
-	"StartWithHolyGrail": StartWithHolyGrail,
-	"StartWithMirai": StartWithMirai,
-	"StartWithHermesBoots": StartWithHermesBoots,
-	"StartWithTextTrax": StartWithTextTrax,
+	"HolyGrailShuffle": HolyGrailShuffle,
+	"MiraiShuffle": MiraiShuffle,
+	"HermesBootsShuffle": HermesBootsShuffle,
+	"TextTraxShuffle": TextTraxShuffle,
 	"RandomizeTransitions": RandomizeTransitions,
 	"RandomizeBacksideDoors": RandomizeBacksideDoors,
 	"RequireIceCape": RequireIceCape,

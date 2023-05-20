@@ -100,7 +100,7 @@ item_table: Dict[str, ItemData] = {
 	'yagomap.exe':                      ItemData('Software', 2359088, progression=True),
 	'yagostr.exe':                      ItemData('Software', 2359089, progression=True),
 	'bunemon.exe':                      ItemData('Software', 2359090, useful=True),
-	'bunplus.exe':                      ItemData('Software', 2359091),
+	'bunplus.com':                      ItemData('Software', 2359091),
 	'torude.exe':                       ItemData('Software', 2359092, progression=True),
 	'guild.exe':                        ItemData('Software', 2359093, progression=True), #progression only if Hell Temple on
 	'mantra.exe':                       ItemData('Software', 2359094, progression=True),
@@ -158,4 +158,4 @@ def get_items_by_category():
 		categories.setdefault(data.category, set()).add(name)
 	return categories
 
-item_exclusion_order = ['Map (Surface)', 'Map (Gate of Guidance)', 'Map (Mausoleum of the Giants)', 'Map (Temple of the Sun)', 'Map (Spring in the Sky)', 'Map (Inferno Cavern)', 'Map (Chamber of Extinction)', 'Map (Twin Labyrinths)', 'Map (Endless Corridor)', 'Map (Gate of Illusion)', 'Map (Graveyard of the Giants)', 'Map (Temple of Moonlight)', 'Map (Tower of the Goddess)', 'Map (Tower of Ruin)', 'Map (Chamber of Birth)', 'Map (Dimensional Corridor)', 'beolamu.exe', 'emusic.exe', 'bunplus.exe', 'xmailer.exe', 'Waterproof Case', 'Heatproof Case', 'bounce.exe', 'capstar.exe', 'Fake Silver Shield', 'Shell Horn']
+item_exclusion_order = ['Map (Surface)', 'Map (Gate of Guidance)', 'Map (Mausoleum of the Giants)', 'Map (Temple of the Sun)', 'Map (Spring in the Sky)', 'Map (Inferno Cavern)', 'Map (Chamber of Extinction)', 'Map (Twin Labyrinths)', 'Map (Endless Corridor)', 'Map (Gate of Illusion)', 'Map (Graveyard of the Giants)', 'Map (Temple of Moonlight)', 'Map (Tower of the Goddess)', 'Map (Tower of Ruin)', 'Map (Chamber of Birth)', 'Map (Dimensional Corridor)', 'beolamu.exe', 'emusic.exe', 'bunplus.com', 'xmailer.exe', 'Waterproof Case', 'Heatproof Case', 'bounce.exe', 'capstar.exe', 'Fake Silver Shield', 'Shell Horn']

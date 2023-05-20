@@ -24,18 +24,17 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 
 	locations = {
 		"Surface [Main]": [
-			LocationData("Birth Seal Chest", 2359000, lambda state: s.attack_chest(state) and state.has_all({worldstate.get_seal_name('Surface Origin'), "Helmet"}, player) and state.has_any({"Hermes' Boots", "Feather", "Bahamut Defeated"}, player), is_cursable=True),
+			LocationData("Birth Seal Chest", 2359000, lambda state: s.attack_chest(state) and state.has_all({worldstate.get_seal_name('Birth Seal Chest'), "Helmet"}, player) and state.has_any({"Hermes' Boots", "Feather", "Bahamut Defeated"}, player), is_cursable=True),
 			LocationData("deathv.exe Location", 2359001, lambda state: s.attack_forward(state) and (state.has("NPC: Xelpud", player) or s.glitch_raindrop(state))),
-			LocationData("Feather Chest", 2359002, lambda state: s.attack_chest(state) and state.has("Argus Defeated", player), is_cursable=True),
+			LocationData("Feather Chest", 2359002, lambda state: s.attack_chest(state) and state.has('Serpent Staff', player) and combat.argus(state), is_cursable=True),
 			LocationData("Map (Surface) Location", 2359003, lambda state: state.has("Hand Scanner", player)),
 			LocationData("Sacred Orb (Surface) Chest", 2359004, lambda state: state.has("Helmet", player) and state.has_any({"Hermes' Boots", "Bahamut Defeated"}, player) and (s.attack_above(state) or s.attack_shuriken(state) or s.attack_chakram(state) or s.attack_bomb(state) or s.attack_pistol(state) or (s.attack_s_above(state) and s.attack_chest(state)) or (s.attack_rolling_shuriken(state) and state.has("Bahamut Defeated", player))), is_cursable=True),
 			LocationData("Shell Horn Chest", 2359005, lambda state: s.attack_chest_any(state), is_cursable=True),
-			LocationData("Argus Defeated", None, lambda state: state.has("Serpent Staff", player) and combat.argus(state), True),
 			LocationData("Surface Grail Tablet", None, lambda state: s.state_read_grail(state), True)
 		],
 		"Gate of Guidance [Main]": [
 			LocationData("Ankh Jewel (Gate of Guidance) Chest", 2359006, lambda state: s.attack_main(state) or s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_chakram(state) or s.attack_caltrops(state) or s.attack_pistol(state), is_cursable=True),
-			LocationData("Crucifix Chest", 2359007, lambda state: s.attack_flare_gun(state) and s.attack_chest(state) and state.has(worldstate.get_seal_name('Guidance Life'), player), is_cursable=True),
+			LocationData("Crucifix Chest", 2359007, lambda state: (s.attack_flare_gun(state) or (state.has('Flare Gun', player) and s.fairy_point_reachable(state))) and s.attack_chest(state) and state.has(worldstate.get_seal_name('Crucifix Chest/3 Lights'), player), is_cursable=True),
 			LocationData("Holy Grail Chest", 2359008, lambda state: s.attack_chest(state), is_cursable=True),
 			LocationData("Map (Gate of Guidance) Chest", 2359009, lambda state: s.attack_chest(state), is_cursable=True),
 			LocationData("Sacred Orb (Gate of Guidance) Chest", 2359010, lambda state: s.attack_chest_any(state), is_cursable=True),
@@ -79,38 +78,35 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 		"Spring in the Sky [Main]": [
 			LocationData("Caltrops Location", 2359025),
 			LocationData("Map (Spring in the Sky) Chest", 2359026, lambda state: s.attack_chest_any(state), is_cursable=True),
-			LocationData("Sacred Orb (Spring in the Sky) Chest", 2359027, lambda state: s.attack_chest_any(state) and state.has(worldstate.get_seal_name('Spring Birth'), player), is_cursable=True),
+			LocationData("Sacred Orb (Spring in the Sky) Chest", 2359027, lambda state: s.attack_chest_any(state) and state.has(worldstate.get_seal_name('Spring Sacred Orb Chest'), player), is_cursable=True),
 			LocationData("Flooded Temple of the Sun", None, lambda state: (s.attack_forward(state) and (s.state_water_swim(state, 3) or state.has('Holy Grail', player))) or (s.attack_vertical(state) and s.state_water_swim(state, 3)), True),
 			LocationData("Spring in the Sky Grail Tablet", None, lambda state: s.state_read_grail(state), True)
 		],
 		"Spring in the Sky [Upper]": [
 			LocationData("Glove Chest", 2359028, lambda state: state.has("Flooded Spring in the Sky", player) and s.attack_chest_any(state), is_cursable=True),
-			LocationData("Origin Seal Chest", 2359029, lambda state: state.has_all({"Helmet", "Nuckelavee Defeated"}, player) and (s.attack_forward(state) or (state.has("Feather", player) and s.attack_earth_spear(state))), is_cursable=True),
+			LocationData("Origin Seal Chest", 2359029, lambda state: state.has_all({'Helmet'}, player) and combat.nuckelavee(state) and (s.attack_forward(state) or (state.has("Feather", player) and s.attack_earth_spear(state))), is_cursable=True),
 			LocationData("Scalesphere Chest", 2359030, lambda state: s.attack_chest(state) and state.has("Helmet", player), is_cursable=True),
-			LocationData("Nuckelavee Defeated", None, lambda state: state.has("Helmet", player) and combat.nuckelavee(state), True),
-			LocationData("Flooded Spring in the Sky", None, lambda state: state.has_all({"Helmet", worldstate.get_seal_name('Spring Bahamut Origin')}, player), True),
-			LocationData('Bahamut Defeated', None, lambda state: state.has_all({'Helmet', worldstate.get_seal_name('Spring Bahamut Origin')}, player) and combat.bahamut(state) and s.has_ankh_jewel(state, 'Bahamut'), True)
+			LocationData("Flooded Spring in the Sky", None, lambda state: state.has_all({"Helmet", worldstate.get_seal_name('Bahamut\'s Room')}, player), True),
+			LocationData('Bahamut Defeated', None, lambda state: state.has_all({'Helmet', worldstate.get_seal_name('Bahamut\'s Room')}, player) and combat.bahamut(state) and s.has_ankh_jewel(state, 'Bahamut'), True)
 		],
 		"Inferno Cavern [Main]": [
-			LocationData("bunplus.exe Location", 2359031, lambda state: s.attack_forward(state)),
+			LocationData("bunplus.com Location", 2359031, lambda state: s.attack_forward(state)),
 			LocationData("Flare Gun Location", 2359032, lambda state: s.attack_forward(state)),
 			LocationData("Ice Cape Chest", 2359033, lambda state: s.attack_chest(state), is_cursable=True),
 			LocationData("Map (Inferno Cavern) Chest", 2359034, lambda state: s.attack_chest_any(state), is_cursable=True),
 			LocationData("Inferno Cavern Grail Tablet", None, lambda state: s.state_read_grail(state), True)
 		],
 		"Inferno Cavern [Pazuzu]": [
-			LocationData("Chain Whip Location", 2359035, lambda state: state.has("Pazuzu Defeated", player)),
-			LocationData("Pazuzu Defeated", None, lambda state: combat.pazuzu(state), True),
+			LocationData("Chain Whip Location", 2359035, lambda state: combat.pazuzu(state))
 		],
 		"Inferno Cavern [Viy]": [
 			LocationData('Viy Defeated', None, lambda state: state.has('Holy Grail', player) and s.state_lava_swim(state, 5) and combat.viy(state) and s.has_ankh_jewel(state, 'Viy'), True)
 		],
 		"Chamber of Extinction [Main]": [
-			LocationData("Chakram Location", 2359036, lambda state: s.state_extinction_light(state) and (state.has("Centimani Defeated", player) or s.glitch_catpause(state))),
-			LocationData("Life Seal Chest", 2359037, lambda state: s.state_extinction_light(state) and s.attack_chest(state) and state.has(worldstate.get_seal_name('Extinction Birth'), player), is_cursable=True),
+			LocationData("Chakram Location", 2359036, lambda state: s.state_extinction_light(state) and (combat.centimani(state) or s.glitch_catpause(state))),
+			LocationData("Life Seal Chest", 2359037, lambda state: s.state_extinction_light(state) and s.attack_chest(state) and state.has(worldstate.get_seal_name('Life Seal Chest'), player), is_cursable=True),
 			LocationData("mantra.exe Scan", 2359038, lambda state: s.attack_flare_gun(state) and state.has_all({"Magatama Jewel", "torude.exe", "Ox-head & Horse-face Defeated"}, player)),
 			LocationData("Sacred Orb (Chamber of Extinction) Chest", 2359039, lambda state: s.state_extinction_light(state) and (s.attack_chest(state) or (s.attack_flare_gun(state) and state.has("Feather", player))), is_cursable=True),
-			LocationData("Centimani Defeated", None, lambda state: s.state_extinction_light(state) and combat.centimani(state), True),
 			LocationData("Chamber of Extinction Grail Tablet", None, lambda state: s.state_extinction_light(state) and s.state_read_grail(state), True)
 		],
 		"Chamber of Extinction [Map]": [
@@ -137,7 +133,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 		],
 		"Twin Labyrinths [Poison 1]": [
 			LocationData("Map (Twin Labyrinths) Chest", 2359044, lambda state: state.has("Twin Poison Cleared", player) and s.attack_forward(state), is_cursable=True),
-			LocationData("Twin Poison Cleared", None, lambda state: state.has("Twin Statue", player) or (state.can_reach("Twin Labyrinths [Poison 2]", "Region", player), True) and state.has('Holy Grail', player))
+			LocationData("Twin Poison Cleared", None, lambda state: state.has("Twin Statue", player) or (state.can_reach("Twin Labyrinths [Poison 2]", "Region", player), True) and state.has('Holy Grail', player), True)
 		],
 		"Twin Labyrinths [Upper Grail]": [
 			LocationData("Twin Labyrinths (Front) Grail Tablet", None, lambda state: s.state_read_grail(state), True)
@@ -166,9 +162,9 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 		],
 		"Shrine of the Mother [Main]": [
 			LocationData("bounce.exe Chest", 2359049, lambda state: s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_earth_spear(state) or s.attack_bomb(state) or s.attack_chakram(state) or s.attack_caltrops(state) or s.attack_pistol(state) or (s.attack_flare_gun(state) and state.has("Removed Shrine Skulls", player)), is_cursable=True),
-			LocationData("Crystal Skull Chest", 2359050, lambda state: s.attack_chest(state) and state.has_all({worldstate.get_seal_name('Shrine Skull Life'), "Removed Shrine Skulls"}, player), is_cursable=True),
+			LocationData("Crystal Skull Chest", 2359050, lambda state: s.attack_chest(state) and state.has_all({worldstate.get_seal_name('Crystal Skull Chest'), "Removed Shrine Skulls"}, player), is_cursable=True),
 			LocationData("Diary Chest", 2359051, lambda state: s.attack_chest(state) and state.has_all({"Removed Shrine Skulls", "Talisman", "NPC: Xelpud"}, player), is_cursable=True),
-			LocationData("Sacred Orb (Shrine of the Mother) Chest", 2359052, lambda state: s.attack_chest(state) and state.has_all({worldstate.get_seal_name('Shrine Origin'), worldstate.get_seal_name('Shrine Birth'), worldstate.get_seal_name('Shrine Life'), worldstate.get_seal_name('Shrine Death')}, player), is_cursable=True),
+			LocationData("Sacred Orb (Shrine of the Mother) Chest", 2359052, lambda state: s.attack_chest(state) and state.has_all({worldstate.get_seal_name('Shrine 4 Seals (Origin)'), worldstate.get_seal_name('Shrine 4 Seals (Birth)'), worldstate.get_seal_name('Shrine 4 Seals (Life)'), worldstate.get_seal_name('Shrine 4 Seals (Death)')}, player), is_cursable=True),
 			LocationData("Removed Shrine Skulls", None, lambda state: state.has_all({'Dragon Bone', 'yagostr.exe', 'yagomap.exe', 'Map (Shrine of the Mother)'}, player), True)
 			#Normal shrine grail tablet doesn't matter, I think - only true shrine
 		],
@@ -182,24 +178,23 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Illusion Unlocked", None, lambda state: state.has('Fruit of Eden', player), True)
 		],
 		"Gate of Illusion [Upper]": [
-			LocationData("Cog of the Soul Chest", 2359055, lambda state: s.state_literacy(state) and state.can_reach("Gate of Illusion [Pot Room]", "Region", player) and state.can_reach("Gate of Illusion [Middle]", "Region", player) and s.state_lamp(state) and state.has_all({"Feather", "Ba Defeated"}, player) and s.attack_forward(state), is_cursable=True),
+			LocationData("Cog of the Soul Chest", 2359055, lambda state: s.state_literacy(state) and combat.ba(state) and state.can_reach("Gate of Illusion [Pot Room]", "Region", player) and state.can_reach("Gate of Illusion [Middle]", "Region", player) and s.state_lamp(state) and state.has('Feather', player) and s.attack_forward(state), is_cursable=True),
 			LocationData("Mudmen Awakened", None, lambda state: state.has_all({"Feather", "Cog of the Soul"}, player) and s.attack_forward(state), True),
-			LocationData("Ba Defeated", None, lambda state: s.state_literacy(state) and state.has("Feather", player) and combat.ba(state), True),
 			LocationData("Recited All Mantras", None, lambda state: s.all_mantras(state), True)
 		],
 		"Gate of Illusion [Middle]": [
-			LocationData("Fairy Clothes Chest", 2359056, lambda state: s.state_key_fairy_access(state) and s.attack_below(state), is_cursable=True)
+			LocationData("Fairy Clothes Chest", 2359056, lambda state: s.state_key_fairy_access(state, False) and s.attack_below(state), is_cursable=True)
 		],
 		"Gate of Illusion [Grail]": [
-			LocationData("Key of Eternity Chest", 2359057, lambda state: s.attack_chest(state) and state.has("Chi You Defeated", player)),
+			LocationData("Key of Eternity Chest", 2359057, lambda state: s.attack_chest(state) and state.has("Chi You Defeated", player), is_cursable=True),
 			LocationData("Gate of Illusion Grail Tablet", None, lambda state: s.state_read_grail(state), True),
-			LocationData("Chi You Defeated", None, lambda state: (s.glitch_raindrop(state) or (state.can_reach("Mausoleum of the Giants", "Region", player) and state.has("Mini Doll", player) and s.state_literacy(state))) and (state.has(worldstate.get_seal_name('Illusion Birth'), player) or s.glitch_lamp(state)) and combat.chi_you(state), True)
+			LocationData("Chi You Defeated", None, lambda state: (s.glitch_raindrop(state) or (state.can_reach("Mausoleum of the Giants", "Region", player) and state.has("Mini Doll", player) and s.state_literacy(state))) and (state.has(worldstate.get_seal_name('Chi You Seal'), player) or s.glitch_lamp(state)) and combat.chi_you(state), True)
 		],
 		"Gate of Illusion [Dracuet]": [
 			LocationData("Map (Gate of Illusion) Chest", 2359058, lambda state: s.attack_forward(state), is_cursable=True)
 		],
 		"Graveyard of the Giants [West]": [
-			LocationData("Gauntlet Chest", 2359059, lambda state: s.attack_chest_any(state) and state.has_all({"Feather", worldstate.get_seal_name('Graveyard Life')}, player), is_cursable=True),
+			LocationData("Gauntlet Chest", 2359059, lambda state: s.attack_chest_any(state) and state.has_all({"Feather", worldstate.get_seal_name('Gauntlet Chest')}, player), is_cursable=True),
 			LocationData("Map (Graveyard of the Giants) Chest", 2359060, lambda state: s.attack_chest_any(state), is_cursable=True),
 			LocationData("mirai.exe Chest", 2359061, lambda state: s.attack_chest(state) and state.has("Feather", player), is_cursable=True),
 			LocationData("Silver Shield Location", 2359062, lambda state: s.attack_below(state))
@@ -208,9 +203,8 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Graveyard of the Giants Grail Tablet", None, lambda state: s.state_read_grail(state), True)
 		],
 		"Graveyard of the Giants [East]": [
-			LocationData("Bomb Location", 2359063, lambda state: state.has_all({"Feather", "Kamaitachi Defeated"}, player)),
-			LocationData("emusic.exe Scan", 2359064, lambda state: s.attack_bomb(state) and state.has("torude.exe", player)),
-			LocationData("Kamaitachi Defeated", None, lambda state: state.has("Feather", player) and combat.kamaitachi(state), True),
+			LocationData("Bomb Location", 2359063, lambda state: state.has('Feather', player) and combat.kamaitachi(state)),
+			LocationData("emusic.exe Scan", 2359064, lambda state: state.has("torude.exe", player) and (s.attack_bomb(state) or (s.fairy_point_reachable(state, True, False) and state.has_all({'Bomb', 'Ring'}, player) and state.can_reach('Graveyard of the Giants [Grail]', 'Region', player)))),
 			LocationData("Lamp Recharge — Graveyard of the Giants", None, lambda state: True, True)
 		],
 		"Temple of Moonlight [Upper]": [
@@ -232,8 +226,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Philosopher's Ocarina Chest", 2359069, lambda state: state.has("Maternity Statue", player) and (state.has("Feather", player) or s.glitch_raindrop(state)))
 		],
 		"Temple of Moonlight [Southeast]": [
-			LocationData("Serpent Staff Chest", 2359070, lambda state: s.attack_chest(state) and state.has("Anubis Defeated", player), is_cursable=True),
-			LocationData("Anubis Defeated", None, lambda state: state.has("Book of the Dead", player) and combat.anubis(state), True)
+			LocationData("Serpent Staff Chest", 2359070, lambda state: s.attack_chest(state) and state.has("Book of the Dead", player) and combat.anubis(state), is_cursable=True),
 		],
 		"Tower of the Goddess [Lower]": [
 			LocationData("Eye of Truth Chest", 2359071, lambda state: s.attack_chest_any(state) and state.can_reach("Tower of the Goddess [Lamp]", "Region", player) and state.has("Flooded Tower of the Goddess", player), is_cursable=True),
@@ -242,9 +235,8 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Flooded Tower of the Goddess", None, lambda state: state.has("Flooded Spring in the Sky", player) and s.state_literacy(state) and (s.attack_caltrops(state) or s.attack_earth_spear(state) or s.attack_bomb(state) or state.has_any({"Knife", "Katana"}, player)) and (state.has_any({"Holy Grail", "Scalesphere", "Sacred Orb"}, player)), True)
 		],
 		"Tower of the Goddess [Grail]": [
-			LocationData("Plane Model Chest", 2359074, lambda state: state.has_all({"Eye of Truth", "Vimana Defeated"}, player) and (s.attack_chest(state) or (s.attack_flare_gun(state) and state.has("Feather", player))) and state.can_reach("Tower of the Goddess [Spaulder]", "Region", player) and state.can_reach("Tower of the Goddess [Lower]", "Region", player), is_cursable=True),
-			LocationData("Spaulder Chest", 2359075, lambda state: s.state_key_fairy_access(state) and s.attack_forward(state) and (state.has_all({"Holy Grail", "mirai.exe"}, player)) or state.has_all({"Feather", "Hermes' Boots"}, player), is_cursable=True),
-			LocationData("Vimana Defeated", None, lambda state: state.has("Flooded Tower of the Goddess", player) and combat.vimana(state), True),
+			LocationData("Plane Model Chest", 2359074, lambda state: state.has_all({'Eye of Truth', 'Flooded Tower of the Goddess'}, player) and combat.vimana(state) and (s.attack_chest(state) or (s.attack_flare_gun(state) and state.has("Feather", player))) and state.can_reach("Tower of the Goddess [Spaulder]", "Region", player) and state.can_reach("Tower of the Goddess [Lower]", "Region", player), is_cursable=True),
+			LocationData("Spaulder Chest", 2359075, lambda state: s.attack_forward(state) and s.state_key_fairy_access(state, False) and (s.state_backside_warp(state) or state.has_all({"Feather", "Hermes' Boots"}, player)), is_cursable=True),
 			LocationData("Tower of the Goddess Grail Tablet", None, lambda state: s.state_read_grail(state), True)
 		],
 		"Tower of the Goddess [Lamp]": [
@@ -259,7 +251,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Thunderbird Defeated", None, lambda state: combat.thunderbird(state), True)
 		],
 		"Tower of Ruin [La-Mulanese]": [
-			LocationData("Medicine Statue Open", None, lambda state: s.state_lamp(state) and s.attack_chest(state))
+			LocationData("Medicine Statue Open", None, lambda state: s.state_lamp(state) and s.attack_chest(state), True)
 		],
 		"Tower of Ruin [Grail]": [
 			LocationData("Tower of Ruin Grail Tablet", None, lambda state: s.state_read_grail(state), True),
@@ -269,8 +261,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("Map (Tower of Ruin) Chest", 2359079, lambda state: s.attack_forward(state), is_cursable=True)
 		],
 		"Tower of Ruin [Top]": [
-			LocationData("Djed Pillar Chest", 2359080, lambda state: state.has("Nuwa Defeated", player) and s.attack_chest(state), is_cursable=True),
-			LocationData("Nuwa Defeated", None, lambda state: s.nuwa_access(state, worldstate) and combat.nuwa(state), True)
+			LocationData("Djed Pillar Chest", 2359080, lambda state: s.nuwa_access(state, worldstate) and combat.nuwa(state) and s.attack_chest(state), is_cursable=True)
 		],
 		"Tower of Ruin [Medicine]": [
 			LocationData("Medicine of the Mind", None, lambda state: state.has_all({'Medicine Statue Open', 'Life and Death Mantras', 'mantra.exe', 'Djed Pillar', 'Vessel'}, player) and state.can_reach('Tower of Ruin [Spirits]', 'Region', player), True)
@@ -300,13 +291,13 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 		],
 		"Dimensional Corridor [Upper]": [
 			LocationData("Angel Shield Location", 2359088, lambda state: state.has("Angel Shield Children Defeated", player) and state.has_any({"Feather", "Left Side Children Defeated"}, player) and (state.has("Dimensional Key", player) or s.glitch_catpause(state))),
-			LocationData("Sacred Orb (Dimensional Corridor) Chest", 2359089, lambda state: state.has_all({"Feather", "Dimensional Key", worldstate.get_seal_name("Dimensional Death"), "Angel Shield Children Defeated"}, player) and s.attack_chest(state), is_cursable=True),
+			LocationData("Sacred Orb (Dimensional Corridor) Chest", 2359089, lambda state: state.has_all({"Feather", "Dimensional Key", worldstate.get_seal_name("Dimensional Sacred Orb Chest"), "Angel Shield Children Defeated"}, player) and s.attack_chest(state), is_cursable=True),
 			LocationData("Ankh Jewel (Dimensional Corridor) Chest", 2359090, lambda state: state.has("Mushussu Defeated", player) and s.attack_chest(state), is_cursable=True),
 			LocationData("Magatama Jewel Chest", 2359091, lambda state: state.has('Tiamat Defeated', player) and s.attack_chest(state), is_cursable=True),
 			LocationData("Left Side Children Defeated", None, lambda state: combat.left_side_children(state), True),
 			LocationData("Right Side Children Defeated", None, lambda state: combat.right_side_children(state), True),
 			LocationData("Angel Shield Children Defeated", None, lambda state: combat.angel_shield_children(state), True),
-			LocationData("Ushumgallu Defeated", None, lambda state: state.has("Dimensional Key", player) and combat.ushumgallu(state)),
+			LocationData("Ushumgallu Defeated", None, lambda state: state.has("Dimensional Key", player) and combat.ushumgallu(state), True),
 			LocationData("Mushussu Defeated", None, lambda state: state.has_all({"Dimensional Key", "Angel Shield Children Defeated"}, player) and (state.has_all({"Left Side Children Defeated", "Right Side Children Defeated"}, player) or s.glitch_raindrop(state)) and combat.mushussu(state), True),
 			LocationData('Tiamat Defeated', None, lambda state: state.has_all({'Dimensional Key', 'Left Side Children Defeated', 'Right Side Children Defeated', 'Angel Shield Children Defeated', 'Ushumgallu Defeated', 'Mushussu Defeated'}, player) and combat.tiamat(state) and s.has_ankh_jewel(state, 'Tiamat'), True)
 		],
@@ -314,15 +305,15 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 			LocationData("lamulana.exe Chest", 2359092, lambda state: s.attack_forward(state) or s.attack_flare_gun(state), is_cursable=True)
 		],
 		"True Shrine of the Mother": [
-			LocationData("All Grail Tablets Read", None, lambda state: state.has_all({"Surface Grail Tablet", "Gate of Guidance Grail Tablet", "Mausoleum of the Giants Grail Tablet", "Temple of the Sun Grail Tablet", "Spring in the Sky Grail Tablet", "Inferno Cavern Grail Tablet", "Chamber of Extinction Grail Tablet", "Twin Labyrinths (Front) Grail Tablet", "Endless Corridor Grail Tablet", "Gate of Illusion Grail Tablet", "Graveyard of the Giants Grail Tablet", "Temple of Moonlight Grail Tablet", "Tower of the Goddess Grail Tablet", "Tower of Ruin Grail Tablet", "Chamber of Birth Grail Tablet", "Twin Labyrinths (Back) Grail Tablet", "Dimensional Corridor Grail Tablet"}, player)),
-			LocationData("Mother Defeated", None, lambda state: state.has_all({'All Grail Tablets Read', 'Fairies Unlocked', 'Medicine of the Mind', worldstate.get_seal_name('Mother Origin'), worldstate.get_seal_name('Mother Birth'), worldstate.get_seal_name('Mother Life'), worldstate.get_seal_name('Mother Death'), 'NPC: Philosopher Fobos'}, player) and ((alt_mother_ankh and s.has_ankh_jewel(state, 'Mother')) or (not alt_mother_ankh and s.attack_empowered_key_sword(state))) and combat.mother(state))
+			LocationData("All Grail Tablets Read", None, lambda state: state.has_all({"Surface Grail Tablet", "Gate of Guidance Grail Tablet", "Mausoleum of the Giants Grail Tablet", "Temple of the Sun Grail Tablet", "Spring in the Sky Grail Tablet", "Inferno Cavern Grail Tablet", "Chamber of Extinction Grail Tablet", "Twin Labyrinths (Front) Grail Tablet", "Endless Corridor Grail Tablet", "Gate of Illusion Grail Tablet", "Graveyard of the Giants Grail Tablet", "Temple of Moonlight Grail Tablet", "Tower of the Goddess Grail Tablet", "Tower of Ruin Grail Tablet", "Chamber of Birth Grail Tablet", "Twin Labyrinths (Back) Grail Tablet", "Dimensional Corridor Grail Tablet"}, player), True),
+			LocationData("Mother Defeated", None, lambda state: state.has_all({'All Grail Tablets Read', 'Fairies Unlocked', 'NPC: Philosopher Fobos', 'Medicine of the Mind', worldstate.get_seal_name('Mother (Origin)'), worldstate.get_seal_name('Mother (Birth)'), worldstate.get_seal_name('Mother (Life)'), worldstate.get_seal_name('Mother (Death)')}, player) and ((alt_mother_ankh and s.has_ankh_jewel(state, 'Mother')) or (not alt_mother_ankh and s.attack_empowered_key_sword(state))) and combat.mother(state), True)
 		]
 	}
 
 	if include_coin_chests:
 		locations['Surface [Main]'].extend([
 			LocationData('Surface Waterfall Coin Chest', 2359093, lambda state: s.attack_chest(state), is_cursable=True),
-			LocationData('Surface Seal Coin Chest', 2359094, lambda state: s.attack_chest(state) and state.has(worldstate.get_seal_name('Surface Life'), player), is_cursable=True)
+			LocationData('Surface Seal Coin Chest', 2359094, lambda state: s.attack_chest(state) and state.has(worldstate.get_seal_name('Surface Coin Chest Seal'), player), is_cursable=True)
 		])
 		locations['Surface [Ruin Path Upper]'] = [
 			LocationData('Surface Underground Path Coin Chest', 2359095, lambda state: s.attack_bomb(state), is_cursable=True)
@@ -332,7 +323,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 		])
 		locations['Temple of the Sun [Main]'].extend([
 			#weapon fairy logic
-			LocationData('Temple of the Sun Pyramid Coin Chest', 2359097, lambda state: s.attack_bomb(state) or (state.has_all({'Bomb', 'Fairies Unlocked'}, player) and s.state_frontside_warp(state)), is_cursable=True)
+			LocationData('Temple of the Sun Pyramid Coin Chest', 2359097, lambda state: s.attack_bomb(state) or (state.has('Bomb', player) and s.fairy_point_reachable(state, True, True)), is_cursable=True)
 		])
 		locations['Spring in the Sky [Main]'].extend([
 			LocationData('Spring in the Sky Coin Chest', 2359098, lambda state: s.attack_forward(state) or (s.attack_vertical(state) and (state.has('Holy Grail', player) or s.state_water_swim(state, 3))), is_cursable=True)
@@ -353,63 +344,66 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 		locations['Endless Corridor [3F Upper]'].extend([
 			LocationData('Endless Corridor Coin Chest', 2359104, lambda state: s.attack_main(state), is_cursable=True)
 		]),
+		locations['Shrine of the Mother [Main]'].extend([
+			LocationData('Shrine of the Mother Coin Chest', 2359105, lambda state: state.has('Katana', player), is_cursable=True)
+		])
 		locations['Gate of Illusion [Middle]'].extend([
-			LocationData('Gate of Illusion Katana Coin Chest', 2359105, lambda state: state.has('Katana', player), is_cursable=True)
+			LocationData('Gate of Illusion Katana Coin Chest', 2359106, lambda state: state.has('Katana', player), is_cursable=True)
 		])
 		locations['Gate of Illusion [Lower]'] = [
-			LocationData('Gate of Illusion Spikes Coin Chest', 2359106, lambda state: s.attack_chest(state), is_cursable=True)
+			LocationData('Gate of Illusion Spikes Coin Chest', 2359107, lambda state: s.attack_chest(state), is_cursable=True)
 		]
 		locations['Graveyard of the Giants [West]'].extend([
-			LocationData('Graveyard of the Giants Coin Chest', 2359107, lambda state: state.has('Feather', player) and s.attack_forward(state), is_cursable=True)
+			LocationData('Graveyard of the Giants Coin Chest', 2359108, lambda state: state.has('Feather', player) and s.attack_forward(state), is_cursable=True)
 		])
 		locations['Temple of Moonlight [Eden]'] = [
-			LocationData('Temple of Moonlight Coin Chest', 2359108, lambda state: s.attack_bomb(state) or (s.attack_caltrops(state) and state.has_any({'Feather', 'Ring'}, player)) or (state.has('Feather', player) and (s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_chakram(state) or s.attack_pistol(state))), is_cursable=True)
+			LocationData('Temple of Moonlight Coin Chest', 2359109, lambda state: s.attack_bomb(state) or (s.attack_caltrops(state) and state.has_any({'Feather', 'Ring'}, player)) or (state.has('Feather', player) and (s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_chakram(state) or s.attack_pistol(state))), is_cursable=True)
 		]
 		locations['Tower of the Goddess [Grail]'].extend([
-			LocationData('Tower of the Goddess Shield Statue Coin Chest', 2359109, lambda state: state.has_any({'Katana', 'Knife'}, player) or s.attack_caltrops(state) or s.attack_bomb(state) or (s.attack_forward(state) and (s.attack_earth_spear(state) or s.glitch_catpause(state))), is_cursable=True)
+			LocationData('Tower of the Goddess Shield Statue Coin Chest', 2359110, lambda state: state.has_any({'Katana', 'Knife'}, player) or s.attack_caltrops(state) or s.attack_bomb(state) or (s.attack_forward(state) and (s.attack_earth_spear(state) or s.glitch_catpause(state))), is_cursable=True)
 		])
 		locations['Tower of the Goddess [Lower]'].extend([
-			LocationData('Tower of the Goddess Fairy Spot Coin Chest', 2359110, lambda state: s.attack_chest_any(state), is_cursable=True)
+			LocationData('Tower of the Goddess Fairy Spot Coin Chest', 2359111, lambda state: s.attack_chest_any(state), is_cursable=True)
 		])
 		locations['Tower of Ruin [Spirits]'] = [
-			LocationData('Tower of Ruin Coin Chest', 2359111, lambda state: s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_chakram(state) or s.attack_bomb(state) or s.attack_chakram(state) or s.attack_pistol(state), is_cursable=True)
+			LocationData('Tower of Ruin Coin Chest', 2359112, lambda state: s.attack_shuriken(state) or s.attack_rolling_shuriken(state) or s.attack_chakram(state) or s.attack_bomb(state) or s.attack_chakram(state) or s.attack_pistol(state), is_cursable=True)
 		]
 		locations['Chamber of Birth [Northeast]'].extend([
-			LocationData('Chamber of Birth Ninja Coin Chest', 2359112, lambda state: s.attack_main(state) or s.attack_shuriken(state) or s.attack_bomb(state) or s.attack_chakram(state) or s.attack_caltrops(state) or s.attack_pistol(state) or (s.state_lamp(state) and (s.attack_earth_spear(state) or s.attack_flare_gun(state) or s.attack_rolling_shuriken(state))), is_cursable=True)
+			LocationData('Chamber of Birth Ninja Coin Chest', 2359113, lambda state: s.attack_main(state) or s.attack_shuriken(state) or s.attack_bomb(state) or s.attack_chakram(state) or s.attack_caltrops(state) or s.attack_pistol(state) or (s.state_lamp(state) and (s.attack_earth_spear(state) or s.attack_flare_gun(state) or s.attack_rolling_shuriken(state))), is_cursable=True)
 		])
 		locations['Chamber of Birth [Southeast]'].extend([
-			LocationData('Chamber of Birth Southeast Coin Chest', 2359113, lambda state: s.attack_forward(state), is_cursable=True)
+			LocationData('Chamber of Birth Southeast Coin Chest', 2359114, lambda state: s.attack_forward(state), is_cursable=True)
 		])
 		locations['Chamber of Birth [Dance]'] = [
-			LocationData('Chamber of Birth Dance of Life Coin Chest', 2359114, lambda state: s.attack_forward(state) or s.attack_flare_gun(state), is_cursable=True)
+			LocationData('Chamber of Birth Dance of Life Coin Chest', 2359115, lambda state: s.attack_forward(state) or s.attack_flare_gun(state), is_cursable=True)
 		]
 		locations['Dimensional Corridor [Grail]'].extend([
-			LocationData('Dimensional Corridor Coin Chest', 2359115, lambda state: s.attack_forward(state) or s.attack_flare_gun(state), is_cursable=True)
+			LocationData('Dimensional Corridor Coin Chest', 2359116, lambda state: s.attack_forward(state) or s.attack_flare_gun(state), is_cursable=True)
 		])
 
 		if include_escape_chest:
 			locations['Twin Labyrinths [Upper Left]'] = [
-				LocationData('Twin Labyrinths Escape Coin Chest', 2359116, lambda state: state.has('Mother Defeated', player) and s.attack_chest(state), is_cursable=True)
+				LocationData('Twin Labyrinths Escape Coin Chest', 2359117, lambda state: state.has('Mother Defeated', player) and s.attack_chest(state), is_cursable=True)
 			]
 
 
 	if include_trap_items:
 		locations['Inferno Cavern [Main]'].append(
-			LocationData('Inferno Cavern Fake Orb', 2359117)
+			LocationData('Inferno Cavern Fake Orb', 2359118)
 		)
 		locations['Twin Labyrinths [Loop]'].append(
-			LocationData('Twin Labyrinths Fake Ankh Jewel', 2359118)
+			LocationData('Twin Labyrinths Fake Ankh Jewel', 2359119)
 		)
 		locations['Gate of Illusion [Dracuet]'].append(
-			LocationData('Gate of Illusion Exploding Chest', 2359119, lambda state: s.attack_chest(state), is_cursable=True)
+			LocationData('Gate of Illusion Exploding Chest', 2359120, lambda state: s.attack_chest(state), is_cursable=True)
 		)
 		locations['Graveyard of the Giants [West]'].append(
-			LocationData('Graveyard of the Giants Trap Chest', 2359120, lambda state: s.attack_chest(state), is_cursable=True)
+			LocationData('Graveyard of the Giants Trap Chest', 2359121, lambda state: s.attack_chest(state), is_cursable=True)
 		)
 
 	if include_hell_temple_reward:
 		locations['Hell Temple [Dracuet]'] = [
-			LocationData("Hell Temple Final Reward", 2359121)
+			LocationData("Hell Temple Final Reward", 2359122)
 		]
 
 	return locations

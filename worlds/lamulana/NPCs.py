@@ -211,10 +211,10 @@ def get_npc_entrances(world: MultiWorld, player: int, worldstate: LaMulanaWorldS
 			LaMulanaNPCDoor(get_entrance_checks('Greedy Charlie'), lambda state: s.attack_chest_any(state)),
 		],
 		'Temple of the Sun [Main]': [
-			LaMulanaNPCDoor(get_entrance_checks('Mulbruk'), lambda state: s.guardian_count(state) >= 1 and state.has(worldstate.get_seal_name('Sun Mulbruk Origin'), player)),
+			LaMulanaNPCDoor(get_entrance_checks('Mulbruk'), lambda state: s.guardian_count(state) >= 1 and state.has(worldstate.get_seal_name('Mulbruk\'s Seal'), player)),
 			LaMulanaNPCDoor(get_entrance_checks('Shalom III'), lambda state: s.attack_shuriken(state) or s.attack_bomb(state) or s.glitch_catpause(state) or (state.has('Feather', player) and (s.attack_forward(state) or s.attack_chakram(state)))),
 			LaMulanaNPCDoor(get_entrance_checks('Usas VI')),
-			LaMulanaNPCDoor(get_entrance_checks('Kingvalley I'), lambda state: state.has_all({'Feather', worldstate.get_seal_name('Sun Death')}, player)),
+			LaMulanaNPCDoor(get_entrance_checks('Kingvalley I'), lambda state: state.has_all({'Feather', worldstate.get_seal_name('Sun Discount Shop')}, player)),
 		],
 		'Temple of the Sun [Sphinx]': [
 			LaMulanaNPCDoor(get_entrance_checks('Priest Madomo')),
@@ -224,8 +224,8 @@ def get_npc_entrances(world: MultiWorld, player: int, worldstate: LaMulanaWorldS
 			LaMulanaNPCDoor(get_entrance_checks('Philosopher Giltoriyo')),
 		],
 		'Spring in the Sky [Upper]': [
-			LaMulanaNPCDoor(get_entrance_checks('Mr. Fishman (Original)'), lambda state: state.has_all({'Helmet', worldstate.get_seal_name('Spring Fishman Origin')}, player)),
-			LaMulanaNPCDoor(get_entrance_checks('Mr. Fishman (Alt)'), lambda state: state.has_all({'Helmet', worldstate.get_seal_name('Spring Fishman Origin')}, player) and s.state_key_fairy_access(state)),
+			LaMulanaNPCDoor(get_entrance_checks('Mr. Fishman (Original)'), lambda state: state.has_all({'Helmet', worldstate.get_seal_name('Mr. Fishman\'s Shop')}, player)),
+			LaMulanaNPCDoor(get_entrance_checks('Mr. Fishman (Alt)'), lambda state: state.has_all({'Helmet', worldstate.get_seal_name('Mr. Fishman\'s Shop')}, player) and s.state_key_fairy_access(state, False)),
 		],
 		'Inferno Cavern [Main]': [
 			LaMulanaNPCDoor(get_entrance_checks('Priest Gailious')),
@@ -254,7 +254,7 @@ def get_npc_entrances(world: MultiWorld, player: int, worldstate: LaMulanaWorldS
 		],
 		'Endless Corridor [1F]': [
 			LaMulanaNPCDoor(get_entrance_checks('Fairy Queen')),
-			LaMulanaNPCDoor(get_entrance_checks('Affected Knimare'), lambda state: state.has(worldstate.get_seal_name('Endless Origin'), player)),
+			LaMulanaNPCDoor(get_entrance_checks('Affected Knimare'), lambda state: state.has(worldstate.get_seal_name('Endless Shop Seal'), player)),
 		],
 		'Gate of Illusion [Grail]': [
 			LaMulanaNPCDoor(get_entrance_checks('duplex'), lambda state: state.has('Chi You Defeated', player) and s.attack_forward(state) and s.combo_dev_npcs(state)),
