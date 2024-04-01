@@ -77,7 +77,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 		create_region(world, player, "Tower of the Goddess [Lamp]", locations, npcs, cursed_chests),
 		create_region(world, player, "Tower of the Goddess [Grail]", locations, npcs, cursed_chests),
 		create_region(world, player, "Tower of the Goddess [Spaulder]", locations, npcs, cursed_chests),
-		create_region(world, player, "Tower of the Goddess [Pipe]", locations, npcs, cursed_chests),		
+		create_region(world, player, "Tower of the Goddess [Pipe]", locations, npcs, cursed_chests),
 		#create_region(world, player, "Tower of the Goddess [Shield Statue]", locations, npcs, cursed_chests),
 		create_region(world, player, "Inferno Cavern [Main]", locations, npcs, cursed_chests),
 		create_region(world, player, "Inferno Cavern [Pazuzu]", locations, npcs, cursed_chests),
@@ -143,7 +143,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 			create_region(world, player, "Hell Temple [Entrance]", locations, npcs, cursed_chests),
 			create_region(world, player, "Hell Temple [Shop]", locations, npcs, cursed_chests),
 		])
-	
+
 	if is_option_enabled(world, player, "HellTempleReward"):
 		regions.extend([
 			create_region(world, player, "Hell Temple [Dracuet]", locations, npcs, cursed_chests)
@@ -300,7 +300,7 @@ def create_regions_and_locations(world: MultiWorld, player: int, worldstate: LaM
 	if is_option_enabled(world, player, "HellTempleReward") or is_option_enabled(world, player, "RandomizeDracuetsShop"):
 		connect(world, player, 'Gate of Guidance [Main]', 'Hell Temple [Entrance]', lambda state: state.has_all({'Hell Temple Unlocked', 'Feather', worldstate.get_seal_name('Crucifix Chest/3 Lights')}, player))
 		connect(world, player, 'Hell Temple [Entrance]', 'Hell Temple [Shop]', lambda state: s.attack_bomb(state) and state.has('Ring', player) and (state.has("Hermes' Boots", player) or s.state_lamp(state)))
-	
+
 	if is_option_enabled(world, player, "HellTempleReward"):
 		combat = LaMulanaCombatLogic(world, player, s)
 		connect(world, player, 'Hell Temple [Shop]', 'Hell Temple [Dracuet]', lambda state: s.state_literacy(state) and s.state_key_fairy_access(state, False) and state.has_all({"Hermes' Boots", 'Grapple Claw', 'guild.exe'}, player) and combat.hell_temple_bosses(state) and (s.attack_chakram(state) or s.attack_pistol(state)))
@@ -431,7 +431,7 @@ def get_and_connect_doors(world: MultiWorld, player: int, worldstate: LaMulanaWo
 def connect(world: MultiWorld, player: int, source: str, target: str, logic: Optional[Callable[CollectionState,bool]] = None):
 	source_region = world.get_region(source, player)
 	target_region = world.get_region(target, player)
-	
+
 	connection = Entrance(player, '', source_region)
 
 	if logic:
@@ -464,4 +464,3 @@ def create_region(world: MultiWorld, player: int, region_name: str, locations_pe
 				location = create_location(player, location_data, region, npc_door.logic)
 				region.locations.append(location)
 	return region
-

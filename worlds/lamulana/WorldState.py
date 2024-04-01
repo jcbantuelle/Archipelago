@@ -72,7 +72,7 @@ class LaMulanaWorldState:
 		self.door_map = {}
 		door_data = self.get_doors()
 
-		#Remove and re-append Dimensional Door/Open after shuffling so they're always paired together 
+		#Remove and re-append Dimensional Door/Open after shuffling so they're always paired together
 		if self.include_nonboss:
 			door_list.remove('Dimensional Door')
 			requirements_list.remove('Open')
@@ -110,7 +110,7 @@ class LaMulanaWorldState:
 		simulated_state = self.world.state.copy()
 		flag_alt_mother_ankh = is_option_enabled(self.world, self.player, 'AlternateMotherAnkh')
 		flag_specific_ankh_jewels = is_option_enabled(self.world, self.player, 'GuardianSpecificAnkhJewels')
-		
+
 		for item_name, item_data in item_table.items():
 			if item_data.progression:
 				item_count = item_data.count
@@ -189,7 +189,7 @@ class LaMulanaWorldState:
 		while locations:
 			state.update_reachable_regions(self.player)
 			sphere: List[Location] = []
-			
+
 			for n in range(len(locations) - 1, -1, -1):
 				if locations[n].can_reach(state):
 					sphere.append(locations.pop(n))
@@ -333,10 +333,10 @@ class LaMulanaWorldState:
 		'Spring Sacred Orb Chest', 'Mr. Fishman\'s Shop', 'Bahamut\'s Room', 'Pazuzu Seal', 'Life Seal Chest', 'Endless Shop Seal',
 		'Chi You Seal', 'Gauntlet Chest', 'Path to Anubis', 'Nuwa', 'Dimensional Sacred Orb Chest',
 		'Extinction Perma-light (Extinction)', 'Extinction Perma-light (Birth)', 'Shrine Laptop Room',
-		'Crystal Skull Chest', 
+		'Crystal Skull Chest',
 		'Shrine 4 Seals (Origin)', 'Shrine 4 Seals (Birth)', 'Shrine 4 Seals (Life)', 'Shrine 4 Seals (Death)',
 		'Mother (Origin)', 'Mother (Birth)', 'Mother (Life)', 'Mother (Death)']
-	
+
 	def get_seal_name(self, name):
 		if not self.seal_map:
 			return None

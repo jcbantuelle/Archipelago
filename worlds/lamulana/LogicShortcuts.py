@@ -31,7 +31,7 @@ class LaMulanaLogicShortcuts:
 			self.flag_raindrop = is_option_enabled(world, player, "RaindropsInLogic")
 			self.flag_catpause = is_option_enabled(world, player, "CatPausingInLogic")
 			self.flag_lamp_glitch = is_option_enabled(world, player, "LampGlitchInLogic")
-			
+
 			starting_location = starting_location_names[get_option_value(world, player, "StartingLocation")]
 			self.is_frontside_start = starting_location in {'surface', 'guidance', 'mausoleum', 'sun', 'spring', 'inferno', 'extinction', 'twin (front)', 'endless', 'gate of time (surface)'}
 

@@ -35,7 +35,7 @@ class LaMulanaWorld(World):
 	required_client_version = (0, 4, 0) #Placeholder version number
 
 	worldstate: LaMulanaWorldState
-	
+
 	item_name_to_id = {name: data.code for name, data in item_table.items()}
 	location_name_to_id = {location.name: location.code for locations in get_locations_by_region(None, None, None).values() for location in locations}
 	location_name_to_id |= {location.name: location.code for locations in get_npc_checks(None, None).values() for location in locations}
@@ -109,7 +109,7 @@ class LaMulanaWorld(World):
 
 	def set_rules(self) -> None:
 		self.multiworld.completion_condition[self.player] = lambda state: state.has_all({'Mother Defeated', 'NPC: Mulbruk'}, self.player)
-		
+
 		option = getattr(self.multiworld, 'RandomizeCoinChests')[self.player]
 		if option.value == lamulana_options['RandomizeCoinChests'].option_include_escape_chest:
 			#local progression would be a problem for the escape coin chest - if it involves another player and loops back to us, that's fine
@@ -151,7 +151,7 @@ class LaMulanaWorld(World):
 							if self.worldstate.transition_rando and door_name in npc_transition_info:
 								target_transition = f' past {get_transition_spoiler_name(npc_transition_info[door_name])}'
 							hint_info[locationdata.code] = room_names[door_name] + target_transition
-		
+
 		if self.worldstate.transition_rando:
 			check_transition_info = {
 				'Sacred Orb (Spring in the Sky) Chest': 'Spring D1',
@@ -182,7 +182,7 @@ class LaMulanaWorld(World):
 				})
 			for check_name, transition_name in check_transition_info.items():
 				hint_info[self.multiworld.get_location(check_name, self.player).address] = get_transition_spoiler_name(transition_name)
-		
+
 		if self.worldstate.door_rando:
 			check_door_info = {
 				'yagostr.exe Chest': 'Guidance Door',
@@ -197,13 +197,13 @@ class LaMulanaWorld(World):
 			for cursed_chest_name in self.worldstate.cursed_chests:
 				location = self.multiworld.get_location(cursed_chest_name, self.player)
 				hint_info[location.address] = hint_info[location.address] + ' (Cursed)' if location.address in hint_info else 'Cursed'
-		
+
 		hint_data[self.player] = hint_info
 
 	def write_spoiler_header(self, spoiler_handle: TextIO) -> None:
 		spoiler_handle.write(f'Cursed Chests ({len(self.worldstate.cursed_chests)}):\n')
 		spoiler_handle.write(f'    - {self.worldstate.cursed_chests if len(self.worldstate.cursed_chests) else "None"}\n')
-		
+
 		def space_count(name):
 			return ' ' * (25 - len(name))
 
@@ -215,7 +215,7 @@ class LaMulanaWorld(World):
 				if npc_name in reverse_map:
 					npc_door = reverse_map[npc_name]
 					spoiler_handle.write(f'    - {npc_name}:{space_count(npc_name)}{room_names[npc_door]}\n')
-		
+
 		if self.is_option_enabled('RandomizeSeals'):
 			seal_spoilers = {value: [seal_name for seal_name, seal_val in self.worldstate.seal_map.items() if seal_val == value] for value in {1, 2, 3, 4}}
 			seal_order = self.worldstate.get_seal_spoiler_order()
@@ -224,7 +224,7 @@ class LaMulanaWorld(World):
 				for seal_location in seal_order:
 					if self.worldstate.seal_map[seal_location] == seal_val:
 						spoiler_handle.write(f'    - {seal_location}\n')
-		
+
 		def arrows(source, dest, base_length, inner_text=None, display_names=None) -> str:
 			oneways = {'Endless L1'}
 			oneway_dests = {'Inferno W1', 'Goddess W1', 'Moonlight L1', 'Ruin L1', 'Endless One-way Exit', 'Guidance Door', 'Ruin Top Door'}
@@ -256,7 +256,7 @@ class LaMulanaWorld(World):
 					pipe = 'pipe'
 					dest = self.worldstate.transition_map['Pipe L1' if dest == 'Pipe R1' else 'Pipe R1']
 				spoiler_handle.write(f'    - {transition_display_names[source]}{arrows(source,dest,59,pipe,transition_display_names)}{transition_display_names[dest]}\n')
-		
+
 		if self.worldstate.door_rando:
 			doors_included = set()
 			spoiler_handle.write('Door Randomizer\n')
@@ -367,7 +367,7 @@ class LaMulanaWorld(World):
 			shop_items.extend(self.multiworld.random.choices(ammo_types + ['5 Weights'], k=slot_amount - len(shop_items)))
 
 		local_shop_inventory_list = self.multiworld.random.sample(list(shop_locations), slot_amount)
-		
+
 		shop_inventory_ids = {item_table[item_name].code for item_name in self.item_name_groups['ShopInventory']}
 		for location in self.multiworld.get_unfilled_locations(self.player):
 			if location.name in local_shop_inventory_list:
@@ -393,7 +393,7 @@ class LaMulanaWorld(World):
 
 		if self.is_option_enabled('SubweaponOnly'):
 			item_pool_size -= 6
-		
+
 		if not self.is_option_enabled('HellTempleReward'):
 			item_exclusion_order.append('guild.exe')
 
@@ -453,7 +453,7 @@ class LaMulanaWorld(World):
 
 		return item_pool
 
-	def create_item(self, name: str, exclude_shop_progression:Set[str]=None) -> Item:		
+	def create_item(self, name: str, exclude_shop_progression:Set[str]=None) -> Item:
 		data = item_table[name]
 
 		if data.category == 'ShopInventory' and data.progression:

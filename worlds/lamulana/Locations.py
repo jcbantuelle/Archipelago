@@ -15,7 +15,7 @@ class LocationData(NamedTuple):
 def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], worldstate) -> Dict[str, List[LocationData]]:
 	s = LaMulanaLogicShortcuts(world, player)
 	combat = LaMulanaCombatLogic(world, player, s)
-	
+
 	include_coin_chests = not world or is_option_enabled(world, player, "RandomizeCoinChests")
 	include_escape_chest = not world or get_option_value(world, player, "RandomizeCoinChests") == 2
 	include_trap_items = not world or is_option_enabled(world, player, "RandomizeTrapItems")

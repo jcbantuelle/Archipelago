@@ -182,7 +182,7 @@ def get_npc_checks(world: Optional[MultiWorld], player: Optional[int]) -> Dict[s
 def get_npc_entrances(world: MultiWorld, player: int, worldstate: LaMulanaWorldState, s: LaMulanaLogicShortcuts) -> Dict[str,List[LaMulanaNPCDoor]]:
 	npc_checks = get_npc_checks(world, player)
 	if worldstate.npc_rando and worldstate.npc_mapping:
-		get_entrance_checks = lambda door: npc_checks[worldstate.npc_mapping[door]] if door in worldstate.npc_mapping and worldstate.npc_mapping[door] in npc_checks else [] 
+		get_entrance_checks = lambda door: npc_checks[worldstate.npc_mapping[door]] if door in worldstate.npc_mapping and worldstate.npc_mapping[door] in npc_checks else []
 	else:
 		get_entrance_checks = lambda door: npc_checks[door] if door in npc_checks else []
 
