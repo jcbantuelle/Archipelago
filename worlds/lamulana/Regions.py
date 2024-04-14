@@ -432,7 +432,7 @@ def connect(world: MultiWorld, player: int, source: str, target: str, logic: Opt
 	source_region = world.get_region(source, player)
 	target_region = world.get_region(target, player)
 
-	connection = Entrance(player, '', source_region)
+	connection = Entrance(player, source + ' -> ' + target, source_region)
 
 	if logic:
 		connection.access_rule = logic
