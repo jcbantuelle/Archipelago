@@ -1,14 +1,20 @@
+import zipfile
+import io
+import os
+import Utils
 from typing import Dict, List, Set, Optional, TextIO, Union
 from BaseClasses import Item, MultiWorld, Tutorial, Region, Entrance, Item, ItemClassification
 from Options import Accessibility
 from worlds.AutoWorld import World, WebWorld
 from worlds.generic.Rules import add_item_rule
+from kaitaistruct import KaitaiStream
 from .Options import lamulana_options, starting_location_names, starting_weapon_names, is_option_enabled, get_option_value
 from .WorldState import LaMulanaWorldState
 from .NPCs import get_npc_checks, get_npc_entrance_room_names
 from .Items import item_table, get_items_by_category, item_exclusion_order
 from .Locations import get_locations_by_region
 from .Regions import create_regions_and_locations
+from .Rcd import Rcd
 
 client_version = 1
 
@@ -44,6 +50,12 @@ class LaMulanaWorld(World):
 	def __init__(self, world : MultiWorld, player: int):
 		super().__init__(world, player)
 		self.worldstate = LaMulanaWorldState(self.multiworld, self.player)
+
+	@classmethod
+	def stage_assert_generate(cls, multiworld: MultiWorld):
+		rcd_file = Utils.user_path("script.rcd")
+		if not os.path.exists(rcd_file):
+			raise FileNotFoundError(rcd_file)
 
 	def generate_early(self) -> None:
 		#Do stuff that can still modify settings
@@ -501,3 +513,18 @@ class LaMulanaWorld(World):
 
 	def get_option_value(self, option: str) -> Union[int, Dict, List]:
 		return get_option_value(self.multiworld, self.player, option)
+
+	def generate_output(self, output_directory: str) -> None:
+		rcd_path = Utils.user_path("script.rcd")
+		rcd_size = os.path.getsize(rcd_path)
+
+		read_io = KaitaiStream(open(rcd_path, 'rb'))
+		rcd_file = Rcd(read_io)
+		rcd_file._read()
+
+		write_io = KaitaiStream(io.BytesIO(bytearray(rcd_size)))
+		rcd_file._write(write_io)
+
+		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
+		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
+			output_zip.writestr("script.rcd", write_io.to_byte_array())

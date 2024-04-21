@@ -1,0 +1,1 @@
+kaitaistruct @ git+https://github.com/kaitai-io/kaitai_struct_python_runtime@704995a
