@@ -442,6 +442,12 @@ def connect(world: MultiWorld, player: int, source: str, target: str, logic: Opt
 
 def create_location(player: int, location_data: LocationData, region: Region, additional_logic: Optional[Callable]=None):
 	location = Location(player, location_data.name, location_data.code, region)
+	location.file_type = location_data.file_type
+	location.zones = location_data.zones
+	location.room = location_data.room
+	location.screen = location_data.screen
+	location.object_type = location_data.object_type
+	location.item_id = location_data.item_id
 	if additional_logic:
 		location.access_rule = lambda state: additional_logic(state) and location_data.logic(state)
 	else:

@@ -522,6 +522,41 @@ class LaMulanaWorld(World):
 		rcd_file = Rcd(read_io)
 		rcd_file._read()
 
+		locations = self.multiworld.get_locations(self.player)
+
+		for location in locations:
+			if location.file_type == 'rcd':
+				for zone in location.zones:
+					screen = rcd_file.zones[zone].rooms[location.room].screens[location.screen]
+					if location.object_type == 0x2c:
+						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0x2c and v.parameters[0] == (location.item_id+11)), None)
+						if object_index is None:
+							print(f'Missing {location.address}, Item Id {location.item_id}')
+					elif location.object_type == 0x2f:
+						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0x2f and v.parameters[1] == location.item_id), None)
+						if object_index is None:
+							print(f'Missing {location.address}, Item Id {location.item_id}')
+					elif location.object_type == 0xb5:
+						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0xb5 and v.parameters[0] == location.item_id), None)
+						if object_index is None:
+							print(f'Missing {location.address}, Item Id {location.item_id}')
+
+		grail_giver = Rcd.ObjectWithPosition()
+		grail_giver.id = 0xb5
+		grail_giver.test_operations_length = 0
+		grail_giver.write_operations_length = 0
+		grail_giver.parameters_length = 4
+		grail_giver.x_pos = 0
+		grail_giver.y_pos = 0
+		grail_giver.test_operations = []
+		grail_giver.write_operations = []
+		grail_giver.parameters = [40,160,120,39]
+		rcd_file.zones[1].rooms[2].screens[1].objects_with_position.append(grail_giver)
+		rcd_file.zones[1].rooms[2].screens[1].objects_length += 1
+		rcd_size += 16
+
+		rcd_file.zones[1].rooms[4].screens[1].objects_with_position[7].parameters[0] = 54
+
 		write_io = KaitaiStream(io.BytesIO(bytearray(rcd_size)))
 		rcd_file._write(write_io)
 
