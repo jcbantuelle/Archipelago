@@ -525,21 +525,38 @@ class LaMulanaWorld(World):
 		locations = self.multiworld.get_locations(self.player)
 
 		for location in locations:
+			item = item_table.get(location.item.name)
+			if item is None:
+				continue
 			if location.file_type == 'rcd':
 				for zone in location.zones:
 					screen = rcd_file.zones[zone].rooms[location.room].screens[location.screen]
 					if location.object_type == 0x2c:
-						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0x2c and v.parameters[0] == (location.item_id+11)), None)
-						if object_index is None:
-							print(f'Missing {location.address}, Item Id {location.item_id}')
+						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0x2c and v.parameters[0] == (location.item_id+11) and len(v.parameters) < 7), None)
+						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters[0] = item.game_code+11
+						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters.append(1)
+						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters_length += 1
+						rcd_size += 2
 					elif location.object_type == 0x2f:
-						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0x2f and v.parameters[1] == location.item_id), None)
-						if object_index is None:
-							print(f'Missing {location.address}, Item Id {location.item_id}')
+						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0x2f and v.parameters[1] == location.item_id and len(v.parameters) < 4), None)
+						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters[1] = item.game_code
+						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters.append(1)
+						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters_length += 1
+						rcd_size += 2
 					elif location.object_type == 0xb5:
-						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0xb5 and v.parameters[0] == location.item_id), None)
-						if object_index is None:
-							print(f'Missing {location.address}, Item Id {location.item_id}')
+						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0xb5 and v.parameters[0] == location.item_id and len(v.parameters) < 5), None)
+						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters[0] = item.game_code
+						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters.append(1)
+						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters_length += 1
+						rcd_size += 2
+					elif location.object_type == 0xc3:
+						objects = enumerate(screen.objects_without_position)
+						for _ in range(2):
+							object_index = next((i for i,v in objects if v.id == 0xc3 and v.parameters[3] == location.item_id and len(v.parameters) < 5), None)
+							rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_without_position[object_index].parameters[3] = item.game_code
+							rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_without_position[object_index].parameters.append(1)
+							rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_without_position[object_index].parameters_length += 1
+							rcd_size += 2
 
 		for item_name, _ in self.multiworld.start_inventory[self.player].value.items():
 			item_id = item_table[item_name].game_code
