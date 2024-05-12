@@ -111,7 +111,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 		"Chamber of Extinction [Main]": [
 			LocationData("Chakram Location", 2359036, lambda state: s.state_extinction_light(state) and (combat.centimani(state) or s.glitch_catpause(state)), file_type='rcd', zones=[6], room=4, screen=0, object_type=0x2f, item_id=13),
 			LocationData("Life Seal Chest", 2359037, lambda state: s.state_extinction_light(state) and s.attack_chest(state) and state.has(worldstate.get_seal_name('Life Seal Chest'), player), is_cursable=True, file_type='rcd', zones=[6], room=6, screen=0, object_type=0x2c, item_id=67),
-			LocationData("mantra.exe Scan", 2359038, lambda state: s.attack_flare_gun(state) and state.has_all({"Magatama Jewel", "torude.exe", "Ox-head & Horse-face Defeated"}, player)),
+			LocationData("mantra.exe Scan", 2359038, lambda state: s.attack_flare_gun(state) and state.has_all({"Magatama Jewel", "torude.exe", "Ox-head & Horse-face Defeated"}, player), file_type='rcd', zones=[6], room=4, screen=1, object_type=0xc3, item_id=93),
 			LocationData("Sacred Orb (Chamber of Extinction) Chest", 2359039, lambda state: s.state_extinction_light(state) and (s.attack_chest(state) or (s.attack_flare_gun(state) and state.has("Feather", player))), is_cursable=True, file_type='rcd', zones=[6], room=3, screen=1, object_type=0x2c, item_id=69),
 			LocationData("Chamber of Extinction Grail Tablet", None, lambda state: s.state_extinction_light(state) and s.state_read_grail(state), True)
 		],
@@ -210,7 +210,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 		],
 		"Graveyard of the Giants [East]": [
 			LocationData("Bomb Location", 2359063, lambda state: state.has('Feather', player) and combat.kamaitachi(state), file_type='rcd', zones=[11], room=6, screen=0, object_type=0x2f, item_id=12),
-			LocationData("emusic.exe Scan", 2359064, lambda state: state.has("torude.exe", player) and (s.attack_bomb(state) or (s.fairy_point_reachable(state, True, False) and state.has_all({'Bomb', 'Ring'}, player) and state.can_reach('Graveyard of the Giants [Grail]', 'Region', player)))),
+			LocationData("emusic.exe Scan", 2359064, lambda state: state.has("torude.exe", player) and (s.attack_bomb(state) or (s.fairy_point_reachable(state, True, False) and state.has_all({'Bomb', 'Ring'}, player) and state.can_reach('Graveyard of the Giants [Grail]', 'Region', player))), file_type='rcd', zones=[11], room=9, screen=0, object_type=0xc3, item_id=94),
 			LocationData("Lamp Recharge — Graveyard of the Giants", None, lambda state: True, True)
 		],
 		"Temple of Moonlight [Upper]": [
