@@ -541,21 +541,21 @@ class LaMulanaWorld(World):
 						if object_index is None:
 							print(f'Missing {location.address}, Item Id {location.item_id}')
 
-		grail_giver = Rcd.ObjectWithPosition()
-		grail_giver.id = 0xb5
-		grail_giver.test_operations_length = 0
-		grail_giver.write_operations_length = 0
-		grail_giver.parameters_length = 4
-		grail_giver.x_pos = 0
-		grail_giver.y_pos = 0
-		grail_giver.test_operations = []
-		grail_giver.write_operations = []
-		grail_giver.parameters = [40,160,120,39]
-		rcd_file.zones[1].rooms[2].screens[1].objects_with_position.append(grail_giver)
-		rcd_file.zones[1].rooms[2].screens[1].objects_length += 1
-		rcd_size += 16
-
-		rcd_file.zones[1].rooms[4].screens[1].objects_with_position[7].parameters[0] = 54
+		for item_name, _ in self.multiworld.start_inventory[self.player].value.items():
+			item_id = item_table[item_name].game_code
+			item_giver = Rcd.ObjectWithPosition()
+			item_giver.id = 0xb5
+			item_giver.test_operations_length = 0
+			item_giver.write_operations_length = 0
+			item_giver.parameters_length = 4
+			item_giver.x_pos = 0
+			item_giver.y_pos = 0
+			item_giver.test_operations = []
+			item_giver.write_operations = []
+			item_giver.parameters = [item_id,160,120,39]
+			rcd_file.zones[1].rooms[2].screens[1].objects_with_position.append(item_giver)
+			rcd_file.zones[1].rooms[2].screens[1].objects_length += 1
+			rcd_size += 16
 
 		write_io = KaitaiStream(io.BytesIO(bytearray(rcd_size)))
 		rcd_file._write(write_io)
