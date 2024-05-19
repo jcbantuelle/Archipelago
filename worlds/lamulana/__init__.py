@@ -532,31 +532,13 @@ class LaMulanaWorld(World):
 				for zone in location.zones:
 					screen = rcd_file.zones[zone].rooms[location.room].screens[location.screen]
 					if location.object_type == 0x2c:
-						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0x2c and v.parameters[0] == (location.item_id+11) and len(v.parameters) < 7), None)
-						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters[0] = item.game_code+11
-						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters.append(1)
-						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters_length += 1
-						rcd_size += 2
+						rcd_size = self.place_item(objects=screen.objects_with_position, object_type=0x2c, param_index=0, param_len=7, location_id=location.item_id, item_id=item.game_code, item_mod=11, rcd_size=rcd_size)
 					elif location.object_type == 0x2f:
-						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0x2f and v.parameters[1] == location.item_id and len(v.parameters) < 4), None)
-						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters[1] = item.game_code
-						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters.append(1)
-						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters_length += 1
-						rcd_size += 2
+						rcd_size = self.place_item(objects=screen.objects_with_position, object_type=0x2f, param_index=1, param_len=4, location_id=location.item_id, item_id=item.game_code, rcd_size=rcd_size)
 					elif location.object_type == 0xb5:
-						object_index = next((i for i,v in enumerate(screen.objects_with_position) if v.id == 0xb5 and v.parameters[0] == location.item_id and len(v.parameters) < 5), None)
-						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters[0] = item.game_code
-						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters.append(1)
-						rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_with_position[object_index].parameters_length += 1
-						rcd_size += 2
+						rcd_size = self.place_item(objects=screen.objects_with_position, object_type=0xb5, param_index=0, param_len=5, location_id=location.item_id, item_id=item.game_code, rcd_size=rcd_size)
 					elif location.object_type == 0xc3:
-						objects = enumerate(screen.objects_without_position)
-						for _ in range(2):
-							object_index = next((i for i,v in objects if v.id == 0xc3 and v.parameters[3] == location.item_id and len(v.parameters) < 5), None)
-							rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_without_position[object_index].parameters[3] = item.game_code
-							rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_without_position[object_index].parameters.append(1)
-							rcd_file.zones[zone].rooms[location.room].screens[location.screen].objects_without_position[object_index].parameters_length += 1
-							rcd_size += 2
+						rcd_size = self.place_item(objects=screen.objects_without_position, object_type=0xc3, param_index=3, param_len=5, location_id=location.item_id, item_id=item.game_code, iterations=2, rcd_size=rcd_size)
 
 		for item_name, _ in self.multiworld.start_inventory[self.player].value.items():
 			item_id = item_table[item_name].game_code
@@ -570,8 +552,9 @@ class LaMulanaWorld(World):
 			item_giver.test_operations = []
 			item_giver.write_operations = []
 			item_giver.parameters = [item_id,160,120,39]
-			rcd_file.zones[1].rooms[2].screens[1].objects_with_position.append(item_giver)
-			rcd_file.zones[1].rooms[2].screens[1].objects_length += 1
+			starting_room = rcd_file.zones[1].rooms[2].screens[1]
+			starting_room.objects_with_position.append(item_giver)
+			starting_room.objects_length += 1
 			rcd_size += 16
 
 		write_io = KaitaiStream(io.BytesIO(bytearray(rcd_size)))
@@ -580,3 +563,13 @@ class LaMulanaWorld(World):
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
 			output_zip.writestr("script.rcd", write_io.to_byte_array())
+
+	def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, rcd_size, item_mod=0, iterations=1):
+		o = enumerate(objects)
+		for _ in range(iterations):
+			o_index = next((i for i,v in o if v.id == object_type and v.parameters[param_index] == location_id+item_mod and len(v.parameters) < param_len), None)
+			objects[o_index].parameters[param_index] = item_id+item_mod
+			objects[o_index].parameters.append(1)
+			objects[o_index].parameters_length += 1
+			rcd_size += 2
+		return rcd_size
