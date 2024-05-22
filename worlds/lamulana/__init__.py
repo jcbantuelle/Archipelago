@@ -15,6 +15,7 @@ from .Items import item_table, get_items_by_category, item_exclusion_order
 from .Locations import get_locations_by_region
 from .Regions import create_regions_and_locations
 from .Rcd import Rcd
+from .Dat import Dat
 
 client_version = 1
 
@@ -518,9 +519,16 @@ class LaMulanaWorld(World):
 		rcd_path = Utils.user_path("script.rcd")
 		rcd_size = os.path.getsize(rcd_path)
 
-		read_io = KaitaiStream(open(rcd_path, 'rb'))
-		rcd_file = Rcd(read_io)
+		rcd_io = KaitaiStream(open(rcd_path, 'rb'))
+		rcd_file = Rcd(rcd_io)
 		rcd_file._read()
+
+		dat_path = Utils.user_path("script_code.dat")
+		dat_size = os.path.getsize(dat_path)
+
+		dat_io = KaitaiStream(open(dat_path, 'rb'))
+		dat_file = Dat(dat_io)
+		dat_file._read()
 
 		locations = self.multiworld.get_locations(self.player)
 
