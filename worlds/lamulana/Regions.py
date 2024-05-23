@@ -444,6 +444,8 @@ def create_location(player: int, location_data: LocationData, region: Region, ad
 	location = Location(player, location_data.name, location_data.code, region)
 	location.file_type = location_data.file_type
 	location.zones = location_data.zones
+	location.cards = location_data.cards
+	location.slot = location_data.slot
 	location.room = location_data.room
 	location.screen = location_data.screen
 	location.object_type = location_data.object_type

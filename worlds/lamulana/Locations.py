@@ -17,6 +17,8 @@ class LocationData(NamedTuple):
 	screen: Optional[int] = None
 	object_type: Optional[hex] = None
 	item_id: Optional[int] = None
+	cards: Optional[List[int]] = None
+	slot: Optional[int] = None
 
 def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], worldstate) -> Dict[str, List[LocationData]]:
 	s = LaMulanaLogicShortcuts(world, player)
@@ -409,7 +411,7 @@ def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], 
 
 	# if include_hell_temple_reward:
 	# 	locations['Hell Temple [Dracuet]'] = [
-	# 		LocationData("Hell Temple Final Reward", 2359122)
+	# 		LocationData("Hell Temple Final Reward", 2359122, file_type='dat', cards=[1012], item_id=74)
 	# 	]
 
 	return locations

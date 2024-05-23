@@ -1,4 +1,4 @@
-from typing import Dict, Set, Tuple, NamedTuple
+from typing import Dict, Set, Tuple, NamedTuple, Optional
 
 class ItemData(NamedTuple):
 	category: str
@@ -8,6 +8,8 @@ class ItemData(NamedTuple):
 	trap: bool = False
 	count: int = 1
 	game_code: int = 0
+	cost: Optional[int] = None
+	quantity: int = 1
 
 item_table: Dict[str, ItemData] = {
 	'Leather Whip':                     ItemData('MainWeapon', 2359000, progression=True, count=0), #Cannot be sent, only as a starting item
@@ -133,15 +135,15 @@ item_table: Dict[str, ItemData] = {
 	'Map (Tower of Ruin)':              ItemData('Map', 2359120, game_code=70),
 	'Map (Chamber of Birth)':           ItemData('Map', 2359121, game_code=70),
 	'Map (Dimensional Corridor)':       ItemData('Map', 2359122, game_code=70),
-	'Shuriken Ammo':                    ItemData('ShopInventory', 2359123, count=0, progression=True, game_code=107),
-	'Rolling Shuriken Ammo':            ItemData('ShopInventory', 2359124, count=0, progression=True, game_code=108),
-	'Earth Spear Ammo':                 ItemData('ShopInventory', 2359125, count=0, progression=True, game_code=109),
-	'Flare Gun Ammo':                   ItemData('ShopInventory', 2359126, count=0, progression=True, game_code=110),
-	'Bomb Ammo':                        ItemData('ShopInventory', 2359127, count=0, progression=True, game_code=111),
-	'Chakram Ammo':                     ItemData('ShopInventory', 2359128, count=0, progression=True, game_code=112),
-	'Caltrops Ammo':                    ItemData('ShopInventory', 2359129, count=0, progression=True, game_code=113),
-	'Pistol Ammo':                      ItemData('ShopInventory', 2359130, count=0, progression=True, game_code=114),
-	'5 Weights':                        ItemData('ShopInventory', 2359131, count=0),
+	'Shuriken Ammo':                    ItemData('ShopInventory', 2359123, count=0, progression=True, game_code=107, quantity=10, cost=10),
+	'Rolling Shuriken Ammo':            ItemData('ShopInventory', 2359124, count=0, progression=True, game_code=108, quantity=10, cost=10),
+	'Earth Spear Ammo':                 ItemData('ShopInventory', 2359125, count=0, progression=True, game_code=109, quantity=10, cost=20),
+	'Flare Gun Ammo':                   ItemData('ShopInventory', 2359126, count=0, progression=True, game_code=110, quantity=10, cost=40),
+	'Bomb Ammo':                        ItemData('ShopInventory', 2359127, count=0, progression=True, game_code=111, quantity=10, cost=80),
+	'Chakram Ammo':                     ItemData('ShopInventory', 2359128, count=0, progression=True, game_code=112, quantity=2, cost=55),
+	'Caltrops Ammo':                    ItemData('ShopInventory', 2359129, count=0, progression=True, game_code=113, quantity=10, cost=30),
+	'Pistol Ammo':                      ItemData('ShopInventory', 2359130, count=0, progression=True, game_code=114, quantity=1, cost=350),
+	'5 Weights':                        ItemData('ShopInventory', 2359131, count=0, quantity=5, cost=10),
 	'200 coins':                        ItemData('Resource', 2359132, count=0),
 	'100 coins':                        ItemData('Resource', 2359133, count=0),
 	'50 coins':                         ItemData('Resource', 2359134, count=0),

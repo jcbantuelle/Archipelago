@@ -547,6 +547,19 @@ class LaMulanaWorld(World):
 						rcd_size = self.place_item(objects=screen.objects_with_position, object_type=0xb5, param_index=0, param_len=5, location_id=location.item_id, item_id=item.game_code, rcd_size=rcd_size)
 					elif location.object_type == 0xc3:
 						rcd_size = self.place_item(objects=screen.objects_without_position, object_type=0xc3, param_index=3, param_len=5, location_id=location.item_id, item_id=item.game_code, iterations=2, rcd_size=rcd_size)
+			elif location.file_type == 'dat':
+				for card_index in location.cards:
+					card = dat_file.cards[card_index]
+					entries = card.contents.entries
+					if location.slot is None:
+						e = enumerate(entries)
+						entry_index = next((i for i,v in e if v.header == 0x0042 and v.contents.value == location.item_id), None)
+						entries[entry_index].contents.value = item.game_code
+					else:
+						entries[0].contents.values[location.slot] = item.game_code
+						if item.cost is not None:
+							entries[2].contents.values[location.slot] = item.cost
+						entries[4].contents.values[location.slot] = item.quantity
 
 		for item_name, _ in self.multiworld.start_inventory[self.player].value.items():
 			item_id = item_table[item_name].game_code
@@ -565,12 +578,16 @@ class LaMulanaWorld(World):
 			starting_room.objects_length += 1
 			rcd_size += 16
 
-		write_io = KaitaiStream(io.BytesIO(bytearray(rcd_size)))
-		rcd_file._write(write_io)
+		rcd_write_io = KaitaiStream(io.BytesIO(bytearray(rcd_size)))
+		rcd_file._write(rcd_write_io)
+
+		dat_write_io = KaitaiStream(io.BytesIO(bytearray(dat_size)))
+		dat_file._write(dat_write_io)
 
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
-			output_zip.writestr("script.rcd", write_io.to_byte_array())
+			output_zip.writestr("script.rcd", rcd_write_io.to_byte_array())
+			output_zip.writestr("script_code.dat", dat_write_io.to_byte_array())
 
 	def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, rcd_size, item_mod=0, iterations=1):
 		o = enumerate(objects)
