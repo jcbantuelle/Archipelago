@@ -1,0 +1,8 @@
+version: '2'
+services:
+  archipelago:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - 8080:8080
