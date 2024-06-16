@@ -450,6 +450,8 @@ def create_location(player: int, location_data: LocationData, region: Region, ad
 	location.screen = location_data.screen
 	location.object_type = location_data.object_type
 	location.item_id = location_data.item_id
+	location.obtain_flag = location_data.obtain_flag
+
 	if additional_logic:
 		location.access_rule = lambda state: additional_logic(state) and location_data.logic(state)
 	else:

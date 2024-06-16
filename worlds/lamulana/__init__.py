@@ -532,6 +532,8 @@ class LaMulanaWorld(World):
 
 		locations = self.multiworld.get_locations(self.player)
 
+		flag_mapping = {}
+
 		for location in locations:
 			item = item_table.get(location.item.name)
 			if item is None:
@@ -539,14 +541,41 @@ class LaMulanaWorld(World):
 			if location.file_type == 'rcd':
 				for zone in location.zones:
 					screen = rcd_file.zones[zone].rooms[location.room].screens[location.screen]
+					skip = False
+
+					objects = screen.objects_with_position
+					param_index = 0
+					iterations = 1
+					item_mod = 0
+					location_ids = [location.item_id]
+
 					if location.object_type == 0x2c:
-						rcd_size = self.place_item(objects=screen.objects_with_position, object_type=0x2c, param_index=0, param_len=7, location_id=location.item_id, item_id=item.game_code, item_mod=11, rcd_size=rcd_size)
+						param_len = 7
+						item_mod = 11
+						# Endless Corridor Twin Statue Chest Exists Twice
+						if location.zones[0] == 8 and location.room == 3 and location.screen == 0 and location.item_id == 59:
+							iterations = 2
 					elif location.object_type == 0x2f:
-						rcd_size = self.place_item(objects=screen.objects_with_position, object_type=0x2f, param_index=1, param_len=4, location_id=location.item_id, item_id=item.game_code, rcd_size=rcd_size)
+						param_index = 1
+						param_len = 4
+						# Endless Corridor Keysword Exists Twice, Once as Regular and Once as Empowered
+						if location.zones[0] == 8 and location.room == 2 and location.screen == 1 and location.item_id == 4:
+							location_ids.append(7)
 					elif location.object_type == 0xb5:
-						rcd_size = self.place_item(objects=screen.objects_with_position, object_type=0xb5, param_index=0, param_len=5, location_id=location.item_id, item_id=item.game_code, rcd_size=rcd_size)
+						param_len = 5
 					elif location.object_type == 0xc3:
-						rcd_size = self.place_item(objects=screen.objects_without_position, object_type=0xc3, param_index=3, param_len=5, location_id=location.item_id, item_id=item.game_code, iterations=2, rcd_size=rcd_size)
+						iterations = 2
+						param_index = 3
+						param_len = 5
+						objects = screen.objects_without_position
+					else:
+						skip = True
+
+					if not skip:
+						obtain_flag = item.obtain_flag if item.obtain_flag is not None else location.obtain_flag
+						for location_id in location_ids:
+							rcd_size = self.place_item(objects=objects, object_type=location.object_type, param_index=param_index, param_len=param_len, location_id=location_id, item_id=item.game_code, item_mod=item_mod, iterations=iterations, rcd_size=rcd_size, original_obtain_flag=location.obtain_flag, new_obtain_flag=obtain_flag)
+
 			elif location.file_type == 'dat':
 				for card_index in location.cards:
 					card = dat_file.cards[card_index]
@@ -560,6 +589,7 @@ class LaMulanaWorld(World):
 						if item.cost is not None:
 							entries[2].contents.values[location.slot] = item.cost
 						entries[4].contents.values[location.slot] = item.quantity
+						entries[6].contents.values[location.slot] = location.obtain_flag
 
 		for item_name, _ in self.multiworld.start_inventory[self.player].value.items():
 			item_id = item_table[item_name].game_code
@@ -589,12 +619,19 @@ class LaMulanaWorld(World):
 			output_zip.writestr("script.rcd", rcd_write_io.to_byte_array())
 			output_zip.writestr("script_code.dat", dat_write_io.to_byte_array())
 
-	def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, rcd_size, item_mod=0, iterations=1):
+	def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, original_obtain_flag, new_obtain_flag, rcd_size, item_mod, iterations):
 		o = enumerate(objects)
 		for _ in range(iterations):
 			o_index = next((i for i,v in o if v.id == object_type and v.parameters[param_index] == location_id+item_mod and len(v.parameters) < param_len), None)
-			objects[o_index].parameters[param_index] = item_id+item_mod
-			objects[o_index].parameters.append(1)
-			objects[o_index].parameters_length += 1
+			location = objects[o_index]
+
+			for test_op in location.test_operations:
+				if test_op.flag == original_obtain_flag: test_op.flag = new_obtain_flag
+			for write_op in location.write_operations:
+				if write_op.flag == original_obtain_flag: write_op.flag = new_obtain_flag
+
+			location.parameters[param_index] = item_id+item_mod
+			location.parameters.append(1)
+			location.parameters_length += 1
 			rcd_size += 2
 		return rcd_size

@@ -1,0 +1,69 @@
+2056 (0x808) - Nebur Shop 1
+2057 (0x809) - Sidro Shop 1
+2058 (0x80a) - Modro Shop 2
+2059 (0x80b) - Modro Shop 3
+2060 (0x80c) - Penadvent Shop 1
+2061 (0x80d) - Penadvent Shop 3
+2062 (0x80e) - Greedy Charlie Shop 2
+2063 (0x80f) - Greedy Charlie Shop 3
+2064 (0x810) - Shalom III Shop 1
+2065 (0x811) - Shalom III Shop 2
+2066 (0x812) - Usas VI Shop 2
+2067 (0x813) - Usas VI Shop 3
+2068 (0x814) - Kingvalley I Shop 1
+2069 (0x815) - Kingvalley I Shop 2
+2070 (0x816) - Kingvalley I Shop 3
+2071 (0x817) - Mr. Fishman (Original) Shop 1
+2072 (0x818) - Mr. Fishman (Original) Shop 2
+2073 (0x819) - Mr. Fishman (Original) Shop 3
+2074 (0x81a) - Mr. Fishman (Alt) Shop 2
+2075 (0x81b) - Hot-blooded Nemesistwo Shop 2
+2076 (0x81c) - Hot-blooded Nemesistwo Shop 3
+2077 (0x81d) - Operator Combaker Shop 1
+2078 (0x81e) - Operator Combaker Shop 2
+2079 (0x81f) - Operator Combaker Shop 3
+2080 (0x820) - Yiegah Kungfu Shop 2
+2081 (0x821) - Yiegah Kungfu Shop 3
+2082 (0x822) - Yiear Kungfu Shop 2
+2083 (0x823) - Yiear Kungfu Shop 3
+2084 (0x824) - Arrogant Sturdy Snake Shop Shop 2
+2085 (0x825) - Arrogant Sturdy Snake Shop Shop 3
+2086 (0x826) - Arrogant Metagear Shop 2
+2087 (0x827) - Arrogant Metagear Shop 3
+2088 (0x828) - Affected Knimare Shop 1
+2089 (0x829) - Affected Knimare Shop 2
+2090 (0x82a) - Affected Knimare Shop 3
+2091 (0x82b) - Mover Athleland Shop 2
+2092 (0x82c) - Mover Athleland Shop 3
+2093 (0x82d) - Giant Mopiran Shop 1
+2094 (0x82e) - Giant Mopiran Shop 2
+2095 (0x82f) - Giant Mopiran Shop 3
+2096 (0x830) - Kingvalley II Shop 2
+2097 (0x831) - Kingvalley II Shop 3
+2098 (0x832) - Energetic Belmont Shop 2
+2099 (0x833) - Energetic Belmont Shop 3
+2100 (0x834) - Mechanical Efspi Shop 2
+2101 (0x835) - Mechanical Efspi Shop 3
+2102 (0x836) - Mudman Qubert Shop 1
+2103 (0x837) - Mudman Qubert Shop 3
+2104 (0x838) - Tailor Dracuet Shop 1
+2105 (0x839) - Tailor Dracuet Shop 2
+2106 (0x83a) - Tailor Dracuet Shop 3
+
+2107 (0x83b) - 'Map (Surface) Location'
+2108 (0x83c) - 'Map (Gate of Guidance) Location'
+2109 (0x83d) - 'Map (Mausoleum of the Giants) Location'
+2110 (0x83e) - 'Map (Temple of the Sun) Location'
+2111 (0x83f) - 'Map (Spring in the Sky) Location'
+2112 (0x840) - 'Map (Inferno Cavern) Location'
+2113 (0x841) - 'Map (Chamber of Extinction) Location'
+2114 (0x842) - 'Map (Twin Labyrinths) Location'
+2115 (0x843) - 'Map (Endless Corridor) Location'
+2116 (0x844) - 'Map (Shrine of the Mother) Location'
+2117 (0x845) - 'Map (Gate of Illusion) Location'
+2118 (0x846) - 'Map (Graveyard of the Giants) Location'
+2119 (0x847) - 'Map (Temple of Moonlight) Location'
+2120 (0x848) - 'Map (Tower of the Goddess) Location'
+2121 (0x849) - 'Map (Tower of Ruin) Location'
+2122 (0x84a) - 'Map (Chamber of Birth) Location'
+2123 (0x84b) - 'Map (Dimensional Corridor) Location'

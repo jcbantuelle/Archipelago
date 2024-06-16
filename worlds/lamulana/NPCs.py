@@ -20,161 +20,161 @@ def get_npc_checks(world: Optional[MultiWorld], player: Optional[int]) -> Dict[s
 		# 	LocationData('Starting Shop Item 3', 2359202, is_shop=True)
 		# ],
 		'Elder Xelpud': [
-			LocationData('Xelpud xmailer.exe Gift', 2359203, file_type='dat', cards=[364], item_id=86),
-			LocationData('Xelpud Mulana Talisman Gift', 2359204, lambda state: state.has('Diary', player), file_type='dat', cards=[371], item_id=73),
+			LocationData('Xelpud xmailer.exe Gift', 2359203, file_type='dat', cards=[364], item_id=86, obtain_flag=0xe3),
+			LocationData('Xelpud Mulana Talisman Gift', 2359204, lambda state: state.has('Diary', player), file_type='dat', cards=[371], item_id=73, obtain_flag=0x105),
 			LocationData('NPC: Xelpud', None, lambda state: True, True),
 		],
 		'Nebur': [
-			LocationData('Nebur Shop Item 1', 2359205, is_shop=True, file_type='dat', cards=[34], slot=0, item_id=105),
-			LocationData('Nebur Shop Item 2', 2359206, is_shop=True, file_type='dat', cards=[34,490], slot=1, item_id=85),
-			LocationData('Nebur Shop Item 3', 2359207, is_shop=True, file_type='dat', cards=[34,490], slot=2, item_id=87),
+			LocationData('Nebur Shop Item 1', 2359205, is_shop=True, file_type='dat', cards=[34], slot=0, item_id=105, obtain_flag=0x808),
+			LocationData('Nebur Shop Item 2', 2359206, is_shop=True, file_type='dat', cards=[34,490], slot=1, item_id=85, obtain_flag=0xe2),
+			LocationData('Nebur Shop Item 3', 2359207, is_shop=True, file_type='dat', cards=[34,490], slot=2, item_id=87, obtain_flag=0xe4),
 			#Must be an item, so doesn't get marked as shop
-			LocationData('Nebur Shop Item - 4 Guardians', 2359208, lambda state: s.guardian_count(state) >= 4, file_type='dat', cards=[490], slot=0, item_id=76)
+			LocationData('Nebur Shop Item - 4 Guardians', 2359208, lambda state: s.guardian_count(state) >= 4, file_type='dat', cards=[490], slot=0, item_id=76, obtain_flag=0x2e6)
 		],
 		'Sidro': [
-			LocationData('Sidro Shop Item 1', 2359209, is_shop=True, file_type='dat', cards=[35], slot=0, item_id=16),
-			LocationData('Sidro Shop Item 2', 2359210, is_shop=True, file_type='dat', cards=[35], slot=1, item_id=36),
-			LocationData('Sidro Shop Item 3', 2359211, is_shop=True, file_type='dat', cards=[35], slot=2, item_id=15)
+			LocationData('Sidro Shop Item 1', 2359209, is_shop=True, file_type='dat', cards=[35], slot=0, item_id=16, obtain_flag=0x809),
+			LocationData('Sidro Shop Item 2', 2359210, is_shop=True, file_type='dat', cards=[35], slot=1, item_id=36, obtain_flag=0xa5),
+			LocationData('Sidro Shop Item 3', 2359211, is_shop=True, file_type='dat', cards=[35], slot=2, item_id=15, obtain_flag=0x8a)
 		],
 		'Modro': [
-			LocationData('Modro Shop Item 1', 2359212, is_shop=True, file_type='dat', cards=[36], slot=0, item_id=20),
-			LocationData('Modro Shop Item 2', 2359213, is_shop=True, file_type='dat', cards=[36], slot=1, item_id=114),
-			LocationData('Modro Shop Item 3', 2359214, is_shop=True, file_type='dat', cards=[36], slot=2, item_id=107)
+			LocationData('Modro Shop Item 1', 2359212, is_shop=True, file_type='dat', cards=[36], slot=0, item_id=20, obtain_flag=0x96),
+			LocationData('Modro Shop Item 2', 2359213, is_shop=True, file_type='dat', cards=[36], slot=1, item_id=114, obtain_flag=0x80a),
+			LocationData('Modro Shop Item 3', 2359214, is_shop=True, file_type='dat', cards=[36], slot=2, item_id=107, obtain_flag=0x80b)
 		],
 		'Former Mekuri Master': [
-			LocationData('Former Mekuri Master mekuri.exe Gift', 2359215, file_type='dat', cards=[37], item_id=100)
+			LocationData('Former Mekuri Master mekuri.exe Gift', 2359215, file_type='dat', cards=[37], item_id=100, obtain_flag=0xf1)
 		],
 		'Penadvent of Ghost': [
-			LocationData('Penadvent of Ghost Shop Item 1', 2359216, is_shop=True, file_type='dat', cards=[39], slot=0, item_id=107),
-			LocationData('Penadvent of Ghost Shop Item 2', 2359217, is_shop=True, file_type='dat', cards=[39], slot=1, item_id=92),
-			LocationData('Penadvent of Ghost Shop Item 3', 2359218, is_shop=True, file_type='dat', cards=[39], slot=2, item_id=105)
+			LocationData('Penadvent of Ghost Shop Item 1', 2359216, is_shop=True, file_type='dat', cards=[39], slot=0, item_id=107, obtain_flag=0x80c),
+			LocationData('Penadvent of Ghost Shop Item 2', 2359217, is_shop=True, file_type='dat', cards=[39], slot=1, item_id=92, obtain_flag=0xe9),
+			LocationData('Penadvent of Ghost Shop Item 3', 2359218, is_shop=True, file_type='dat', cards=[39], slot=2, item_id=105, obtain_flag=0x80d)
 		],
 		'Greedy Charlie': [
-			LocationData('Greedy Charlie Shop Item 1', 2359219, is_shop=True, file_type='dat', cards=[74], slot=0, item_id=57),
-			LocationData('Greedy Charlie Shop Item 2', 2359220, is_shop=True, file_type='dat', cards=[74], slot=1, item_id=108),
-			LocationData('Greedy Charlie Shop Item 3', 2359221, is_shop=True, file_type='dat', cards=[74], slot=2, item_id=105)
+			LocationData('Greedy Charlie Shop Item 1', 2359219, is_shop=True, file_type='dat', cards=[74], slot=0, item_id=57, obtain_flag=0xba),
+			LocationData('Greedy Charlie Shop Item 2', 2359220, is_shop=True, file_type='dat', cards=[74], slot=1, item_id=108, obtain_flag=0x80e),
+			LocationData('Greedy Charlie Shop Item 3', 2359221, is_shop=True, file_type='dat', cards=[74], slot=2, item_id=105, obtain_flag=0x80f)
 		],
 		'Mulbruk': [
-			LocationData('Mulbruk Book of the Dead Gift', 2359222, lambda state: state.can_reach('Temple of Moonlight [Southeast]', 'Region', player), file_type='dat', cards=[397], item_id=54),
+			LocationData('Mulbruk Book of the Dead Gift', 2359222, lambda state: state.can_reach('Temple of Moonlight [Southeast]', 'Region', player), file_type='dat', cards=[397], item_id=54, obtain_flag=0x32a),
 			LocationData('NPC: Mulbruk', None, lambda state: True, True),
 		],
 		'Shalom III': [
-			LocationData('Shalom III Shop Item 1', 2359223, is_shop=True, file_type='dat', cards=[100], slot=0, item_id=108),
-			LocationData('Shalom III Shop Item 2', 2359224, is_shop=True, file_type='dat', cards=[100], slot=1, item_id=109),
-			LocationData('Shalom III Shop Item 3', 2359225, is_shop=True, file_type='dat', cards=[100], slot=2, item_id=89)
+			LocationData('Shalom III Shop Item 1', 2359223, is_shop=True, file_type='dat', cards=[100], slot=0, item_id=108, obtain_flag=0x810),
+			LocationData('Shalom III Shop Item 2', 2359224, is_shop=True, file_type='dat', cards=[100], slot=1, item_id=109, obtain_flag=0x811),
+			LocationData('Shalom III Shop Item 3', 2359225, is_shop=True, file_type='dat', cards=[100], slot=2, item_id=89, obtain_flag=0xe6)
 		],
 		'Usas VI': [
-			LocationData('Usas VI Shop Item 1', 2359226, is_shop=True, file_type='dat', cards=[102], slot=0, item_id=37),
-			LocationData('Usas VI Shop Item 2', 2359227, is_shop=True, file_type='dat', cards=[102], slot=1, item_id=110),
-			LocationData('Usas VI Shop Item 3', 2359228, is_shop=True, file_type='dat', cards=[102], slot=2, item_id=105)
+			LocationData('Usas VI Shop Item 1', 2359226, is_shop=True, file_type='dat', cards=[102], slot=0, item_id=37, obtain_flag=0xa6),
+			LocationData('Usas VI Shop Item 2', 2359227, is_shop=True, file_type='dat', cards=[102], slot=1, item_id=110, obtain_flag=0x812),
+			LocationData('Usas VI Shop Item 3', 2359228, is_shop=True, file_type='dat', cards=[102], slot=2, item_id=105, obtain_flag=0x813)
 		],
 		'Kingvalley I': [
-			LocationData('Kingvalley I Shop Item 1', 2359229, is_shop=True, file_type='dat', cards=[103], slot=0, item_id=114),
-			LocationData('Kingvalley I Shop Item 2', 2359230, is_shop=True, file_type='dat', cards=[103], slot=1, item_id=111),
-			LocationData('Kingvalley I Shop Item 3', 2359231, is_shop=True, file_type='dat', cards=[103], slot=2, item_id=107)
+			LocationData('Kingvalley I Shop Item 1', 2359229, is_shop=True, file_type='dat', cards=[103], slot=0, item_id=114, obtain_flag=0x814),
+			LocationData('Kingvalley I Shop Item 2', 2359230, is_shop=True, file_type='dat', cards=[103], slot=1, item_id=111, obtain_flag=0x815),
+			LocationData('Kingvalley I Shop Item 3', 2359231, is_shop=True, file_type='dat', cards=[103], slot=2, item_id=107, obtain_flag=0x816)
 		],
 		'Philosopher Giltoriyo': [
 			LocationData('NPC: Philosopher Giltoriyo', None, lambda state: state.has("Philosopher's Ocarina", player), True)
 		],
 		'Mr. Fishman (Original)': [
-			LocationData('Mr. Fishman (Original) Shop Item 1', 2359232, is_shop=True, file_type='dat', cards=[132], slot=0, item_id=105),
-			LocationData('Mr. Fishman (Original) Shop Item 2', 2359233, is_shop=True, file_type='dat', cards=[132], slot=1, item_id=107),
-			LocationData('Mr. Fishman (Original) Shop Item 3', 2359234, is_shop=True, file_type='dat', cards=[132], slot=2, item_id=113)
+			LocationData('Mr. Fishman (Original) Shop Item 1', 2359232, is_shop=True, file_type='dat', cards=[132], slot=0, item_id=105, obtain_flag=0x817),
+			LocationData('Mr. Fishman (Original) Shop Item 2', 2359233, is_shop=True, file_type='dat', cards=[132], slot=1, item_id=107, obtain_flag=0x818),
+			LocationData('Mr. Fishman (Original) Shop Item 3', 2359234, is_shop=True, file_type='dat', cards=[132], slot=2, item_id=113, obtain_flag=0x819)
 		],
 		'Mr. Fishman (Alt)': [
-			LocationData('Mr. Fishman (Alt) Shop Item 1', 2359235, is_shop=True, file_type='dat', cards=[133], slot=0, item_id=38),
-			LocationData('Mr. Fishman (Alt) Shop Item 2', 2359236, is_shop=True, file_type='dat', cards=[133], slot=1, item_id=92),
-			LocationData('Mr. Fishman (Alt) Shop Item 3', 2359237, is_shop=True, file_type='dat', cards=[133], slot=2, item_id=97)
+			LocationData('Mr. Fishman (Alt) Shop Item 1', 2359235, is_shop=True, file_type='dat', cards=[133], slot=0, item_id=38, obtain_flag=0xa7),
+			LocationData('Mr. Fishman (Alt) Shop Item 2', 2359236, is_shop=True, file_type='dat', cards=[133], slot=1, item_id=92, obtain_flag=0x81a),
+			LocationData('Mr. Fishman (Alt) Shop Item 3', 2359237, is_shop=True, file_type='dat', cards=[133], slot=2, item_id=97, obtain_flag=0xee)
 		],
 		'Hot-blooded Nemesistwo': [
-			LocationData('Hot-blooded Nemesistwo Shop Item 1', 2359238, is_shop=True, file_type='dat', cards=[470], slot=0, item_id=98),
-			LocationData('Hot-blooded Nemesistwo Shop Item 2', 2359239, is_shop=True, file_type='dat', cards=[470], slot=1, item_id=109),
-			LocationData('Hot-blooded Nemesistwo Shop Item 3', 2359240, is_shop=True, file_type='dat', cards=[470], slot=2, item_id=105)
+			LocationData('Hot-blooded Nemesistwo Shop Item 1', 2359238, is_shop=True, file_type='dat', cards=[470], slot=0, item_id=98, obtain_flag=0xef),
+			LocationData('Hot-blooded Nemesistwo Shop Item 2', 2359239, is_shop=True, file_type='dat', cards=[470], slot=1, item_id=109, obtain_flag=0x81b),
+			LocationData('Hot-blooded Nemesistwo Shop Item 3', 2359240, is_shop=True, file_type='dat', cards=[470], slot=2, item_id=105, obtain_flag=0x81c)
 		],
 		'Operator Combaker': [
-			LocationData('Operator Combaker Shop Item 1', 2359241, is_shop=True, file_type='dat', cards=[167], slot=0, item_id=109),
-			LocationData('Operator Combaker Shop Item 2', 2359242, is_shop=True, file_type='dat', cards=[167], slot=1, item_id=110),
-			LocationData('Operator Combaker Shop Item 3', 2359243, is_shop=True, file_type='dat', cards=[167], slot=2, item_id=112)
+			LocationData('Operator Combaker Shop Item 1', 2359241, is_shop=True, file_type='dat', cards=[167], slot=0, item_id=109, obtain_flag=0x81d),
+			LocationData('Operator Combaker Shop Item 2', 2359242, is_shop=True, file_type='dat', cards=[167], slot=1, item_id=110, obtain_flag=0x81e),
+			LocationData('Operator Combaker Shop Item 3', 2359243, is_shop=True, file_type='dat', cards=[167], slot=2, item_id=112, obtain_flag=0x81f)
 		],
 		'Yiegah Kungfu': [
-			LocationData('Yiegah Kungfu Shop Item 1', 2359244, is_shop=True, file_type='dat', cards=[205], slot=0, item_id=27),
-			LocationData('Yiegah Kungfu Shop Item 2', 2359245, is_shop=True, file_type='dat', cards=[205], slot=1, item_id=109),
-			LocationData('Yiegah Kungfu Shop Item 3', 2359246, is_shop=True, file_type='dat', cards=[205], slot=2, item_id=110),
+			LocationData('Yiegah Kungfu Shop Item 1', 2359244, is_shop=True, file_type='dat', cards=[205], slot=0, item_id=27, obtain_flag=0x9d),
+			LocationData('Yiegah Kungfu Shop Item 2', 2359245, is_shop=True, file_type='dat', cards=[205], slot=1, item_id=109, obtain_flag=0x820),
+			LocationData('Yiegah Kungfu Shop Item 3', 2359246, is_shop=True, file_type='dat', cards=[205], slot=2, item_id=110, obtain_flag=0x821),
 			LocationData('NPC: Yiegah Kungfu', None, lambda state: True, True)
 		],
 		'Yiear Kungfu': [
-			LocationData('Yiear Kungfu Shop Item 1', 2359247, is_shop=True, file_type='dat', cards=[185], slot=0, item_id=43),
-			LocationData('Yiear Kungfu Shop Item 2', 2359248, is_shop=True, file_type='dat', cards=[185], slot=1, item_id=113),
-			LocationData('Yiear Kungfu Shop Item 3', 2359249, is_shop=True, file_type='dat', cards=[185], slot=2, item_id=105)
+			LocationData('Yiear Kungfu Shop Item 1', 2359247, is_shop=True, file_type='dat', cards=[185], slot=0, item_id=43, obtain_flag=0xac),
+			LocationData('Yiear Kungfu Shop Item 2', 2359248, is_shop=True, file_type='dat', cards=[185], slot=1, item_id=113, obtain_flag=0x822),
+			LocationData('Yiear Kungfu Shop Item 3', 2359249, is_shop=True, file_type='dat', cards=[185], slot=2, item_id=105, obtain_flag=0x823)
 		],
 		'Arrogant Sturdy Snake': [
-			LocationData('Arrogant Sturdy Snake Shop Item 1', 2359250, is_shop=True, file_type='dat', cards=[204], slot=0, item_id=60),
-			LocationData('Arrogant Sturdy Snake Shop Item 2', 2359251, is_shop=True, file_type='dat', cards=[204], slot=1, item_id=111),
-			LocationData('Arrogant Sturdy Snake Shop Item 3', 2359252, is_shop=True, file_type='dat', cards=[204], slot=2, item_id=113)
+			LocationData('Arrogant Sturdy Snake Shop Item 1', 2359250, is_shop=True, file_type='dat', cards=[204], slot=0, item_id=60, obtain_flag=0xbd),
+			LocationData('Arrogant Sturdy Snake Shop Item 2', 2359251, is_shop=True, file_type='dat', cards=[204], slot=1, item_id=111, obtain_flag=0x824),
+			LocationData('Arrogant Sturdy Snake Shop Item 3', 2359252, is_shop=True, file_type='dat', cards=[204], slot=2, item_id=113, obtain_flag=0x825)
 		],
 		'Arrogant Metagear': [
-			LocationData('Arrogant Metagear Shop Item 1', 2359253, is_shop=True, file_type='dat', cards=[187], slot=0, item_id=25),
-			LocationData('Arrogant Metagear Shop Item 2', 2359254, is_shop=True, file_type='dat', cards=[187], slot=1, item_id=107),
-			LocationData('Arrogant Metagear Shop Item 3', 2359255, is_shop=True, file_type='dat', cards=[187], slot=2, item_id=112)
+			LocationData('Arrogant Metagear Shop Item 1', 2359253, is_shop=True, file_type='dat', cards=[187], slot=0, item_id=25, obtain_flag=0x9b),
+			LocationData('Arrogant Metagear Shop Item 2', 2359254, is_shop=True, file_type='dat', cards=[187], slot=1, item_id=107, obtain_flag=0x826),
+			LocationData('Arrogant Metagear Shop Item 3', 2359255, is_shop=True, file_type='dat', cards=[187], slot=2, item_id=112, obtain_flag=0x827)
 		],
 		'Fairy Queen': [
 			LocationData('Fairies Unlocked', None, lambda state: state.has("Isis' Pendant", player), True)
 		],
 		'Affected Knimare': [
-			LocationData('Affected Knimare Shop Item 1', 2359256, is_shop=True, file_type='dat', cards=[220], slot=0, item_id=111),
-			LocationData('Affected Knimare Shop Item 2', 2359257, is_shop=True, file_type='dat', cards=[220], slot=1, item_id=113),
-			LocationData('Affected Knimare Shop Item 3', 2359258, is_shop=True, file_type='dat', cards=[220], slot=2, item_id=105)
+			LocationData('Affected Knimare Shop Item 1', 2359256, is_shop=True, file_type='dat', cards=[220], slot=0, item_id=111, obtain_flag=0x828),
+			LocationData('Affected Knimare Shop Item 2', 2359257, is_shop=True, file_type='dat', cards=[220], slot=1, item_id=113, obtain_flag=0x829),
+			LocationData('Affected Knimare Shop Item 3', 2359258, is_shop=True, file_type='dat', cards=[220], slot=2, item_id=105, obtain_flag=0x82a)
 		],
 		'Mr. Slushfund': [
-			LocationData('Mr. Slushfund Pepper Gift', 2359259, file_type='dat', cards=[245], item_id=30),
-			LocationData('Mr. Slushfund Anchor Gift', 2359260, lambda state: state.has('Treasures', player), file_type='dat', cards=[247], item_id=50)
+			LocationData('Mr. Slushfund Pepper Gift', 2359259, file_type='dat', cards=[245], item_id=30, obtain_flag=0x228),
+			LocationData('Mr. Slushfund Anchor Gift', 2359260, lambda state: state.has('Treasures', player), file_type='dat', cards=[247], item_id=50, obtain_flag=0x228)
 		],
 		'Priest Alest': [
-			LocationData('Priest Alest Mini Doll Gift', 2359261, file_type='dat', cards=[249], item_id=22)
+			LocationData('Priest Alest Mini Doll Gift', 2359261, file_type='dat', cards=[249], item_id=22, obtain_flag=0x98)
 		],
 		'Mover Athleland': [
-			LocationData('Mover Athleland Shop Item 1', 2359262, is_shop=True, file_type='dat', cards=[244], slot=0, item_id=99),
-			LocationData('Mover Athleland Shop Item 2', 2359263, is_shop=True, file_type='dat', cards=[244], slot=1, item_id=111),
-			LocationData('Mover Athleland Shop Item 3', 2359264, is_shop=True, file_type='dat', cards=[244], slot=2, item_id=105)
+			LocationData('Mover Athleland Shop Item 1', 2359262, is_shop=True, file_type='dat', cards=[244], slot=0, item_id=99, obtain_flag=0xf0),
+			LocationData('Mover Athleland Shop Item 2', 2359263, is_shop=True, file_type='dat', cards=[244], slot=1, item_id=111, obtain_flag=0x82b),
+			LocationData('Mover Athleland Shop Item 3', 2359264, is_shop=True, file_type='dat', cards=[244], slot=2, item_id=105, obtain_flag=0x82c)
 		],
 		'Giant Mopiran': [
-			LocationData('Giant Mopiran Shop Item 1', 2359265, is_shop=True, file_type='dat', cards=[272], slot=0, item_id=109),
-			LocationData('Giant Mopiran Shop Item 2', 2359266, is_shop=True, file_type='dat', cards=[272], slot=1, item_id=75),
-			LocationData('Giant Mopiran Shop Item 3', 2359267, is_shop=True, file_type='dat', cards=[272], slot=2, item_id=105)
+			LocationData('Giant Mopiran Shop Item 1', 2359265, is_shop=True, file_type='dat', cards=[272], slot=0, item_id=109, obtain_flag=0x82d),
+			LocationData('Giant Mopiran Shop Item 2', 2359266, is_shop=True, file_type='dat', cards=[272], slot=1, item_id=75, obtain_flag=0x82e),
+			LocationData('Giant Mopiran Shop Item 3', 2359267, is_shop=True, file_type='dat', cards=[272], slot=2, item_id=105, obtain_flag=0x82f)
 		],
 		'Philosopher Alsedana': [
 			LocationData('NPC: Philosopher Alsedana', None, lambda state: state.has("Philosopher's Ocarina", player), True)
 		],
 		'Kingvalley II': [
-			LocationData('Kingvalley II Shop Item 1', 2359268, is_shop=True, file_type='dat', cards=[290], slot=0, item_id=56),
-			LocationData('Kingvalley II Shop Item 2', 2359269, is_shop=True, file_type='dat', cards=[290], slot=1, item_id=107),
-			LocationData('Kingvalley II Shop Item 3', 2359270, is_shop=True, file_type='dat', cards=[290], slot=2, item_id=114)
+			LocationData('Kingvalley II Shop Item 1', 2359268, is_shop=True, file_type='dat', cards=[290], slot=0, item_id=56, obtain_flag=0xb9),
+			LocationData('Kingvalley II Shop Item 2', 2359269, is_shop=True, file_type='dat', cards=[290], slot=1, item_id=107, obtain_flag=0x830),
+			LocationData('Kingvalley II Shop Item 3', 2359270, is_shop=True, file_type='dat', cards=[290], slot=2, item_id=114, obtain_flag=0x831)
 		],
 		'Philosopher Samaranta': [
 			LocationData('NPC: Philosopher Samaranta', None, lambda state: state.has("Philosopher's Ocarina", player), True)
 		],
 		'Energetic Belmont': [
-			LocationData('Energetic Belmont Shop Item 1', 2359271, is_shop=True, file_type='dat', cards=[303], slot=0, item_id=102),
-			LocationData('Energetic Belmont Shop Item 2', 2359272, is_shop=True, file_type='dat', cards=[303], slot=1, item_id=113),
-			LocationData('Energetic Belmont Shop Item 3', 2359273, is_shop=True, file_type='dat', cards=[303], slot=2, item_id=105)
+			LocationData('Energetic Belmont Shop Item 1', 2359271, is_shop=True, file_type='dat', cards=[303], slot=0, item_id=102, obtain_flag=0xf3),
+			LocationData('Energetic Belmont Shop Item 2', 2359272, is_shop=True, file_type='dat', cards=[303], slot=1, item_id=113, obtain_flag=0x832),
+			LocationData('Energetic Belmont Shop Item 3', 2359273, is_shop=True, file_type='dat', cards=[303], slot=2, item_id=105, obtain_flag=0x833)
 		],
 		'Mechanical Efspi': [
-			LocationData('Mechanical Efspi Shop Item 1', 2359274, is_shop=True, file_type='dat', cards=[321], slot=0, item_id=91),
-			LocationData('Mechanical Efspi Shop Item 2', 2359275, is_shop=True, file_type='dat', cards=[321], slot=1, item_id=111),
-			LocationData('Mechanical Efspi Shop Item 3', 2359276, is_shop=True, file_type='dat', cards=[321], slot=2, item_id=110)
+			LocationData('Mechanical Efspi Shop Item 1', 2359274, is_shop=True, file_type='dat', cards=[321], slot=0, item_id=91, obtain_flag=0xe8),
+			LocationData('Mechanical Efspi Shop Item 2', 2359275, is_shop=True, file_type='dat', cards=[321], slot=1, item_id=111, obtain_flag=0x834),
+			LocationData('Mechanical Efspi Shop Item 3', 2359276, is_shop=True, file_type='dat', cards=[321], slot=2, item_id=110, obtain_flag=0x835)
 		],
 		'Mudman Qubert': [
-			LocationData('Mudman Qubert Shop Item 1', 2359277, is_shop=True, file_type='dat', cards=[337], slot=0, item_id=114),
-			LocationData('Mudman Qubert Shop Item 2', 2359278, is_shop=True, file_type='dat', cards=[337], slot=1, item_id=19),
-			LocationData('Mudman Qubert Shop Item 3', 2359279, is_shop=True, file_type='dat', cards=[337], slot=2, item_id=105)
+			LocationData('Mudman Qubert Shop Item 1', 2359277, is_shop=True, file_type='dat', cards=[337], slot=0, item_id=114, obtain_flag=0x836),
+			LocationData('Mudman Qubert Shop Item 2', 2359278, is_shop=True, file_type='dat', cards=[337], slot=1, item_id=19, obtain_flag=0x93),
+			LocationData('Mudman Qubert Shop Item 3', 2359279, is_shop=True, file_type='dat', cards=[337], slot=2, item_id=105, obtain_flag=0x837)
 		],
 		'Philosopher Fobos': [
 			LocationData('NPC: Philosopher Fobos', None, lambda state: state.has("Philosopher's Ocarina", player), True)
 		],
 		'Tailor Dracuet': [
-			LocationData('Tailor Dracuet Shop Item 1', 2359280, is_shop=True, file_type='dat', cards=[1008], slot=0, item_id=110),
-			LocationData('Tailor Dracuet Shop Item 2', 2359281, is_shop=True, file_type='dat', cards=[1008], slot=1, item_id=111),
-			LocationData('Tailor Dracuet Shop Item 3', 2359282, is_shop=True, file_type='dat', cards=[1008], slot=2, item_id=114)
+			LocationData('Tailor Dracuet Shop Item 1', 2359280, is_shop=True, file_type='dat', cards=[1008], slot=0, item_id=110, obtain_flag=0x838),
+			LocationData('Tailor Dracuet Shop Item 2', 2359281, is_shop=True, file_type='dat', cards=[1008], slot=1, item_id=111, obtain_flag=0x839),
+			LocationData('Tailor Dracuet Shop Item 3', 2359282, is_shop=True, file_type='dat', cards=[1008], slot=2, item_id=114, obtain_flag=0x83a)
 		] if include_dracuet else []
 	}
 
