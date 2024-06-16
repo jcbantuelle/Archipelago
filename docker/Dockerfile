@@ -2,9 +2,7 @@ FROM python:3.11-bookworm
 
 RUN apt update && apt install -y build-essential
 
-RUN mkdir /app
-COPY . /app
-COPY docker/config.yaml /app/config.yaml
+COPY docker/config.yaml /usr/local/lib/config.yaml
 
 WORKDIR /app
-ENTRYPOINT python3 WebHost.py
+ENTRYPOINT cp /usr/local/lib/config.yaml /app/config.yaml && python3 WebHost.py

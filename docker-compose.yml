@@ -1,8 +1,10 @@
-version: '2'
 services:
   archipelago:
     build:
       context: .
       dockerfile: docker/Dockerfile
+    volumes:
+      - .:/app:rw
     ports:
       - 8080:8080
+    container_name: ap_server
