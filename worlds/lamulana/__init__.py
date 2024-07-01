@@ -572,9 +572,11 @@ class LaMulanaWorld(World):
 						skip = True
 
 					if not skip:
+						original_obtain_flag = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
 						obtain_flag = item.obtain_flag if item.obtain_flag is not None else location.obtain_flag
+						obtain_value = item.obtain_value if item.obtain_value is not None else location.obtain_value
 						for location_id in location_ids:
-							rcd_size = self.place_item(objects=objects, object_type=location.object_type, param_index=param_index, param_len=param_len, location_id=location_id, item_id=item.game_code, item_mod=item_mod, iterations=iterations, rcd_size=rcd_size, original_obtain_flag=location.obtain_flag, new_obtain_flag=obtain_flag)
+							rcd_size = self.place_item(objects=objects, object_type=location.object_type, param_index=param_index, param_len=param_len, location_id=location_id, item_id=item.game_code, item_mod=item_mod, iterations=iterations, rcd_size=rcd_size, original_obtain_flag=original_obtain_flag, new_obtain_flag=obtain_flag, obtain_value=obtain_value)
 
 			elif location.file_type == 'dat':
 				for card_index in location.cards:
@@ -584,12 +586,25 @@ class LaMulanaWorld(World):
 						e = enumerate(entries)
 						entry_index = next((i for i,v in e if v.header == 0x0042 and v.contents.value == location.item_id), None)
 						entries[entry_index].contents.value = item.game_code
+
+						original_obtain_flag = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
+						obtain_flag = item.obtain_flag if item.obtain_flag is not None else location.obtain_flag
+						obtain_value = item.obtain_value if item.obtain_value is not None else location.obtain_value
+
+						e = enumerate(entries)
+						entry_index = next((i for i,v in e if v.header == 0x0040 and v.contents.address == original_obtain_flag), None)
+						entries[entry_index].contents.address = obtain_flag
+						entries[entry_index].contents.value = obtain_value
 					else:
-						entries[0].contents.values[location.slot] = item.game_code
+						e = enumerate(entries)
+						data_indices = [i for i,v in e if v.header == 0x004e]
+						entries[data_indices[0]].contents.values[location.slot] = item.game_code
 						if item.cost is not None:
-							entries[2].contents.values[location.slot] = item.cost
-						entries[4].contents.values[location.slot] = item.quantity
-						entries[6].contents.values[location.slot] = location.obtain_flag
+							entries[data_indices[1]].contents.values[location.slot] = item.cost
+						entries[data_indices[2]].contents.values[location.slot] = item.quantity
+						entries[data_indices[3]].contents.values[location.slot] = location.obtain_flag
+						if location.obtain_value > 1:
+							entries[data_indices[6]].contents.values[location.slot] = location.obtain_flag
 
 		for item_name, _ in self.multiworld.start_inventory[self.player].value.items():
 			item_id = item_table[item_name].game_code
@@ -619,16 +634,22 @@ class LaMulanaWorld(World):
 			output_zip.writestr("script.rcd", rcd_write_io.to_byte_array())
 			output_zip.writestr("script_code.dat", dat_write_io.to_byte_array())
 
-	def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, original_obtain_flag, new_obtain_flag, rcd_size, item_mod, iterations):
+	def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, rcd_size, item_mod, iterations):
 		o = enumerate(objects)
 		for _ in range(iterations):
 			o_index = next((i for i,v in o if v.id == object_type and v.parameters[param_index] == location_id+item_mod and len(v.parameters) < param_len), None)
 			location = objects[o_index]
 
 			for test_op in location.test_operations:
-				if test_op.flag == original_obtain_flag: test_op.flag = new_obtain_flag
+				if test_op.flag == original_obtain_flag:
+					test_op.flag = new_obtain_flag
 			for write_op in location.write_operations:
-				if write_op.flag == original_obtain_flag: write_op.flag = new_obtain_flag
+				if write_op.flag == original_obtain_flag:
+					write_op.flag = new_obtain_flag
+					if object_type == 0x2c:
+						location.write_operations[3].op_value = obtain_value
+					elif object_type == 0x2f or 0xb5 or 0xc3:
+						write_op.value = obtain_value
 
 			location.parameters[param_index] = item_id+item_mod
 			location.parameters.append(1)

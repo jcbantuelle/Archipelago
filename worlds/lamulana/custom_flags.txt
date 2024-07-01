@@ -50,20 +50,23 @@
 2105 (0x839) - Tailor Dracuet Shop 2
 2106 (0x83a) - Tailor Dracuet Shop 3
 
-2107 (0x83b) - 'Map (Surface) Location'
-2108 (0x83c) - 'Map (Gate of Guidance) Location'
-2109 (0x83d) - 'Map (Mausoleum of the Giants) Location'
-2110 (0x83e) - 'Map (Temple of the Sun) Location'
-2111 (0x83f) - 'Map (Spring in the Sky) Location'
-2112 (0x840) - 'Map (Inferno Cavern) Location'
-2113 (0x841) - 'Map (Chamber of Extinction) Location'
-2114 (0x842) - 'Map (Twin Labyrinths) Location'
-2115 (0x843) - 'Map (Endless Corridor) Location'
-2116 (0x844) - 'Map (Shrine of the Mother) Location'
-2117 (0x845) - 'Map (Gate of Illusion) Location'
-2118 (0x846) - 'Map (Graveyard of the Giants) Location'
-2119 (0x847) - 'Map (Temple of Moonlight) Location'
-2120 (0x848) - 'Map (Tower of the Goddess) Location'
-2121 (0x849) - 'Map (Tower of Ruin) Location'
-2122 (0x84a) - 'Map (Chamber of Birth) Location'
-2123 (0x84b) - 'Map (Dimensional Corridor) Location'
+2107 (0x83b) - Map (Surface) Location
+2108 (0x83c) - Map (Gate of Guidance) Location
+2109 (0x83d) - Map (Mausoleum of the Giants) Location
+2110 (0x83e) - Map (Temple of the Sun) Location
+2111 (0x83f) - Map (Spring in the Sky) Location
+2112 (0x840) - Map (Inferno Cavern) Location
+2113 (0x841) - Map (Chamber of Extinction) Location
+2114 (0x842) - Map (Twin Labyrinths) Location
+2115 (0x843) - Map (Endless Corridor) Location
+2116 (0x844) - Map (Shrine of the Mother) Location
+2117 (0x845) - Map (Gate of Illusion) Location
+2118 (0x846) - Map (Graveyard of the Giants) Location
+2119 (0x847) - Map (Temple of Moonlight) Location
+2120 (0x848) - Map (Tower of the Goddess) Location
+2121 (0x849) - Map (Tower of Ruin) Location
+2122 (0x84a) - Map (Chamber of Birth) Location
+2123 (0x84b) - Map (Dimensional Corridor) Location
+
+2124 (0x84c) - Mr. Slushfund Pepper Gift
+2125 (0x84d) - Mr. Slushfund Anchor Gift

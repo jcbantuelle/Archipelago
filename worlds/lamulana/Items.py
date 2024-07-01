@@ -11,6 +11,7 @@ class ItemData(NamedTuple):
 	cost: Optional[int] = None
 	quantity: int = 1
 	obtain_flag: Optional[int] = None
+	obtain_value: Optional[int] = None
 
 item_table: Dict[str, ItemData] = {
 	'Leather Whip':                     ItemData('MainWeapon', 2359000, progression=True, count=0), #Cannot be sent, only as a starting item
@@ -119,23 +120,23 @@ item_table: Dict[str, ItemData] = {
 	'miracle.exe':                      ItemData('Software', 2359103, progression=True, game_code=102), #progression if key fairy combo or NPC rando
 	'mirai.exe':                        ItemData('Software', 2359104, progression=True, game_code=103),
 	'lamulana.exe':                     ItemData('Software', 2359105, useful=True, game_code=104),
-	'Map (Surface)':                    ItemData('Map', 2359106, game_code=70, obtain_flag=0xd1),
-	'Map (Gate of Guidance)':           ItemData('Map', 2359107, game_code=70, obtain_flag=0xd2),
-	'Map (Mausoleum of the Giants)':    ItemData('Map', 2359108, game_code=70, obtain_flag=0xd3),
-	'Map (Temple of the Sun)':          ItemData('Map', 2359109, game_code=70, obtain_flag=0xd4),
-	'Map (Spring in the Sky)':          ItemData('Map', 2359110, game_code=70, obtain_flag=0xd5),
-	'Map (Inferno Cavern)':             ItemData('Map', 2359111, game_code=70, obtain_flag=0xd6),
-	'Map (Chamber of Extinction)':      ItemData('Map', 2359112, game_code=70, obtain_flag=0xd7),
-	'Map (Twin Labyrinths)':            ItemData('Map', 2359113, game_code=70, obtain_flag=0xd8),
-	'Map (Endless Corridor)':           ItemData('Map', 2359114, game_code=70, obtain_flag=0xd9),
-	'Map (Shrine of the Mother)':       ItemData('Map', 2359115, progression=True, game_code=70, obtain_flag=0xda),
-	'Map (Gate of Illusion)':           ItemData('Map', 2359116, game_code=70, obtain_flag=0xdb),
-	'Map (Graveyard of the Giants)':    ItemData('Map', 2359117, game_code=70, obtain_flag=0xdc),
-	'Map (Temple of Moonlight)':        ItemData('Map', 2359118, game_code=70, obtain_flag=0xdd),
-	'Map (Tower of the Goddess)':       ItemData('Map', 2359119, game_code=70, obtain_flag=0xde),
-	'Map (Tower of Ruin)':              ItemData('Map', 2359120, game_code=70, obtain_flag=0xdf),
-	'Map (Chamber of Birth)':           ItemData('Map', 2359121, game_code=70, obtain_flag=0xe0),
-	'Map (Dimensional Corridor)':       ItemData('Map', 2359122, game_code=70, obtain_flag=0xe1),
+	'Map (Surface)':                    ItemData('Map', 2359106, game_code=70, obtain_flag=0xd1, obtain_value=2),
+	'Map (Gate of Guidance)':           ItemData('Map', 2359107, game_code=70, obtain_flag=0xd2, obtain_value=2),
+	'Map (Mausoleum of the Giants)':    ItemData('Map', 2359108, game_code=70, obtain_flag=0xd3, obtain_value=2),
+	'Map (Temple of the Sun)':          ItemData('Map', 2359109, game_code=70, obtain_flag=0xd4, obtain_value=2),
+	'Map (Spring in the Sky)':          ItemData('Map', 2359110, game_code=70, obtain_flag=0xd5, obtain_value=2),
+	'Map (Inferno Cavern)':             ItemData('Map', 2359111, game_code=70, obtain_flag=0xd6, obtain_value=2),
+	'Map (Chamber of Extinction)':      ItemData('Map', 2359112, game_code=70, obtain_flag=0xd7, obtain_value=2),
+	'Map (Twin Labyrinths)':            ItemData('Map', 2359113, game_code=70, obtain_flag=0xd8, obtain_value=2),
+	'Map (Endless Corridor)':           ItemData('Map', 2359114, game_code=70, obtain_flag=0xd9, obtain_value=2),
+	'Map (Shrine of the Mother)':       ItemData('Map', 2359115, progression=True, game_code=70, obtain_flag=0xda, obtain_value=2),
+	'Map (Gate of Illusion)':           ItemData('Map', 2359116, game_code=70, obtain_flag=0xdb, obtain_value=2),
+	'Map (Graveyard of the Giants)':    ItemData('Map', 2359117, game_code=70, obtain_flag=0xdc, obtain_value=2),
+	'Map (Temple of Moonlight)':        ItemData('Map', 2359118, game_code=70, obtain_flag=0xdd, obtain_value=2),
+	'Map (Tower of the Goddess)':       ItemData('Map', 2359119, game_code=70, obtain_flag=0xde, obtain_value=2),
+	'Map (Tower of Ruin)':              ItemData('Map', 2359120, game_code=70, obtain_flag=0xdf, obtain_value=2),
+	'Map (Chamber of Birth)':           ItemData('Map', 2359121, game_code=70, obtain_flag=0xe0, obtain_value=2),
+	'Map (Dimensional Corridor)':       ItemData('Map', 2359122, game_code=70, obtain_flag=0xe1, obtain_value=2),
 	'Shuriken Ammo':                    ItemData('ShopInventory', 2359123, count=0, progression=True, game_code=107, quantity=10, cost=10),
 	'Rolling Shuriken Ammo':            ItemData('ShopInventory', 2359124, count=0, progression=True, game_code=108, quantity=10, cost=10),
 	'Earth Spear Ammo':                 ItemData('ShopInventory', 2359125, count=0, progression=True, game_code=109, quantity=10, cost=20),
