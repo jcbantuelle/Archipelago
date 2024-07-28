@@ -533,11 +533,10 @@ class LaMulanaWorld(World):
 		dat_file._read()
 
 		configurations = {
-			"server": "localhost",
-			"players": [
-				{"id": "1", "name": "Justin"},
-				{"id": "2", "name": "Tuan"},
-			]
+			"server_url": "<get_from_host>",
+			"log_file_name": "lamulanamw.txt",
+			"local_player_id": self.player,
+			"players": [{"id": player_id, "name": self.multiworld.player_name[player_id]} for player_id in self.multiworld.player_ids]
 		}
 		locations = self.multiworld.get_locations(self.player)
 
@@ -642,7 +641,7 @@ class LaMulanaWorld(World):
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
 			output_zip.writestr("script.rcd", rcd_write_io.to_byte_array())
 			output_zip.writestr("script_code.dat", dat_write_io.to_byte_array())
-			output_zip.writestr("config.toml", toml.dumps(configurations))
+			output_zip.writestr("lamulana-config.toml", toml.dumps(configurations))
 
 	def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, rcd_size, item_mod, iterations):
 		o = enumerate(objects)
