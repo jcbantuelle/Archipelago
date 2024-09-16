@@ -555,7 +555,7 @@ class LaMulanaWorld(World):
 					"obtain_value": location.obtain_value
 				}
 			)
-			item_id = item.game_code if item is not None and location.item.player == self.player else 84
+			item_id = item.game_code if item is not None and location.item.player == self.player else 83
 			if location.file_type == 'rcd':
 				for zone in location.zones:
 					screen = rcd_file.zones[zone].rooms[location.room].screens[location.screen]
@@ -569,7 +569,7 @@ class LaMulanaWorld(World):
 
 					if location.object_type == 0x2c:
 						param_len = 7
-						item_mod = 10
+						item_mod = 11
 						# Endless Corridor Twin Statue Chest Exists Twice
 						if location.zones[0] == 8 and location.room == 3 and location.screen == 0 and location.item_id == 59:
 							iterations = 2
