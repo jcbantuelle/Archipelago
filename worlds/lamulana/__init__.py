@@ -534,18 +534,27 @@ class LaMulanaWorld(World):
 
 		configurations = {
 			"server_url": "<get_from_host>",
+			"password": "<get_from_host_or_leave_as_empty_quotes>",
 			"log_file_name": "lamulanamw.txt",
 			"local_player_id": self.player,
 			"players": [{"id": player_id, "name": self.multiworld.player_name[player_id]} for player_id in self.multiworld.player_ids]
 		}
 		locations = self.multiworld.get_locations(self.player)
 
-		flag_mapping = {}
+		item_mapping = []
 
 		for location in locations:
 			item = item_table.get(location.item.name)
 			if item is None:
 				continue
+			item_mapping.append(
+				{
+					"flag": location.obtain_flag,
+					"location_id": location.address,
+					"player_id": location.item.player,
+					"obtain_value": location.obtain_value
+				}
+			)
 			if location.file_type == 'rcd':
 				for zone in location.zones:
 					screen = rcd_file.zones[zone].rooms[location.room].screens[location.screen]
@@ -559,7 +568,7 @@ class LaMulanaWorld(World):
 
 					if location.object_type == 0x2c:
 						param_len = 7
-						item_mod = 11
+						item_mod = 10
 						# Endless Corridor Twin Statue Chest Exists Twice
 						if location.zones[0] == 8 and location.room == 3 and location.screen == 0 and location.item_id == 59:
 							iterations = 2
@@ -636,6 +645,8 @@ class LaMulanaWorld(World):
 
 		dat_write_io = KaitaiStream(io.BytesIO(bytearray(dat_size)))
 		dat_file._write(dat_write_io)
+
+		configurations["item_mapping"] = item_mapping
 
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:

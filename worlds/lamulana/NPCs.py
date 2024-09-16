@@ -82,7 +82,7 @@ def get_npc_checks(world: Optional[MultiWorld], player: Optional[int]) -> Dict[s
 			LocationData('Mr. Fishman (Original) Shop Item 3', 2359234, is_shop=True, file_type='dat', cards=[132], slot=2, item_id=113, obtain_flag=0x819, obtain_value=2)
 		],
 		'Mr. Fishman (Alt)': [
-			LocationData('Mr. Fishman (Alt) Shop Item 1', 2359235, is_shop=True, file_type='dat', cards=[133], slot=0, item_id=38, obtain_flag=0xa7, obtain_value=2),
+			LocationData('Mr. Fishman (Alt) Shop Item 1', 2359235, is_shop=True, file_type='dat', cards=[133], slot=0, item_id=38, obtain_flag=0x84e, obtain_value=2),
 			LocationData('Mr. Fishman (Alt) Shop Item 2', 2359236, is_shop=True, file_type='dat', cards=[133], slot=1, item_id=92, obtain_flag=0x81a, obtain_value=2),
 			LocationData('Mr. Fishman (Alt) Shop Item 3', 2359237, is_shop=True, file_type='dat', cards=[133], slot=2, item_id=97, obtain_flag=0xee, obtain_value=2)
 		],
