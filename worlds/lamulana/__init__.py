@@ -545,7 +545,7 @@ class LaMulanaWorld(World):
 
 		for location in locations:
 			item = item_table.get(location.item.name)
-			if item is None:
+			if (item is None and location.item.player == self.player) or location.address is None:
 				continue
 			item_mapping.append(
 				{
@@ -555,6 +555,7 @@ class LaMulanaWorld(World):
 					"obtain_value": location.obtain_value
 				}
 			)
+			item_id = item.game_code if item is not None and location.item.player == self.player else 84
 			if location.file_type == 'rcd':
 				for zone in location.zones:
 					screen = rcd_file.zones[zone].rooms[location.room].screens[location.screen]
@@ -593,7 +594,7 @@ class LaMulanaWorld(World):
 						obtain_flag = item.obtain_flag if item.obtain_flag is not None else location.obtain_flag
 						obtain_value = item.obtain_value if item.obtain_value is not None else location.obtain_value
 						for location_id in location_ids:
-							rcd_size = self.place_item(objects=objects, object_type=location.object_type, param_index=param_index, param_len=param_len, location_id=location_id, item_id=item.game_code, item_mod=item_mod, iterations=iterations, rcd_size=rcd_size, original_obtain_flag=original_obtain_flag, new_obtain_flag=obtain_flag, obtain_value=obtain_value)
+							rcd_size = self.place_item(objects=objects, object_type=location.object_type, param_index=param_index, param_len=param_len, location_id=location_id, item_id=item_id, item_mod=item_mod, iterations=iterations, rcd_size=rcd_size, original_obtain_flag=original_obtain_flag, new_obtain_flag=obtain_flag, obtain_value=obtain_value)
 
 			elif location.file_type == 'dat':
 				for card_index in location.cards:
@@ -602,7 +603,7 @@ class LaMulanaWorld(World):
 					if location.slot is None:
 						e = enumerate(entries)
 						entry_index = next((i for i,v in e if v.header == 0x0042 and v.contents.value == location.item_id), None)
-						entries[entry_index].contents.value = item.game_code
+						entries[entry_index].contents.value = item_id
 
 						original_obtain_flag = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
 						obtain_flag = item.obtain_flag if item.obtain_flag is not None else location.obtain_flag
@@ -615,7 +616,7 @@ class LaMulanaWorld(World):
 					else:
 						e = enumerate(entries)
 						data_indices = [i for i,v in e if v.header == 0x004e]
-						entries[data_indices[0]].contents.values[location.slot] = item.game_code
+						entries[data_indices[0]].contents.values[location.slot] = item_id
 						if item.cost is not None:
 							entries[data_indices[1]].contents.values[location.slot] = item.cost
 						entries[data_indices[2]].contents.values[location.slot] = item.quantity

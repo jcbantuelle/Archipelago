@@ -70,3 +70,5 @@
 
 2124 (0x84c) - Mr. Slushfund Pepper Gift
 2125 (0x84d) - Mr. Slushfund Anchor Gift
+
+2126 (0x84e) - Mr. Fishman (Alt) Shop 1
