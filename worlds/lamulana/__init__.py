@@ -641,6 +641,9 @@ class LaMulanaWorld(World):
 			starting_room.objects_length += 1
 			rcd_size += 16
 
+		# Xelpud flag checks
+		dat_size = self.rewrite_xelpud_flag_checks(dat_file, dat_size)
+
 		rcd_write_io = KaitaiStream(io.BytesIO(bytearray(rcd_size)))
 		rcd_file._write(rcd_write_io)
 
@@ -654,6 +657,26 @@ class LaMulanaWorld(World):
 			output_zip.writestr("script.rcd", rcd_write_io.to_byte_array())
 			output_zip.writestr("script_code.dat", dat_write_io.to_byte_array())
 			output_zip.writestr("lamulana-config.toml", toml.dumps(configurations))
+
+	def rewrite_xelpud_flag_checks(self, dat_file, dat_size):
+		card = dat_file.cards[480]
+		dat_size -= self.remove_data_entry_by_value(card, 1049)
+		dat_size -= self.remove_data_entry_by_value(card, 371)
+		dat_size -= self.remove_data_entry_by_value(card, 370)
+		dat_size -= self.remove_data_entry_by_value(card, 364)
+
+		talisman_item_values = [0xaed, 1, 371, 0]
+		dat_size += self.add_data_entry(dat_file, card, talisman_item_values)
+
+		xelpud_pillar_conversation = [0xaec, 2, 370, 0]
+		dat_size += self.add_data_entry(dat_file, card, xelpud_pillar_conversation)
+
+		xelpud_talisman_conversation_values = [0xaec, 1, 369, 0]
+		dat_size += self.add_data_entry(dat_file, card, xelpud_talisman_conversation_values)
+
+		xmailer_item_values = [0xad0, 0, 364, 0]
+		dat_size += self.add_data_entry(dat_file, card, xmailer_item_values)
+		return dat_size
 
 	def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, rcd_size, item_mod, iterations):
 		o = enumerate(objects)
@@ -677,3 +700,39 @@ class LaMulanaWorld(World):
 			location.parameters_length += 1
 			rcd_size += 2
 		return rcd_size
+
+	def remove_data_entry_by_value(self, card, value):
+		entries = card.contents.entries
+
+		e = enumerate(entries)
+		entry_index = next((i for i,v in e if v.header == 0x004e and v.contents.values[2] == value), None)
+		next_index_to_delete = entry_index + 2
+
+		# entry.header + entry.header.data.num_values + break + entry.header.data.values
+		size = 6 + (entries[entry_index].contents.num_values * 2)
+		if entry_index == len(entries):
+			# Possible to not have the break after the entry
+			size -= 2
+			# Inclusive means that this only deletes one element?
+			next_index_to_delete = 1
+
+
+		del entries[entry_index:next_index_to_delete]
+		return size
+
+	def add_data_entry(self, dat_file, card, values):
+		entry = Dat.Entry(None, card, dat_file)
+		entry.header = 0x000a
+		entry.contents = Dat.Noop(None, entry, dat_file)
+
+		entry = Dat.Entry(None, card, dat_file)
+		entry.header = 0x004e
+
+		data = Dat.Data(None, entry, dat_file)
+		data.num_values = len(values)
+		data.values = values
+
+		entry.contents = data
+		card.contents.entries.append()
+
+		return 6 + (data.num_values * 2)
