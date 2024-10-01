@@ -1,23 +1,20 @@
 import zipfile
-import io
 import os
-import toml
 import Utils
 from typing import Dict, List, Set, Optional, TextIO, Union
 from BaseClasses import Item, MultiWorld, Tutorial, Region, Entrance, Item, ItemClassification
 from Options import Accessibility
 from worlds.AutoWorld import World, WebWorld
 from worlds.generic.Rules import add_item_rule
-from kaitaistruct import KaitaiStream
 from .Options import lamulana_options, starting_location_names, starting_weapon_names, is_option_enabled, get_option_value
 from .WorldState import LaMulanaWorldState
 from .NPCs import get_npc_checks, get_npc_entrance_room_names
 from .Items import item_table, get_items_by_category, item_exclusion_order
 from .Locations import get_locations_by_region
 from .Regions import create_regions_and_locations
-from .Rcd import Rcd
-from .Dat import Dat
-from pprint import pprint
+from .RcdMod import RcdMod
+from .DatMod import DatMod
+from .LocalConfig import LocalConfig
 
 client_version = 1
 
@@ -59,6 +56,10 @@ class LaMulanaWorld(World):
 		rcd_file = Utils.user_path("script.rcd")
 		if not os.path.exists(rcd_file):
 			raise FileNotFoundError(rcd_file)
+
+		dat_file = Utils.user_path("script_code.dat")
+		if not os.path.exists(dat_file):
+			raise FileNotFoundError(dat_file)
 
 	def generate_early(self) -> None:
 		#Do stuff that can still modify settings
@@ -518,221 +519,29 @@ class LaMulanaWorld(World):
 		return get_option_value(self.multiworld, self.player, option)
 
 	def generate_output(self, output_directory: str) -> None:
-		rcd_path = Utils.user_path("script.rcd")
-		rcd_size = os.path.getsize(rcd_path)
+		rcd_mod = RcdMod("script.rcd")
+		dat_mod = DatMod("script_code.dat")
+		local_config = LocalConfig(self.multiworld, self.player)
 
-		rcd_io = KaitaiStream(open(rcd_path, 'rb'))
-		rcd_file = Rcd(rcd_io)
-		rcd_file._read()
-
-		dat_path = Utils.user_path("script_code.dat")
-		dat_size = os.path.getsize(dat_path)
-
-		dat_io = KaitaiStream(open(dat_path, 'rb'))
-		dat_file = Dat(dat_io)
-		dat_file._read()
-
-		configurations = {
-			"server_url": "<get_from_host>",
-			"password": "<get_from_host_or_leave_as_empty_quotes>",
-			"log_file_name": "lamulanamw.txt",
-			"local_player_id": self.player,
-			"players": [{"id": player_id, "name": self.multiworld.player_name[player_id]} for player_id in self.multiworld.player_ids]
-		}
 		locations = self.multiworld.get_locations(self.player)
-
-		item_mapping = []
 
 		for location in locations:
 			item = item_table.get(location.item.name)
 			if (item is None and location.item.player == self.player) or location.address is None:
 				continue
-			item_mapping.append(
-				{
-					"flag": location.obtain_flag,
-					"location_id": location.address,
-					"player_id": location.item.player,
-					"obtain_value": location.obtain_value
-				}
-			)
+			local_config.add_item(location)
+
 			item_id = item.game_code if item is not None and location.item.player == self.player else 83
 			if location.file_type == 'rcd':
-				for zone in location.zones:
-					screen = rcd_file.zones[zone].rooms[location.room].screens[location.screen]
-					skip = False
-
-					objects = screen.objects_with_position
-					param_index = 0
-					iterations = 1
-					item_mod = 0
-					location_ids = [location.item_id]
-
-					if location.object_type == 0x2c:
-						param_len = 7
-						item_mod = 11
-						# Endless Corridor Twin Statue Chest Exists Twice
-						if location.zones[0] == 8 and location.room == 3 and location.screen == 0 and location.item_id == 59:
-							iterations = 2
-					elif location.object_type == 0x2f:
-						param_index = 1
-						param_len = 4
-						# Endless Corridor Keysword Exists Twice, Once as Regular and Once as Empowered
-						if location.zones[0] == 8 and location.room == 2 and location.screen == 1 and location.item_id == 4:
-							location_ids.append(7)
-					elif location.object_type == 0xb5:
-						param_len = 5
-					elif location.object_type == 0xc3:
-						iterations = 2
-						param_index = 3
-						param_len = 5
-						objects = screen.objects_without_position
-					else:
-						skip = True
-
-					if not skip:
-						original_obtain_flag = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
-						obtain_flag = item.obtain_flag if item.obtain_flag is not None else location.obtain_flag
-						obtain_value = item.obtain_value if item.obtain_value is not None else location.obtain_value
-						for location_id in location_ids:
-							rcd_size = self.place_item(objects=objects, object_type=location.object_type, param_index=param_index, param_len=param_len, location_id=location_id, item_id=item_id, item_mod=item_mod, iterations=iterations, rcd_size=rcd_size, original_obtain_flag=original_obtain_flag, new_obtain_flag=obtain_flag, obtain_value=obtain_value)
-
+				rcd_mod.place_item_in_location(item, item_id, location)
 			elif location.file_type == 'dat':
-				for card_index in location.cards:
-					card = dat_file.cards[card_index]
-					entries = card.contents.entries
-					if location.slot is None:
-						e = enumerate(entries)
-						entry_index = next((i for i,v in e if v.header == 0x0042 and v.contents.value == location.item_id), None)
-						entries[entry_index].contents.value = item_id
+				dat_mod.place_item_in_location(item, item_id, location)
 
-						original_obtain_flag = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
-						obtain_flag = item.obtain_flag if item.obtain_flag is not None else location.obtain_flag
-						obtain_value = item.obtain_value if item.obtain_value is not None else location.obtain_value
-
-						e = enumerate(entries)
-						entry_index = next((i for i,v in e if v.header == 0x0040 and v.contents.address == original_obtain_flag), None)
-						entries[entry_index].contents.address = obtain_flag
-						entries[entry_index].contents.value = obtain_value
-					else:
-						e = enumerate(entries)
-						data_indices = [i for i,v in e if v.header == 0x004e]
-						entries[data_indices[0]].contents.values[location.slot] = item_id
-						if item.cost is not None:
-							entries[data_indices[1]].contents.values[location.slot] = item.cost
-						entries[data_indices[2]].contents.values[location.slot] = item.quantity
-						entries[data_indices[3]].contents.values[location.slot] = location.obtain_flag
-						if location.obtain_value > 1:
-							entries[data_indices[6]].contents.values[location.slot] = location.obtain_flag
-
-		for item_name, _ in self.multiworld.start_inventory[self.player].value.items():
-			item_id = item_table[item_name].game_code
-			item_giver = Rcd.ObjectWithPosition()
-			item_giver.id = 0xb5
-			item_giver.test_operations_length = 0
-			item_giver.write_operations_length = 0
-			item_giver.parameters_length = 4
-			item_giver.x_pos = 0
-			item_giver.y_pos = 0
-			item_giver.test_operations = []
-			item_giver.write_operations = []
-			item_giver.parameters = [item_id,160,120,39]
-			starting_room = rcd_file.zones[1].rooms[2].screens[1]
-			starting_room.objects_with_position.append(item_giver)
-			starting_room.objects_length += 1
-			rcd_size += 16
-
-		# Xelpud flag checks
-		dat_size = self.rewrite_xelpud_flag_checks(dat_file, dat_size)
-
-		rcd_write_io = KaitaiStream(io.BytesIO(bytearray(rcd_size)))
-		rcd_file._write(rcd_write_io)
-
-		dat_write_io = KaitaiStream(io.BytesIO(bytearray(dat_size)))
-		dat_file._write(dat_write_io)
-
-		configurations["item_mapping"] = item_mapping
+		rcd_mod.give_starting_items(self.multiworld.start_inventory[self.player].value.keys())
+		dat_mod.rewrite_xelpud_flag_checks()
 
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
-			output_zip.writestr("script.rcd", rcd_write_io.to_byte_array())
-			output_zip.writestr("script_code.dat", dat_write_io.to_byte_array())
-			output_zip.writestr("lamulana-config.toml", toml.dumps(configurations))
-
-	def rewrite_xelpud_flag_checks(self, dat_file, dat_size):
-		card = dat_file.cards[480]
-		dat_size -= self.remove_data_entry_by_value(card, 1049)
-		dat_size -= self.remove_data_entry_by_value(card, 371)
-		dat_size -= self.remove_data_entry_by_value(card, 370)
-		dat_size -= self.remove_data_entry_by_value(card, 364)
-
-		talisman_item_values = [0xaed, 1, 371, 0]
-		dat_size += self.add_data_entry(dat_file, card, talisman_item_values)
-
-		xelpud_pillar_conversation = [0xaec, 2, 370, 0]
-		dat_size += self.add_data_entry(dat_file, card, xelpud_pillar_conversation)
-
-		xelpud_talisman_conversation_values = [0xaec, 1, 369, 0]
-		dat_size += self.add_data_entry(dat_file, card, xelpud_talisman_conversation_values)
-
-		xmailer_item_values = [0xad0, 0, 364, 0]
-		dat_size += self.add_data_entry(dat_file, card, xmailer_item_values)
-		return dat_size
-
-	def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, rcd_size, item_mod, iterations):
-		o = enumerate(objects)
-		for _ in range(iterations):
-			o_index = next((i for i,v in o if v.id == object_type and v.parameters[param_index] == location_id+item_mod and len(v.parameters) < param_len), None)
-			location = objects[o_index]
-
-			for test_op in location.test_operations:
-				if test_op.flag == original_obtain_flag:
-					test_op.flag = new_obtain_flag
-			for write_op in location.write_operations:
-				if write_op.flag == original_obtain_flag:
-					write_op.flag = new_obtain_flag
-					if object_type == 0x2c:
-						location.write_operations[3].op_value = obtain_value
-					elif object_type == 0x2f or 0xb5 or 0xc3:
-						write_op.value = obtain_value
-
-			location.parameters[param_index] = item_id+item_mod
-			location.parameters.append(1)
-			location.parameters_length += 1
-			rcd_size += 2
-		return rcd_size
-
-	def remove_data_entry_by_value(self, card, value):
-		entries = card.contents.entries
-
-		e = enumerate(entries)
-		entry_index = next((i for i,v in e if v.header == 0x004e and v.contents.values[2] == value), None)
-		next_index_to_delete = entry_index + 2
-
-		# entry.header + entry.header.data.num_values + break + entry.header.data.values
-		size = 6 + (entries[entry_index].contents.num_values * 2)
-		if entry_index == len(entries):
-			# Possible to not have the break after the entry
-			size -= 2
-			# Inclusive means that this only deletes one element?
-			next_index_to_delete = 1
-
-
-		del entries[entry_index:next_index_to_delete]
-		return size
-
-	def add_data_entry(self, dat_file, card, values):
-		entry = Dat.Entry(None, card, dat_file)
-		entry.header = 0x000a
-		entry.contents = Dat.Noop(None, entry, dat_file)
-
-		entry = Dat.Entry(None, card, dat_file)
-		entry.header = 0x004e
-
-		data = Dat.Data(None, entry, dat_file)
-		data.num_values = len(values)
-		data.values = values
-
-		entry.contents = data
-		card.contents.entries.append()
-
-		return 6 + (data.num_values * 2)
+			output_zip.writestr("script.rcd", rcd_mod.write_file())
+			output_zip.writestr("script_code.dat", dat_mod.write_file())
+			output_zip.writestr("lamulana-config.toml", local_config.write_file())
