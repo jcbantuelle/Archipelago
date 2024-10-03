@@ -49,7 +49,7 @@ class DatMod(FileMod):
       [GLOBAL_FLAGS["diary_found"], 1, CARDS["xelpud_mulana_talisman"], 0],
       [GLOBAL_FLAGS["talisman_found"], 2, CARDS["xelpud_pillar"], 0],
       [GLOBAL_FLAGS["talisman_found"], 1, CARDS["xelpud_talisman"], 0],
-      [0xad0, 0, CARDS["xelpud_xmailer"], 0]
+      [GLOBAL_FLAGS["xmailer"], 0, CARDS["xelpud_xmailer"], 0]
     ]
     for data_values in data_values_to_add:
       self.add_data_entry(card, data_values)
@@ -99,7 +99,6 @@ class DatMod(FileMod):
     ])
   
     self.add_flag_entry(card, insert_index, GLOBAL_FLAGS["talisman_found"], 3)
-
 
   def card(self, card_name):
     card_index = CARDS[card_name]

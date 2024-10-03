@@ -6,6 +6,7 @@ GLOBAL_FLAGS = {
   "shrine_shawn": 0x21b,
   "cant_leave_conversation": 0x2e4,
   "xelpud_talisman": 0x327,
+  "xmailer": 0xe3,
   "starting_items": 0x84f,
   "diary_found": 0x850,
   "talisman_found": 0x851
