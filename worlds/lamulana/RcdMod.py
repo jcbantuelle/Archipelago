@@ -1,7 +1,8 @@
 from .FileMod import FileMod
 from .Items import item_table
 from .Rcd import Rcd
-from .LmFlags import GLOBAL_FLAGS, RCD_OBJECTS
+from .LmFlags import GLOBAL_FLAGS, RCD_OBJECTS, TEST_OPERATIONS, WRITE_OPERATIONS
+from .Locations import get_locations_by_region
 
 class RcdMod(FileMod):
 
@@ -70,6 +71,51 @@ class RcdMod(FileMod):
         params["location_id"] = location_id
         self.place_item(**params)
 
+  def rewrite_diary_chest(self) -> None:
+    diary_location = next((location for _, location in enumerate(get_locations_by_region(None, None, None)["Shrine of the Mother [Main]"]) if location.name == "Diary Chest"), None)
+    for zone_index in diary_location.zones:
+      diary_screen = self.file_contents.zones[zone_index].rooms[diary_location.room].screens[diary_location.screen]
+      diary_chest = next((o for _,o in enumerate(diary_screen.objects_with_position)
+        if o.id == RCD_OBJECTS["chest"]), None)
+
+      diary_shawn_test = next((test_op for _, test_op in enumerate(diary_chest.test_operations) if test_op.flag == GLOBAL_FLAGS["shrine_shawn"]), None)
+      diary_shawn_test.flag = GLOBAL_FLAGS["shrine_dragon_bone"]
+      diary_shawn_test.operation = TEST_OPERATIONS["eq"]
+      diary_shawn_test.op_value = 1
+
+      self.add_test_to_object(diary_chest, GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["eq"], 2)
+
+  def add_diary_chest_timer(self) -> None:
+    screen = self.file_contents.zones[9].rooms[2].screens[0]
+  
+    talisman_found_test = Rcd.Operation()
+    talisman_found_test.flag = GLOBAL_FLAGS["talisman_found"]
+    talisman_found_test.operation = TEST_OPERATIONS["gteq"]
+    talisman_found_test.op_value = 3
+
+    shrine_dragon_bone_test = Rcd.Operation()
+    shrine_dragon_bone_test.flag = GLOBAL_FLAGS["shrine_dragon_bone"]
+    shrine_dragon_bone_test.operation = TEST_OPERATIONS["gteq"]
+    shrine_dragon_bone_test.op_value = 1
+
+    write_op = Rcd.Operation()
+    write_op.flag = GLOBAL_FLAGS["shrine_diary_chest"]
+    write_op.operation = WRITE_OPERATIONS["assign"]
+    write_op.op_value = 2
+
+    flag_timer = Rcd.ObjectWithoutPosition()
+    flag_timer.id = RCD_OBJECTS["flag_timer"]
+    flag_timer.test_operations_length = 2
+    flag_timer.write_operations_length = 1
+    flag_timer.parameters_length = 2
+    flag_timer.test_operations = [talisman_found_test, shrine_dragon_bone_test]
+    flag_timer.write_operations = [write_op]
+    flag_timer.parameters = [0,0]
+    
+    screen.objects_without_position.append(flag_timer)
+    screen.objects_length += 1
+    self.file_size += 20
+
   def give_starting_items(self, items) -> None:
     flag_counter = 0
     for item_name in items:
@@ -119,3 +165,13 @@ class RcdMod(FileMod):
       location.parameters.append(1)
       location.parameters_length += 1
       self.file_size += 2
+
+  def add_test_to_object(self, rcd_object, flag, operation, value):
+    test_op = Rcd.Operation()
+    test_op.flag = flag
+    test_op.operation = operation
+    test_op.op_value = value
+
+    rcd_object.test_operations.append(test_op)
+    rcd_object.test_operations_length += 1
+    self.file_size += 4

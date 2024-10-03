@@ -76,3 +76,4 @@
 2127 (0x84f) - Starting Item Givers
 
 2128 (0x850) - Diary Found Flag
+2129 (0x851) - Talisman Found

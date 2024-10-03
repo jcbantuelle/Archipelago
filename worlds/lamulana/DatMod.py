@@ -73,6 +73,33 @@ class DatMod(FileMod):
     ), None)
     self.remove_flag_entry(card, diary_puzzle_index)
 
+  def rewrite_xelpud_talisman_conversation(self) -> None:
+    card = self.card("xelpud_talisman")
+    entries = card.contents.entries
+
+    insert_index = max([i for i,entry in enumerate(entries)
+      if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["cant_leave_conversation"]
+    ])
+
+    self.add_flag_entry(card, insert_index, GLOBAL_FLAGS["talisman_found"], 2)
+    self.add_flag_entry(card, insert_index, GLOBAL_FLAGS["xelpud_talisman"], 1)
+
+  def rewrite_xelpud_pillar_conversation(self) -> None:
+    card = self.card("xelpud_pillar")
+    entries = card.contents.entries
+
+    diary_chest_flag_index = next((i for i,entry in enumerate(entries)
+      if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["shrine_diary_chest"]
+    ), None)
+  
+    self.remove_flag_entry(card, diary_chest_flag_index)
+
+    insert_index = max([i for i,entry in enumerate(entries)
+      if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["cant_leave_conversation"]
+    ])
+  
+    self.add_flag_entry(card, insert_index, GLOBAL_FLAGS["talisman_found"], 3)
+
 
   def card(self, card_name):
     card_index = CARDS[card_name]
