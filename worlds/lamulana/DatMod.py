@@ -33,7 +33,8 @@ class DatMod(FileMod):
           entries[data_indices[6]].contents.values[location.slot] = location.obtain_flag
 
   def rewrite_xelpud_flag_checks(self) -> None:
-    entries = self.card("xelpud_conversation_tree").contents.entries
+    card = self.card("xelpud_conversation_tree")
+    entries = card.contents.entries
 
     entries_to_remove = [
       CARDS["xelpud_howling_wind"],
@@ -42,7 +43,7 @@ class DatMod(FileMod):
       CARDS["xelpud_mulana_talisman"]
     ]
     for entry_value in entries_to_remove:
-      self.remove_data_entry_by_value(entries, entry_value)
+      self.remove_data_entry_by_value(card, entry_value)
 
     data_values_to_add = [
       [GLOBAL_FLAGS["diary_found"], 1, CARDS["xelpud_mulana_talisman"], 0],
@@ -51,10 +52,11 @@ class DatMod(FileMod):
       [0xad0, 0, CARDS["xelpud_xmailer"], 0]
     ]
     for data_values in data_values_to_add:
-      self.add_data_entry(entries, data_values)
+      self.add_data_entry(card, data_values)
 
   def rewrite_xelpud_mulana_talisman_conversation(self) -> None:
-    entries = self.card("xelpud_mulana_talisman").contents.entries
+    card = self.card("xelpud_mulana_talisman")
+    entries = card.contents.entries
 
     talisman_flag_entries = [(i, entry) for i, entry in enumerate(entries)
       if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["mulana_talisman"]
@@ -64,20 +66,20 @@ class DatMod(FileMod):
       flag_entry.contents.value = 2
 
     insert_index = max([i for i,_ in talisman_flag_entries])
-    self.add_flag_entry(entries, insert_index, GLOBAL_FLAGS["mulana_talisman"], 2)
+    self.add_flag_entry(card, insert_index, GLOBAL_FLAGS["mulana_talisman"], 2)
 
     diary_puzzle_index = next((i for i, entry in enumerate(entries)
       if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["diary_chest_puzzle"]
     ), None)
-    self.remove_flag_entry(entries, diary_puzzle_index)
+    self.remove_flag_entry(card, diary_puzzle_index)
 
 
   def card(self, card_name):
     card_index = CARDS[card_name]
     return self.file_contents.cards[card_index]
 
-  def remove_data_entry_by_value(self, entries, value):
-    entry_index = next((i for i,v in e if v.header == HEADERS["data"] and v.contents.values[2] == value), None)
+  def remove_data_entry_by_value(self, card, value):
+    entries = card.contents.entries
     entry_index = next((i for i,v in enumerate(entries) if v.header == HEADERS["data"] and v.contents.values[2] == value), None)
     next_index_to_delete = entry_index + 2
 
@@ -89,8 +91,10 @@ class DatMod(FileMod):
 
     del entries[entry_index:next_index_to_delete]
     self.file_size -= size
+    card.len_contents -= size
 
-  def add_data_entry(self, entries, data_values):
+  def add_data_entry(self, card, data_values):
+    entries = card.contents.entries
     break_entry = Dat.Entry()
     break_entry.header = HEADERS["break"]
     break_entry.contents = Dat.Noop()
@@ -107,9 +111,12 @@ class DatMod(FileMod):
     entries.append(break_entry)
     entries.append(data_entry)
 
-    self.file_size += (6 + (data.num_values * 2))
+    file_mod = (6 + (data.num_values * 2))
+    self.file_size += file_mod
+    card.len_contents += file_mod
 
-  def add_flag_entry(self, entries, index, address, value):
+  def add_flag_entry(self, card, index, address, value):
+    entries = card.contents.entries
     flag = Dat.Flag()
     flag.address = address
     flag.value = value
@@ -121,8 +128,11 @@ class DatMod(FileMod):
     entries.insert(index, flag_entry)
 
     self.file_size += 6
+    card.len_contents += 6
 
-  def remove_flag_entry(self, entries, index):
+  def remove_flag_entry(self, card, index):
+    entries = card.contents.entries
     if index is not None:
       del entries[index]
       self.file_size -= 6
+      card.len_contents -= 6
