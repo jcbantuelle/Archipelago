@@ -101,10 +101,8 @@ class RcdMod(FileMod):
       flag_counter += 1
 
   def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, item_mod, iterations):
-    o = enumerate(objects)
     for _ in range(iterations):
-      o_index = next((i for i,v in o if v.id == object_type and v.parameters[param_index] == location_id+item_mod and len(v.parameters) < param_len), None)
-      location = objects[o_index]
+      location = next((o for _,o in enumerate(objects) if o.id == object_type and o.parameters[param_index] == location_id+item_mod and len(o.parameters) < param_len), None)
 
       for test_op in location.test_operations:
         if test_op.flag == original_obtain_flag:

@@ -12,21 +12,18 @@ class DatMod(FileMod):
       entries = self.file_contents.cards[card_index].contents.entries
 
       if location.slot is None:
-        e = enumerate(entries)
-        entry_index = next((i for i,v in e if v.header == HEADERS["item"] and v.contents.value == location.item_id), None)
+        entry_index = next((i for i,v in enumerate(entries) if v.header == HEADERS["item"] and v.contents.value == location.item_id), None)
         entries[entry_index].contents.value = item_id
 
         original_obtain_flag = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
         obtain_flag = item.obtain_flag if item.obtain_flag is not None else location.obtain_flag
         obtain_value = item.obtain_value if item.obtain_value is not None else location.obtain_value
 
-        e = enumerate(entries)
-        entry_index = next((i for i,v in e if v.header == HEADERS["flag"] and v.contents.address == original_obtain_flag), None)
+        entry_index = next((i for i,v in enumerate(entries) if v.header == HEADERS["flag"] and v.contents.address == original_obtain_flag), None)
         entries[entry_index].contents.address = obtain_flag
         entries[entry_index].contents.value = obtain_value
       else:
-        e = enumerate(entries)
-        data_indices = [i for i,v in e if v.header == HEADERS["data"]]
+        data_indices = [i for i,v in enumerate(entries) if v.header == HEADERS["data"]]
         entries[data_indices[0]].contents.values[location.slot] = item_id
         if item.cost is not None:
           entries[data_indices[1]].contents.values[location.slot] = item.cost
@@ -80,8 +77,8 @@ class DatMod(FileMod):
     return self.file_contents.cards[card_index]
 
   def remove_data_entry_by_value(self, entries, value):
-    e = enumerate(entries)
     entry_index = next((i for i,v in e if v.header == HEADERS["data"] and v.contents.values[2] == value), None)
+    entry_index = next((i for i,v in enumerate(entries) if v.header == HEADERS["data"] and v.contents.values[2] == value), None)
     next_index_to_delete = entry_index + 2
 
     size = 6 + (entries[entry_index].contents.num_values * 2)
