@@ -75,13 +75,13 @@ class RcdMod(FileMod):
     for item_name in items:
       test_op = Rcd.Operation()
       test_op.flag = GLOBAL_FLAGS["starting_items"]
+      test_op.operation = TEST_OPERATIONS["eq"]
       test_op.op_value = flag_counter
-      test_op.operation = 0
 
       write_op = Rcd.Operation()
       write_op.flag = GLOBAL_FLAGS["starting_items"]
+      write_op.operation = WRITE_OPERATIONS["add"]
       write_op.op_value = 1
-      write_op.operation = 1
 
       item_id = item_table[item_name].game_code
       item_giver = Rcd.ObjectWithPosition()
