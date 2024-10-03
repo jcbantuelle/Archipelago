@@ -74,3 +74,5 @@
 2126 (0x84e) - Mr. Fishman (Alt) Shop 1
 
 2127 (0x84f) - Starting Item Givers
+
+2128 (0x850) - Diary Found Flag
