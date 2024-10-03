@@ -64,6 +64,35 @@ class DatMod(FileMod):
     for entry in entries_to_add:
       self.add_data_entry(card, entry)
 
+  def rewrite_xelpud_mulana_talisman_conversation(self) -> None:
+    card = self.card("xelpud_mulana_talisman")
+    entries = card.contents.entries
+
+    talisman_flag_entries = [(i, entry) for i, entry in enumerate(entries)
+      if entry.header == 0x0040 and entry.contents.address == 0x105
+    ]
+    for _, flag_entry in talisman_flag_entries:
+      flag_entry.contents.address = 0xaed
+      flag_entry.contents.value = 2
+    
+    flag = Dat.Flag()
+    flag.address = 0x105
+    flag.value = 2
+
+    flag_entry = Dat.Entry()
+    flag_entry.header = 0x0040
+    flag_entry.contents = flag
+
+    max_index = max([i for i,_ in talisman_flag_entries])
+    insert_index = max([i for i,_ in talisman_flag_entries])
+    entries.insert(insert_index, flag_entry)
+
+    diary_puzzle_index = next((i for i, entry in enumerate(entries)
+      if entry.header == 0x0040 and entry.contents.address == 0x212
+    ), None)
+    if diary_puzzle_index is not None:
+      del entries[diary_puzzle_index]
+
   def card(self, card_name):
     card_index = self.CARDS[card_name]
     return self.file_contents.cards[card_index]

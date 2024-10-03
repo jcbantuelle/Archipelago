@@ -539,6 +539,7 @@ class LaMulanaWorld(World):
 
 		rcd_mod.give_starting_items(self.multiworld.start_inventory[self.player].value.keys())
 		dat_mod.rewrite_xelpud_flag_checks()
+		dat_mod.rewrite_xelpud_mulana_talisman_conversation()
 
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
