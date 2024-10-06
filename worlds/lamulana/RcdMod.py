@@ -100,7 +100,7 @@ class RcdMod(FileMod):
                 lemeza_detector.write_operations_length = 1
                 lemeza_detector.parameters_length = 6
                 lemeza_detector.x_pos = obj.x_pos
-                lemeza_detector.y_pos = obj.y_pos - 20
+                lemeza_detector.y_pos = obj.y_pos - 1
                 lemeza_detector.test_operations = [test_op]
                 lemeza_detector.write_operations = [write_op]
                 lemeza_detector.parameters = [0,0,0,0,2,3]
