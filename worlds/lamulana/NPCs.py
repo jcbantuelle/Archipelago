@@ -97,15 +97,15 @@ def get_npc_checks(world: Optional[MultiWorld], player: Optional[int]) -> Dict[s
 			LocationData('Operator Combaker Shop Item 3', 2359243, is_shop=True, file_type='dat', cards=[167], slot=2, item_id=112, obtain_flag=0x81f, obtain_value=2)
 		],
 		'Yiegah Kungfu': [
-			LocationData('Yiegah Kungfu Shop Item 1', 2359244, is_shop=True, file_type='dat', cards=[205], slot=0, item_id=27, obtain_flag=0x9d, obtain_value=2),
-			LocationData('Yiegah Kungfu Shop Item 2', 2359245, is_shop=True, file_type='dat', cards=[205], slot=1, item_id=109, obtain_flag=0x820, obtain_value=2),
-			LocationData('Yiegah Kungfu Shop Item 3', 2359246, is_shop=True, file_type='dat', cards=[205], slot=2, item_id=110, obtain_flag=0x821, obtain_value=2),
+			LocationData('Yiegah Kungfu Shop Item 1', 2359244, is_shop=True, file_type='dat', cards=[185], slot=0, item_id=43, obtain_flag=0xac, obtain_value=1),
+			LocationData('Yiegah Kungfu Shop Item 2', 2359245, is_shop=True, file_type='dat', cards=[185], slot=1, item_id=113, obtain_flag=0x822, obtain_value=1),
+			LocationData('Yiegah Kungfu Shop Item 3', 2359246, is_shop=True, file_type='dat', cards=[185], slot=2, item_id=105, obtain_flag=0x823, obtain_value=1),
 			LocationData('NPC: Yiegah Kungfu', None, lambda state: True, True)
 		],
 		'Yiear Kungfu': [
-			LocationData('Yiear Kungfu Shop Item 1', 2359247, is_shop=True, file_type='dat', cards=[185], slot=0, item_id=43, obtain_flag=0xac, obtain_value=1),
-			LocationData('Yiear Kungfu Shop Item 2', 2359248, is_shop=True, file_type='dat', cards=[185], slot=1, item_id=113, obtain_flag=0x822, obtain_value=1),
-			LocationData('Yiear Kungfu Shop Item 3', 2359249, is_shop=True, file_type='dat', cards=[185], slot=2, item_id=105, obtain_flag=0x823, obtain_value=1)
+			LocationData('Yiear Kungfu Shop Item 1', 2359247, is_shop=True, file_type='dat', cards=[205], slot=0, item_id=27, obtain_flag=0x9d, obtain_value=2),
+			LocationData('Yiear Kungfu Shop Item 2', 2359248, is_shop=True, file_type='dat', cards=[205], slot=1, item_id=109, obtain_flag=0x820, obtain_value=2),
+			LocationData('Yiear Kungfu Shop Item 3', 2359249, is_shop=True, file_type='dat', cards=[205], slot=2, item_id=110, obtain_flag=0x821, obtain_value=2)
 		],
 		'Arrogant Sturdy Snake': [
 			LocationData('Arrogant Sturdy Snake Shop Item 1', 2359250, is_shop=True, file_type='dat', cards=[204], slot=0, item_id=60, obtain_flag=0xbd, obtain_value=2),
