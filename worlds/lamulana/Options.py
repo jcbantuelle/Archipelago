@@ -44,15 +44,16 @@ starting_weapon_names = {y: x for x, y in starting_weapon_ids.items()}
 
 class ShopDensity(Range):
 	"""The amount of randomized items placed in shops, with the remainder filled by ammo and weights.
-	If set to 0, the only randomized item in a shop is Nebur's 4 guardian item."""
+# If set to 0, the only randomized item in a shop is Nebur's 4 guardian item."""
 	range_start = 0
 	range_end = 50
 	default = 30
 	display_name = "Shop Item Density"
 
 class RandomizeCoinChests(Choice):
-	"""Randomizes coin chests. Including the escape chest has the potential
-	to create rude item chains if NPCs or seals are randomized."""
+	"""Not supported - must be set to false.
+# Randomizes coin chests. Including the escape chest has the potential
+# to create rude item chains if NPCs or seals are randomized."""
 	display_name = "Randomize coin chests"
 	option_off = 0
 	option_basic = 1
@@ -60,41 +61,49 @@ class RandomizeCoinChests(Choice):
 	alias_true = 1
 
 class RandomizeTrapItems(Toggle):
-	"Randomizes the 4 trap items and locations"
+	"""Not suppoted - must be set to false.
+# Randomizes the 4 trap items and locations"""
 	display_name = "Randomize Trap Items"
 
 class RandomizeSeals(Toggle):
-	"Individually randomizes which seal is required to break each wall seal"
+	"""Not supported - must be set to false.
+# Individually randomizes which seal is required to break each wall seal"""
 	display_name = "Randomize seals"
 
 class RandomizeCursedChests(Toggle):
-	"""If on, a random number of chests will be cursed and require the Mulana Talisman to open.
-	If off, CursedChestCount is be ignored and the 4 vanilla cursed chests will still be cursed."""
+	"""Not supported - must be set to false.
+# If on, a random number of chests will be cursed and require the Mulana Talisman to open.
+# If off, CursedChestCount is be ignored and the 4 vanilla cursed chests will still be cursed."""
 	display_name = "Randomize Cursed Chests"
 
 class CursedChestCount(Range):
-	"""The number of chests that will be cursed and require the Mulana Talisman to open.
-	The maximum number (97) corresponds to every single chest (including coin and trap chests) being cursed.
-	As a result, a random value will skew toward a higher percentage of cursed chests if coin or trap chests aren't randomized."""
+	"""Not supported - value will be disregarded.
+# The number of chests that will be cursed and require the Mulana Talisman to open.
+# The maximum number (97) corresponds to every single chest (including coin and trap chests) being cursed.
+# As a result, a random value will skew toward a higher percentage of cursed chests if coin or trap chests aren't randomized."""
 	display_name = "Number of Cursed Chests"
 	range_start = 0
 	range_end = 97
 	default = 4
 
 class RandomizeNPCs(Toggle):
-	"Randomizes all NPCs and shop locations"
+	"""Not supported - must be set to off.
+# Randomizes all NPCs and shop locations"""
 	display_name = "Randomize NPC/shop doors"
 
 class RandomizeDracuetsShop(Toggle):
-	"Randomize Dracuet's shop in Hell Temple. If NPCs are randomized, includes the Hell Temple shop in the randomized NPC pool"
+	"""Not supported - must be set to false.
+# Randomize Dracuet's shop in Hell Temple. If NPCs are randomized, includes the Hell Temple shop in the randomized NPC pool"""
 	display_name = "Randomize Dracuet's Shop"
 
 class HellTempleReward(Toggle):
-	"The final reward for beating Hell Temple may be required. A treasure that should not have been created."
+	"""Not supported - must be set to false.
+# The final reward for beating Hell Temple may be required. A treasure that should not have been created."""
 	display_name = "Hell Temple Final Reward"
 
 class StartingLocation(Choice):
-	"Set or randomize your starting location"
+	"""Not supported - must be set to surface
+# Set or randomize your starting location"""
 	display_name = "Starting Location"
 	option_surface = starting_location_ids['surface']
 	option_gate_of_guidance = starting_location_ids['guidance']
@@ -157,8 +166,9 @@ class TextTraxShuffle(SpecificItem):
 	display_name = "TextTrax Shuffle"
 
 class RandomizeTransitions(Choice):
-	"""Randomizes transitions (ladders and side exits) between areas.
-	"Exclude Oneways" will only include transitions that usually go both ways, whereas "Full" includes one-way transitions"""
+	"""Not supported - must be set to false/off.
+# Randomizes transitions (ladders and side exits) between areas.
+# "Exclude Oneways" will only include transitions that usually go both ways, whereas "Full" includes one-way transitions"""
 	display_name = "Randomize Transitions"
 	option_off = 0
 	option_exclude_oneways = 1
@@ -166,10 +176,11 @@ class RandomizeTransitions(Choice):
 	alias_true = 2
 
 class RandomizeBacksideDoors(Choice):
-	"""Randomizes boss door destinations, as well as the required guardian for opening each pair of connected doors.
-	"Full" adds the non-boss transitions (Extinction-Gate of Time and Dimensional-Endless Corridor) to the entrance pool.
-	"Full" also makes a door pair require a key fairy, and at least 1 door pair be open from the start
-	- unlike boss doors, these won't require the Bronze Mirror to go through."""
+	"""Not supported - must be set to false/off.
+# Randomizes boss door destinations, as well as the required guardian for opening each pair of connected doors.
+# "Full" adds the non-boss transitions (Extinction-Gate of Time and Dimensional-Endless Corridor) to the entrance pool.
+# "Full" also makes a door pair require a key fairy, and at least 1 door pair be open from the start
+# - unlike boss doors, these won't require the Bronze Mirror to go through."""
 	display_name = "Randomize Backside Doors"
 	option_off = 0
 	option_boss_doors_only = 1
@@ -186,38 +197,39 @@ class RequireFlareGun(DefaultOnToggle):
 
 class RequireKeyFairyCombo(DefaultOnToggle):
 	"""Requires the software combination miracle + mekuri to summon key fairies.
-	If off, you may need to grind for key fairies (5% chance)"""
+# If off, you may need to grind for key fairies (5% chance)"""
 	display_name = "Key Fairies expect miracle + mekuri"
 
 class AutoScanGrailTablets(DefaultOnToggle):
 	"""Quality of life - walking past a grail tablet scans it automatically.
-	Otherwise, Hand Scanner and reader.exe are required to warp back to it."""
+# Otherwise, Hand Scanner and reader.exe are required to warp back to it."""
 	display_name = "Automatically Scan Grail Tablets"
 
 class GuardianSpecificAnkhJewels(DefaultOnToggle):
-	"If on, each guardian fight has a specific ankh jewel needed to start the fight."
+	"""If on, each guardian fight has a specific ankh jewel needed to start the fight.
+# This is currently not enforced in-game, only logically."""
 	display_name = "Guardian-specific Ankh Jewels"
 
 class AlternateMotherAnkh(DefaultOnToggle):
 	"""Quality of life - If on, skips the mantra sequence to empower the key sword by adding a 9th ankh jewel.
-	Mother's ankh will be like other bosses' and cannot be activated by an empowered key sword."""
+# Mother's ankh will be like other bosses' and cannot be activated by an empowered key sword."""
 	display_name = "Alternate Mother Ankh"
 
 class AncientLaMulaneseLearned(DefaultOnToggle):
 	"""Quality of Life - Ancient La-Mulanese is learned from the start, without having to read the 3 translation tablets.
-	Ancient La-Mulanese is required to learn mantras."""
+# Ancient La-Mulanese is required to learn mantras."""
 	display_name = "Ancient La-Mulanese readable from the start"
 
 class HardCombatLogic(Toggle):
 	"""If on, combat logic for bosses and room guardians is minimal:
-	Would it be theoretically possible to defeat this boss with these items at low HP?"""
+# Would it be theoretically possible to defeat this boss with these items at low HP?"""
 	display_name = "Hard Combat Logic"
 
 #Add note about what happens when you set startingweapon to a main weapon and this is on - maybe overrides it and gives a random subweapon?
 class SubweaponOnly(Toggle):
 	"""If on, removes all main weapons from the item pool, and all subweapon ammo in shops is free.
-	If your starting weapon is set to a main weapon, instead replaces it with a random subweapon.
-	Also forces AlternateMotherAnkh to be on, since there is no key sword."""
+# If your starting weapon is set to a main weapon, instead replaces it with a random subweapon.
+# Also forces AlternateMotherAnkh to be on, since there is no key sword."""
 	display_name = "Subweapon Only Mode"
 
 class RaindropsInLogic(Toggle):

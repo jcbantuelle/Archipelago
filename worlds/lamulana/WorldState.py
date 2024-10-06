@@ -1,5 +1,5 @@
 from typing import List, Dict, Set, Optional, Callable, Tuple, NamedTuple
-from BaseClasses import MultiWorld, CollectionState, Region, Location, LocationProgressType
+from BaseClasses import MultiWorld, CollectionState, Region, Location, LocationProgressType, Item, ItemClassification
 from .Options import is_option_enabled, get_option_value, starting_location_ids, starting_weapon_names
 from .Locations import get_locations_by_region
 from .LogicShortcuts import LaMulanaLogicShortcuts
@@ -124,8 +124,9 @@ class LaMulanaWorldState:
 							item_count = 1
 					elif item_name.startswith('Ankh Jewel (') and flag_specific_ankh_jewels:
 						item_count = 1
-				if item_count > 0:
-					simulated_state.prog_items[item_name, self.player] = item_count
+				for _ in range(item_count):
+					item = Item(item_name, ItemClassification.progression, item_data.code, self.player)
+					simulated_state.collect(item)
 		simulated_state.stale[self.player] = True
 		return simulated_state
 
@@ -166,7 +167,7 @@ class LaMulanaWorldState:
 		beatable_fulfilled = False
 
 		def location_relevant(location: Location) -> bool:
-			if location.progress_type != LocationProgressType.EXCLUDED and (accessibility == 'locations' or location.event):
+			if location.progress_type != LocationProgressType.EXCLUDED and (accessibility == 'locations' or location.is_event or location.progress_type == LocationProgressType.PRIORITY):
 				return True
 			return False
 
@@ -197,11 +198,13 @@ class LaMulanaWorldState:
 				return False
 
 			for location in sphere:
-				if location.event:
+				if location.is_event:
 					item_name = location.item.name if location.item is not None else location.name
-					if '—' in item_name:
-						item_name = item_name[:item_name.find('—')].strip()
-					state.prog_items[item_name, self.player] = 1
+					#Special case for Lamp Recharge events, since item and location names don't match
+					if 'Lamp Recharge' in item_name:
+						item_name = 'Lamp Recharge'
+					event_item = Item(item_name, ItemClassification.progression, None, self.player)
+					state.collect(event_item)
 					state.stale[self.player] = True
 
 			if victory(state):
@@ -314,7 +317,7 @@ class LaMulanaWorldState:
 			locations_by_region = get_locations_by_region(self.world, self.player, self)
 			for locationlist in locations_by_region.values():
 				for location in locationlist:
-					if not location.is_event and location.is_cursable:
+					if location.code and location.is_cursable:
 						possible_cursed_chests.append(location.name)
 			curse_count = min(len(possible_cursed_chests), get_option_value(self.world, self.player, 'CursedChestCount'))
 			self.cursed_chests = set(self.world.random.sample(possible_cursed_chests, curse_count))
