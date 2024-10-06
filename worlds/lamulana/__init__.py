@@ -503,6 +503,8 @@ class LaMulanaWorld(World):
 		return item
 
 	def get_filler_item(self, k: Optional[int]):
+		# Temporary placeholder for filler items until more involved RCD edits can be implemented and tested
+		return 'Shell Horn'
 		if k == 0:
 			return '200 coins'
 		elif k and k <= 2:
