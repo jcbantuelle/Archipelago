@@ -542,6 +542,8 @@ class LaMulanaWorld(World):
 		rcd_mod.give_starting_items(self.multiworld.start_inventory[self.player].value.keys())
 		rcd_mod.rewrite_diary_chest()
 		rcd_mod.add_diary_chest_timer()
+		if self.is_option_enabled("AutoScanGrailTablets"):
+			rcd_mod.create_grail_autoscans()
 
 		dat_mod.rewrite_xelpud_flag_checks()
 		dat_mod.rewrite_xelpud_mulana_talisman_conversation()

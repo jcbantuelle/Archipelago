@@ -1,7 +1,7 @@
 from .FileMod import FileMod
 from .Items import item_table
 from .Rcd import Rcd
-from .LmFlags import GLOBAL_FLAGS, RCD_OBJECTS, TEST_OPERATIONS, WRITE_OPERATIONS
+from .LmFlags import GLOBAL_FLAGS, RCD_OBJECTS, TEST_OPERATIONS, WRITE_OPERATIONS, grail_flag_by_zone
 from .Locations import get_locations_by_region
 
 class RcdMod(FileMod):
@@ -70,6 +70,45 @@ class RcdMod(FileMod):
       for location_id in location_ids:
         params["location_id"] = location_id
         self.place_item(**params)
+
+  def create_grail_autoscans(self) -> None:
+    for zone in self.file_contents.zones:
+      for room in zone.rooms:
+        for screen in room.screens:
+          for obj in screen.objects_with_position:
+            if obj.id == RCD_OBJECTS["scannable"]:
+              language_block = obj.parameters[0]
+              frontside = language_block == 41 or language_block == 75 or language_block == 104 or language_block == 136 or language_block == 149 or language_block == 170 or language_block == 188 or language_block == 221 or (language_block == 231 and zone.zone_index == 9)
+              backside = language_block == 250 or language_block == 275 or language_block == 291 or language_block == 305 or language_block == 323 or language_block == 339 or language_block == 206 or language_block == 358 or (language_block == 231 and zone.zone_index != 9)
+
+              if frontside or backside:
+                grail_flag = grail_flag_by_zone(zone.zone_index, frontside)
+
+                test_op = Rcd.Operation()
+                test_op.flag = grail_flag
+                test_op.operation = TEST_OPERATIONS["eq"]
+                test_op.op_value = 0
+
+                write_op = Rcd.Operation()
+                write_op.flag = grail_flag
+                write_op.operation = WRITE_OPERATIONS["assign"]
+                write_op.op_value = 1
+
+                lemeza_detector = Rcd.ObjectWithPosition()
+                lemeza_detector.id = RCD_OBJECTS["lemeza_detector"]
+                lemeza_detector.test_operations_length = 1
+                lemeza_detector.write_operations_length = 1
+                lemeza_detector.parameters_length = 6
+                lemeza_detector.x_pos = obj.x_pos
+                lemeza_detector.y_pos = obj.y_pos - 20
+                lemeza_detector.test_operations = [test_op]
+                lemeza_detector.write_operations = [write_op]
+                lemeza_detector.parameters = [0,0,0,0,2,3]
+
+                screen.objects_with_position.append(lemeza_detector)
+                screen.objects_length += 1
+
+                self.file_size += 28
 
   def rewrite_diary_chest(self) -> None:
     diary_location = next((location for _, location in enumerate(get_locations_by_region(None, None, None)["Shrine of the Mother [Main]"]) if location.name == "Diary Chest"), None)
