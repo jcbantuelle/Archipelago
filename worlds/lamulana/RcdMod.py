@@ -114,6 +114,7 @@ class RcdMod(FileMod):
     
     screen.objects_without_position.append(flag_timer)
     screen.objects_length += 1
+    screen.objects_without_position_length += 1
     self.file_size += 20
 
   def give_starting_items(self, items) -> None:
