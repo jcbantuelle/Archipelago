@@ -1,9 +1,12 @@
-from typing import List, Dict, Set, Optional, Callable, Tuple, NamedTuple
+from typing import TYPE_CHECKING, List, Dict, Set, Optional, Callable, Tuple, NamedTuple
 from BaseClasses import MultiWorld, CollectionState, Region, Location, LocationProgressType, Item, ItemClassification
-from .Options import is_option_enabled, get_option_value, starting_location_ids, starting_weapon_names
+from .Options import RandomizeTransitions, RandomizeBacksideDoors, StartingLocation, starting_weapon_names
 from .Locations import get_locations_by_region
 from .LogicShortcuts import LaMulanaLogicShortcuts
 from .Items import item_table
+
+if TYPE_CHECKING:
+	from . import LaMulanaWorld
 
 class LaMulanaTransition(NamedTuple):
 	region: str
@@ -36,17 +39,18 @@ class LaMulanaWorldState:
 	seal_map: Dict[str,int]
 	is_surface_start: bool
 
-	def __init__(self, world: MultiWorld, player: int):
+	def __init__(self, world: 'LaMulanaWorld', multiworld: MultiWorld, player: int):
 		self.world = world
+		self.multiworld = multiworld
 		self.player = player
-		self.transition_rando = is_option_enabled(world, player, "RandomizeTransitions")
-		self.include_oneways = get_option_value(world, player, "RandomizeTransitions") == 2
-		self.door_rando = is_option_enabled(world, player, "RandomizeBacksideDoors")
-		self.include_nonboss = get_option_value(world, player, "RandomizeBacksideDoors") == 2
-		self.npc_rando = is_option_enabled(world, player, "RandomizeNPCs")
-		self.include_dracuet = is_option_enabled(world, player, "RandomizeDracuetsShop")
-		self.randomize_cursed_chests = is_option_enabled(world, player, "RandomizeCursedChests")
-		self.is_surface_start = get_option_value(world, player, "StartingLocation") == starting_location_ids['surface']
+		self.transition_rando = world.options.RandomizeTransitions
+		self.include_oneways = world.options.RandomizeTransitions == RandomizeTransitions.option_full
+		self.door_rando = world.options.RandomizeBacksideDoors
+		self.include_nonboss = world.options.RandomizeBacksideDoors == RandomizeBacksideDoors.option_full
+		self.npc_rando = world.options.RandomizeNPCs
+		self.include_dracuet = world.options.RandomizeDracuetsShop
+		self.randomize_cursed_chests = world.options.RandomizeCursedChests
+		self.is_surface_start = world.options.StartingLocation == StartingLocation.option_surface
 
 		self.set_cursed_chests()
 		self.set_seal_values()
@@ -77,8 +81,8 @@ class LaMulanaWorldState:
 			door_list.remove('Dimensional Door')
 			requirements_list.remove('Open')
 
-		self.world.random.shuffle(door_list)
-		self.world.random.shuffle(requirements_list)
+		self.multiworld.random.shuffle(door_list)
+		self.multiworld.random.shuffle(requirements_list)
 
 		if self.include_nonboss:
 			door_list.append('Dimensional Door')
@@ -105,11 +109,11 @@ class LaMulanaWorldState:
 			self.door_map[door2] = (door1, req)
 		return True
 
-	# Copies self.world.state and gives it all progression items, to simulate full movement ability
+	# Copies self.multiworld.state and gives it all progression items, to simulate full movement ability
 	def build_simulated_state(self, give_ammo=True) -> CollectionState:
-		simulated_state = self.world.state.copy()
-		flag_alt_mother_ankh = is_option_enabled(self.world, self.player, 'AlternateMotherAnkh')
-		flag_specific_ankh_jewels = is_option_enabled(self.world, self.player, 'GuardianSpecificAnkhJewels')
+		simulated_state = self.multiworld.state.copy()
+		flag_alt_mother_ankh = self.world.options.AlternateMotherAnkh
+		flag_specific_ankh_jewels = self.world.options.GuardianSpecificAnkhJewels
 
 		for item_name, item_data in item_table.items():
 			if item_data.progression:
@@ -141,15 +145,15 @@ class LaMulanaWorldState:
 	def build_transition_layout(self, transitions: Dict[str,Dict[str,LaMulanaTransition]]):
 		self.transition_map = {}
 		if self.include_oneways:
-			self.transition_map['Endless L1'] = self.world.random.choice(list(transitions['right'].keys()))
+			self.transition_map['Endless L1'] = self.multiworld.random.choice(list(transitions['right'].keys()))
 
 		left_transition_list = [name for name in transitions['left'].keys() if name != 'Endless L1']
 		up_transition_list = list(transitions['up'].keys())
 		right_transition_list = list(transitions['right'].keys())
 		down_transition_list = list(transitions['down'].keys())
 
-		self.world.random.shuffle(left_transition_list)
-		self.world.random.shuffle(up_transition_list)
+		self.multiworld.random.shuffle(left_transition_list)
+		self.multiworld.random.shuffle(up_transition_list)
 
 		for ndx, left_transition in enumerate(left_transition_list):
 			right_transition = right_transition_list[ndx]
@@ -162,7 +166,7 @@ class LaMulanaWorldState:
 
 	def layout_fulfills_accessibility(self, state: CollectionState):
 		state = state.copy()
-		accessibility = self.world.accessibility[self.player]
+		accessibility = self.multiworld.accessibility[self.player]
 
 		beatable_fulfilled = False
 
@@ -186,7 +190,7 @@ class LaMulanaWorldState:
 		def victory(state: CollectionState) -> bool:
 			return state.has_all({'Mother Defeated', 'NPC: Mulbruk'}, self.player)
 
-		locations = [location for location in self.world.get_locations(self.player) if location_relevant(location)]
+		locations = [location for location in self.multiworld.get_locations(self.player) if location_relevant(location)]
 		while locations:
 			state.update_reachable_regions(self.player)
 			sphere: List[Location] = []
@@ -217,7 +221,7 @@ class LaMulanaWorldState:
 
 	def randomize_npcs(self, npc_list: List[str]) -> Dict[str,str]:
 		randomized_list = npc_list.copy()
-		self.world.random.shuffle(randomized_list)
+		self.multiworld.random.shuffle(randomized_list)
 		return {npc_list[i]: randomized_list[i] for i in range(len(npc_list))}
 
 	def get_shop_names(self) -> Set[str]:
@@ -248,7 +252,7 @@ class LaMulanaWorldState:
 	def npc_rando_checks_passed(self) -> bool:
 		if self.is_surface_start:
 			#Surface start - make sure Xelpud and a shop are accessible
-			starting_weapon = starting_weapon_names[get_option_value(self.world, self.player, 'StartingWeapon')]
+			starting_weapon = starting_weapon_names[self.world.options.StartingWeapon]
 			if starting_weapon in {'Knife', 'Rolling Shuriken', 'Flare Gun', 'Bomb', 'Caltrops'}:
 				#Case: starting weapon can't break Mekuri Wall - Xelpud must be vanilla, with a shop available
 				if self.npc_mapping['Elder Xelpud'] != 'Elder Xelpud':
@@ -319,8 +323,8 @@ class LaMulanaWorldState:
 				for location in locationlist:
 					if location.code and location.is_cursable:
 						possible_cursed_chests.append(location.name)
-			curse_count = min(len(possible_cursed_chests), get_option_value(self.world, self.player, 'CursedChestCount'))
-			self.cursed_chests = set(self.world.random.sample(possible_cursed_chests, curse_count))
+			curse_count = min(len(possible_cursed_chests), self.world.options.CursedChestCount)
+			self.cursed_chests = set(self.multiworld.random.sample(possible_cursed_chests, curse_count))
 		else:
 			#4 vanilla cursed chests
 			self.cursed_chests = {'Crystal Skull Chest', 'Dimensional Key Chest', 'Djed Pillar Chest', 'Magatama Jewel Chest'}
@@ -348,15 +352,15 @@ class LaMulanaWorldState:
 
 	def set_seal_values(self):
 		self.seal_map = {}
-		seal_rando = is_option_enabled(self.world, self.player, 'RandomizeSeals')
+		seal_rando = self.world.options.RandomizeSeals
 		for seal_name in {'Birth Seal Chest', 'Mulbruk\'s Seal', 'Sun Right Exits', 'Mr. Fishman\'s Shop', 'Bahamut\'s Room', 'Endless Shop Seal', 'Shrine 4 Seals (Origin)', 'Mother (Origin)'}:
-			self.seal_map[seal_name] = self.world.random.choice([1, 2, 3, 4]) if seal_rando else 1
+			self.seal_map[seal_name] = self.multiworld.random.choice([1, 2, 3, 4]) if seal_rando else 1
 		for seal_name in {'Spring Sacred Orb Chest', 'Pazuzu Seal', 'Life Seal Chest', 'Chi You Seal', 'Path to Anubis', 'Shrine 4 Seals (Birth)', 'Mother (Birth)'}:
-			self.seal_map[seal_name] = self.world.random.choice([1, 2, 3, 4]) if seal_rando else 2
+			self.seal_map[seal_name] = self.multiworld.random.choice([1, 2, 3, 4]) if seal_rando else 2
 		for seal_name in {'Crucifix Chest/3 Lights', 'Surface Coin Chest Seal', 'Gauntlet Chest', 'Extinction Perma-light (Extinction)', 'Extinction Perma-light (Birth)', 'Crystal Skull Chest', 'Shrine 4 Seals (Life)', 'Mother (Life)'}:
-			self.seal_map[seal_name] = self.world.random.choice([1, 2, 3, 4]) if seal_rando else 3
+			self.seal_map[seal_name] = self.multiworld.random.choice([1, 2, 3, 4]) if seal_rando else 3
 		for seal_name in {'Sun Discount Shop', 'Nuwa', 'Dimensional Sacred Orb Chest', 'Shrine Laptop Room', 'Shrine 4 Seals (Death)', 'Mother (Death)'}:
-			self.seal_map[seal_name] = self.world.random.choice([1, 2, 3, 4]) if seal_rando else 4
+			self.seal_map[seal_name] = self.multiworld.random.choice([1, 2, 3, 4]) if seal_rando else 4
 
 	def get_transitions(self, s: LaMulanaLogicShortcuts):
 		transitions = {

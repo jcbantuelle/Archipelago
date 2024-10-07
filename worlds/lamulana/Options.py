@@ -1,6 +1,7 @@
 from typing import Dict, Union, List
 from BaseClasses import MultiWorld
-from Options import Toggle, DefaultOnToggle, DeathLink, Choice, Range, Option, OptionDict, OptionList
+from dataclasses import dataclass
+from Options import Toggle, DefaultOnToggle, DeathLink, Choice, Range, Option, OptionDict, OptionList, PerGameCommonOptions
 
 starting_location_ids = {
 	'surface': 0,
@@ -244,43 +245,42 @@ class LampGlitchInLogic(Toggle):
 	"Glitch Logic - using the lamp of time to pass through certain walls may be required"
 	display_name = "Lamp Glitch In Logic"
 
-lamulana_options = {
-	"ShopDensity": ShopDensity,
-	"RandomizeCoinChests": RandomizeCoinChests,
-	"RandomizeTrapItems": RandomizeTrapItems,
-	"RandomizeCursedChests": RandomizeCursedChests,
-	"CursedChestCount": CursedChestCount,
-	"RandomizeNPCs": RandomizeNPCs,
-	"RandomizeDracuetsShop": RandomizeDracuetsShop,
-	"HellTempleReward": HellTempleReward,
-	"RandomizeSeals": RandomizeSeals,
-	"StartingLocation": StartingLocation,
-	"StartingWeapon": StartingWeapon,
-	"HolyGrailShuffle": HolyGrailShuffle,
-	"MiraiShuffle": MiraiShuffle,
-	"HermesBootsShuffle": HermesBootsShuffle,
-	"TextTraxShuffle": TextTraxShuffle,
-	"RandomizeTransitions": RandomizeTransitions,
-	"RandomizeBacksideDoors": RandomizeBacksideDoors,
-	"RequireIceCape": RequireIceCape,
-	"RequireFlareGun": RequireFlareGun,
-	"RequireKeyFairyCombo": RequireKeyFairyCombo,
-	"AutoScanGrailTablets": AutoScanGrailTablets,
-	"GuardianSpecificAnkhJewels": GuardianSpecificAnkhJewels,
-	"AlternateMotherAnkh": AlternateMotherAnkh,
-	"AncientLaMulaneseLearned": AncientLaMulaneseLearned,
-	"HardCombatLogic": HardCombatLogic,
-	"SubweaponOnly": SubweaponOnly,
-	"RaindropsInLogic": RaindropsInLogic,
-	"CatPausingInLogic": CatPausingInLogic,
-	"LampGlitchInLogic": LampGlitchInLogic
-}
+@dataclass
+class LaMulanaOptions(PerGameCommonOptions):
+	ShopDensity: ShopDensity
+	RandomizeCoinChests: RandomizeCoinChests
+	RandomizeTrapItems: RandomizeTrapItems
 
-def is_option_enabled(world: MultiWorld, player: int, name: str) -> bool:
-	return get_option_value(world, player, name) > 0
-
-def get_option_value(world: MultiWorld, player: int, name: str) -> Union[int, Dict, List]:
-	option = getattr(world, name, None)
-	if option == None:
-		return 0
-	return option[player].value
+	RandomizeCursedChests: RandomizeCursedChests
+	CursedChestCount: CursedChestCount
+	
+	RandomizeNPCs: RandomizeNPCs
+	RandomizeDracuetsShop: RandomizeDracuetsShop
+	HellTempleReward: HellTempleReward
+	RandomizeSeals: RandomizeSeals
+	
+	StartingLocation: StartingLocation
+	StartingWeapon: StartingWeapon
+	
+	HolyGrailShuffle: HolyGrailShuffle
+	MiraiShuffle: MiraiShuffle
+	HermesBootsShuffle: HermesBootsShuffle
+	TextTraxShuffle: TextTraxShuffle
+	
+	RandomizeTransitions: RandomizeTransitions
+	RandomizeBacksideDoors: RandomizeBacksideDoors
+	
+	RequireIceCape: RequireIceCape
+	RequireFlareGun: RequireFlareGun
+	RequireKeyFairyCombo: RequireKeyFairyCombo
+	
+	AutoScanGrailTablets: AutoScanGrailTablets
+	GuardianSpecificAnkhJewels: GuardianSpecificAnkhJewels
+	AlternateMotherAnkh: AlternateMotherAnkh
+	AncientLaMulaneseLearned: AncientLaMulaneseLearned
+	
+	HardCombatLogic: HardCombatLogic
+	SubweaponOnly: SubweaponOnly
+	RaindropsInLogic: RaindropsInLogic
+	CatPausingInLogic: CatPausingInLogic
+	LampGlitchInLogic: LampGlitchInLogic

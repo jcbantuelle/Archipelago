@@ -1,18 +1,21 @@
-from typing import List, Set, Dict, Tuple, Optional, Callable, NamedTuple
+from typing import TYPE_CHECKING, List, Set, Dict, Tuple, Optional, Callable, NamedTuple
 from BaseClasses import MultiWorld, Location, CollectionState
-from .Options import is_option_enabled, get_option_value, starting_location_ids
+from .Options import StartingLocation
 from .Locations import LocationData
 from .LogicShortcuts import LaMulanaLogicShortcuts
 from .WorldState import LaMulanaWorldState
+
+if TYPE_CHECKING:
+	from . import LaMulanaWorld
 
 class LaMulanaNPCDoor(NamedTuple):
 	checks: List[LocationData] = []
 	logic: Optional[Callable[CollectionState,bool]] = None
 
 
-def get_npc_checks(world: Optional[MultiWorld], player: Optional[int]) -> Dict[str,List[LocationData]]:
+def get_npc_checks(world: Optional['LaMulanaWorld'], player: Optional[int]) -> Dict[str,List[LocationData]]:
 	s = LaMulanaLogicShortcuts(world, player)
-	include_dracuet = not world or is_option_enabled(world, player, 'RandomizeDracuetsShop')
+	include_dracuet = not world or world.options.RandomizeDracuetsShop
 	return {
 		# 'Starting Shop': [
 		# 	LocationData('Starting Shop Item 1', 2359200, is_shop=True),
@@ -179,14 +182,14 @@ def get_npc_checks(world: Optional[MultiWorld], player: Optional[int]) -> Dict[s
 	}
 
 
-def get_npc_entrances(world: MultiWorld, player: int, worldstate: LaMulanaWorldState, s: LaMulanaLogicShortcuts) -> Dict[str,List[LaMulanaNPCDoor]]:
+def get_npc_entrances(world: 'LaMulanaWorld', player: int, worldstate: LaMulanaWorldState, s: LaMulanaLogicShortcuts) -> Dict[str,List[LaMulanaNPCDoor]]:
 	npc_checks = get_npc_checks(world, player)
 	if worldstate.npc_rando and worldstate.npc_mapping:
 		get_entrance_checks = lambda door: npc_checks[worldstate.npc_mapping[door]] if door in worldstate.npc_mapping and worldstate.npc_mapping[door] in npc_checks else []
 	else:
 		get_entrance_checks = lambda door: npc_checks[door] if door in npc_checks else []
 
-	is_surface_start = get_option_value(world, player, "StartingLocation") == starting_location_ids['surface']
+	is_surface_start = world.options.StartingLocation == StartingLocation.option_surface
 
 	npc_doors = {
 		'Menu': [
@@ -304,7 +307,7 @@ def get_npc_entrances(world: MultiWorld, player: int, worldstate: LaMulanaWorldS
 		]
 	}
 
-	if is_option_enabled(world, player, "RandomizeDracuetsShop"):
+	if world.options.RandomizeDracuetsShop:
 		npc_doors['Hell Temple [Shop]'] = [
 			LaMulanaNPCDoor(get_entrance_checks('Tailor Dracuet'))
 		]

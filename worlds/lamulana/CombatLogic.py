@@ -1,6 +1,9 @@
 from BaseClasses import MultiWorld, CollectionState, Optional
-from .Options import is_option_enabled
+from typing import TYPE_CHECKING
 from .LogicShortcuts import LaMulanaLogicShortcuts
+
+if TYPE_CHECKING:
+	from . import LaMulanaWorld
 
 class LaMulanaCombatLogic:
 	player: int
@@ -8,11 +11,11 @@ class LaMulanaCombatLogic:
 	flag_subweapon_only: bool
 	s: LaMulanaLogicShortcuts
 
-	def __init__(self, world: Optional[MultiWorld], player: Optional[int], shortcuts: Optional[LaMulanaLogicShortcuts]):
-		if world and player:
-			self.player = player
-			self.flag_hard_logic = is_option_enabled(world, self.player, "HardCombatLogic")
-			self.flag_subweapon_only = is_option_enabled(world, self.player, "SubweaponOnly")
+	def __init__(self, world: Optional['LaMulanaWorld'], player: Optional[int], shortcuts: Optional[LaMulanaLogicShortcuts]):
+		if world:
+			self.flag_hard_logic = world.options.HardCombatLogic
+			self.flag_subweapon_only = world.options.SubweaponOnly
+		self.player = player
 		self.s = shortcuts
 
 	def anubis(self, state: CollectionState) -> bool:

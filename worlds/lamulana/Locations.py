@@ -1,8 +1,11 @@
-from typing import List, Dict, Tuple, Optional, Callable, NamedTuple
+from typing import TYPE_CHECKING, List, Dict, Tuple, Optional, Callable, NamedTuple
 from BaseClasses import MultiWorld, Location, CollectionState
-from .Options import is_option_enabled, get_option_value
+from .Options import RandomizeCoinChests
 from .LogicShortcuts import LaMulanaLogicShortcuts
 from .CombatLogic import LaMulanaCombatLogic
+
+if TYPE_CHECKING:
+	from . import LaMulanaWorld
 
 class LocationData(NamedTuple):
 	name: str
@@ -23,15 +26,16 @@ class LocationData(NamedTuple):
 	obtain_flag: Optional[int] = None
 	obtain_value: Optional[int] = None
 
-def get_locations_by_region(world: Optional[MultiWorld], player: Optional[int], worldstate) -> Dict[str, List[LocationData]]:
+def get_locations_by_region(world: Optional['LaMulanaWorld'], player: Optional[int], worldstate) -> Dict[str, List[LocationData]]:
 	s = LaMulanaLogicShortcuts(world, player)
 	combat = LaMulanaCombatLogic(world, player, s)
 
-	include_coin_chests = not world or is_option_enabled(world, player, "RandomizeCoinChests")
-	include_escape_chest = not world or get_option_value(world, player, "RandomizeCoinChests") == 2
-	include_trap_items = not world or is_option_enabled(world, player, "RandomizeTrapItems")
-	include_hell_temple_reward = not world or is_option_enabled(world, player, "HellTempleReward")
-	alt_mother_ankh = not world or is_option_enabled(world, player, "AlternateMotherAnkh")
+	#Output all locations when "world" isn't supplied - this is done when initializing so AP can get a list of all checks
+	include_coin_chests = not world or world.options.RandomizeCoinChests
+	include_escape_chest = not world or world.options.RandomizeCoinChests == RandomizeCoinChests.option_include_escape_chest
+	include_trap_items = not world or world.options.RandomizeTrapItems
+	include_hell_temple_reward = not world or world.options.HellTempleReward
+	alt_mother_ankh = not world or world.options.AlternateMotherAnkh
 
 	locations = {
 		"Surface [Main]": [

@@ -1,5 +1,9 @@
 from BaseClasses import MultiWorld, CollectionState, Optional
-from .Options import is_option_enabled, get_option_value, starting_weapon_ids, starting_location_names
+from typing import TYPE_CHECKING
+from .Options import starting_location_names, StartingWeapon
+
+if TYPE_CHECKING:
+	from . import LaMulanaWorld
 
 class LaMulanaLogicShortcuts:
 	player: int
@@ -17,27 +21,27 @@ class LaMulanaLogicShortcuts:
 	flag_lamp_glitch: bool
 	is_frontside_start: bool
 
-	def __init__(self, world: Optional[MultiWorld], player: Optional[int]):
-		if world and player:
-			self.player = player
-			self.flag_specific_ankh_jewels = is_option_enabled(world, player, "GuardianSpecificAnkhJewels")
-			self.flag_autoscan = is_option_enabled(world, player, "AutoScanGrailTablets")
-			self.flag_ancient_lamulanese = is_option_enabled(world, player, "AncientLaMulaneseLearned")
-			self.flag_ice_cape_lava = is_option_enabled(world, player, "RequireIceCape")
-			self.flag_flare_gun_extinction = is_option_enabled(world, player, "RequireFlareGun")
-			self.flag_key_fairy_combo_required = is_option_enabled(world, player, "RequireKeyFairyCombo")
-			self.flag_subweapon_only = is_option_enabled(world, player, "SubweaponOnly")
-			self.flag_pistol_start = get_option_value(world, player, "StartingWeapon") == starting_weapon_ids['Pistol']
-			self.flag_raindrop = is_option_enabled(world, player, "RaindropsInLogic")
-			self.flag_catpause = is_option_enabled(world, player, "CatPausingInLogic")
-			self.flag_lamp_glitch = is_option_enabled(world, player, "LampGlitchInLogic")
+	def __init__(self, world: Optional['LaMulanaWorld'], player: Optional[int]):
+		self.player = player
+		if world:
+			self.flag_specific_ankh_jewels = world.options.GuardianSpecificAnkhJewels
+			self.flag_autoscan = world.options.AutoScanGrailTablets
+			self.flag_ancient_lamulanese = world.options.AncientLaMulaneseLearned
+			self.flag_ice_cape_lava = world.options.RequireIceCape
+			self.flag_flare_gun_extinction = world.options.RequireFlareGun
+			self.flag_key_fairy_combo_required = world.options.RequireKeyFairyCombo
+			self.flag_subweapon_only = world.options.SubweaponOnly
+			self.flag_pistol_start = world.options.StartingWeapon == StartingWeapon.option_pistol
+			self.flag_raindrop = world.options.RaindropsInLogic
+			self.flag_catpause = world.options.CatPausingInLogic
+			self.flag_lamp_glitch = world.options.LampGlitchInLogic
 
-			starting_location = starting_location_names[get_option_value(world, player, "StartingLocation")]
+			starting_location = starting_location_names[world.options.StartingLocation]
 			self.is_frontside_start = starting_location in {'surface', 'guidance', 'mausoleum', 'sun', 'spring', 'inferno', 'extinction', 'twin (front)', 'endless', 'gate of time (surface)'}
 
 
 	#Could add +1 if revive combo was on, but that would turn move.exe and randc.exe into progression
-	def get_health_count(self, state: CollectionState) -> bool:
+	def get_health_count(self, state: CollectionState) -> int:
 		return state.count("Sacred Orb", self.player)
 
 	def attack_whip(self, state: CollectionState) -> bool:
