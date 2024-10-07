@@ -540,6 +540,13 @@ class LaMulanaWorld(World):
 	def get_option_value(self, option: str) -> Union[int, Dict, List]:
 		return get_option_value(self.multiworld, self.player, option)
 
+	def start_inventory_as_list(self) -> List[str]:
+		out = []
+		for item_name, count in self.options.start_inventory.value.items():
+			for _ in range(count):
+				out.append(item_name)
+		return out
+
 	def generate_output(self, output_directory: str) -> None:
 		rcd_mod = RcdMod("script.rcd")
 		dat_mod = DatMod("script_code.dat")
@@ -559,7 +566,7 @@ class LaMulanaWorld(World):
 			elif location.file_type == 'dat':
 				dat_mod.place_item_in_location(item, item_id, location)
 
-		rcd_mod.give_starting_items(self.precollected_items[self.player])
+		rcd_mod.give_starting_items(self.start_inventory_as_list() + list(self.precollected_items[self.player]))
 		rcd_mod.rewrite_diary_chest()
 		rcd_mod.add_diary_chest_timer()
 		if self.is_option_enabled("AutoScanGrailTablets"):
