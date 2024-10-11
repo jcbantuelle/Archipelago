@@ -126,7 +126,7 @@ class LaMulanaWorld(World):
 
 		if self.options.RandomizeCoinChests == RandomizeCoinChests.option_include_escape_chest:
 			#local progression would be a problem for the escape coin chest - if it involves another player and loops back to us, that's fine
-			escape_location = self.multiworld.get_location('Twin Labyrinths Escape Coin Chest', self.player)
+			escape_location = self.multiworld.get_location('Twin Labyrinths - Escape Coin Chest', self.player)
 			add_item_rule(escape_location, lambda item: item.player != self.player or not item.classification in {ItemClassification.progression, ItemClassification.progression_skip_balancing})
 
 	def extend_hint_information(self, hint_data: Dict[int, Dict[int,str]]):
@@ -166,40 +166,41 @@ class LaMulanaWorld(World):
 
 		if self.worldstate.transition_rando:
 			check_transition_info = {
-				'Sacred Orb (Spring in the Sky) Chest': 'Spring D1',
-				'Map (Spring in the Sky) Chest': 'Spring D1',
-				'Caltrops Location': 'Spring D1',
-				'Glove Chest': 'Spring D1',
-				'Origin Seal Chest': 'Spring D1',
-				'Scalesphere Chest': 'Spring D1',
-				'Map (Chamber of Extinction) Chest': 'Extinction L2',
-				'Death Seal Chest': 'Shrine D2',
-				'Map (Shrine of the Mother) Chest': 'Shrine D3',
-				'Sacred Orb (Shrine of the Mother) Chest': 'Shrine U1',
-				'Crystal Skull Chest': 'Shrine U1',
-				'Diary Chest': 'Shrine U1',
-				'bounce.exe Chest': 'Shrine U1',
-				'Cog of the Soul Chest': 'Illusion R1',
-				'Map (Tower of Ruin) Chest': 'Ruin L1',
-				'Map (Chamber of Birth) Chest': 'Birth D1',
-				'Pochette Key Chest': 'Birth D1',
-				'Dimensional Key Chest': 'Birth D1',
-				'lamulana.exe Chest': 'Retrosurface R1'
+				'Spring in the Sky - Sacred Orb Chest': 'Spring D1',
+				'Spring in the Sky - Map Chest': 'Spring D1',
+				'Spring in the Sky - Ankh Jewel Chest': 'Spring D1',
+				'Spring in the Sky - Caltrops Puzzle Reward': 'Spring D1',
+				'Spring in the Sky - Glove Chest': 'Spring D1',
+				'Spring in the Sky - Origin Seal Chest': 'Spring D1',
+				'Spring in the Sky - Scalesphere Chest': 'Spring D1',
+				'Chamber of Extinction - Map Chest': 'Extinction L2',
+				'Shrine of the Mother - Death Seal Chest': 'Shrine D2',
+				'Shrine of the Mother - Map Chest': 'Shrine D3',
+				'Shrine of the Mother - Sacred Orb Chest': 'Shrine U1',
+				'Shrine of the Mother - Crystal Skull Chest': 'Shrine U1',
+				'Shrine of the Mother - Diary Chest': 'Shrine U1',
+				'Shrine of the Mother - bounce.exe Chest': 'Shrine U1',
+				'Gate of Illusion - Cog of the Soul Chest': 'Illusion R1',
+				'Tower of Ruin - Map Chest': 'Ruin L1',
+				'Chamber of Birth - Map Chest': 'Birth D1',
+				'Chamber of Birth - Pochette Key Chest': 'Birth D1',
+				'Chamber of Birth - Dimensional Key Chest': 'Birth D1',
+				'Gate of Time (Surface) - lamulana.exe Chest': 'Retrosurface R1'
 			}
 			if self.options.RandomizeCoinChests:
 				check_transition_info.update({
-					'Spring in the Sky Coin Chest': 'Spring D1',
-					'Shrine of the Mother Coin Chest': 'Shrine U1',
-					'Chamber of Birth Dance of Life Coin Chest': 'Birth D1'
+					'Spring in the Sky - Lower Path Coin Chest': 'Spring D1',
+					'Shrine of the Mother - Katana Coin Chest': 'Shrine U1',
+					'Chamber of Birth - Dance of Life Coin Chest': 'Birth D1'
 				})
 			for check_name, transition_name in check_transition_info.items():
 				hint_info[self.multiworld.get_location(check_name, self.player).address] = get_transition_spoiler_name(transition_name)
 
 		if self.worldstate.door_rando:
 			check_door_info = {
-				'yagostr.exe Chest': 'Guidance Door',
-				'Djed Pillar Chest': 'Ruin Top Door',
-				'Talisman Location': 'Inferno Viy Door'
+				'Gate of Guidance - yagostr.exe Chest': 'Guidance Door',
+				'Tower of Ruin - Djed Pillar Chest': 'Ruin Top Door',
+				'Temple of the Sun - Talisman Location': 'Inferno Viy Door'
 			}
 			for check_name, door_name in check_door_info.items():
 				target, req = self.worldstate.door_map[door_name]
@@ -328,8 +329,8 @@ class LaMulanaWorld(World):
 		for location in self.multiworld.get_locations(self.player):
 			if location.address is None:
 				item_name = location.name
-				if '—' in location.name:
-					item_name = item_name[:item_name.find('—')].strip()
+				if 'Lamp Recharge' in location.name:
+					item_name = 'Lamp Recharge'
 				item = Item(item_name, ItemClassification.progression, None, self.player)
 				location.place_locked_item(item)
 
