@@ -80,11 +80,11 @@ class RandomizeCursedChests(Toggle):
 class CursedChestCount(Range):
 	"""Not supported - value will be disregarded.
 # The number of chests that will be cursed and require the Mulana Talisman to open.
-# The maximum number (97) corresponds to every single chest (including coin and trap chests) being cursed.
+# The maximum number (101) corresponds to every single chest (including coin and trap chests) being cursed.
 # As a result, a random value will skew toward a higher percentage of cursed chests if coin or trap chests aren't randomized."""
 	display_name = "Number of Cursed Chests"
 	range_start = 0
-	range_end = 97
+	range_end = 101
 	default = 4
 
 class RandomizeNPCs(Toggle):

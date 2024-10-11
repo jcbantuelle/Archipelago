@@ -434,8 +434,8 @@ class LaMulanaWorld(World):
 		return item_list
 
 	def get_excluded_items(self) -> Set[str]:
-		#101 base locations (chests + NPC checks) + 24 coin chests + escape chest + 4 trap items + number of randomized items in shops + 1 Hell Temple check
-		location_pool_size = 101 + (24 if self.options.RandomizeCoinChests else 0) + (1 if self.options.RandomizeCoinChests == RandomizeCoinChests.option_include_escape_chest else 0) + (4 if self.options.RandomizeTrapItems else 0) + self.options.ShopDensity + (1 if self.options.HellTempleReward else 0)
+		#103 base locations (chests + NPC checks) + 27 coin chests + escape chest + 4 trap items + number of randomized items in shops + 1 Hell Temple check
+		location_pool_size = 103 + (27 if self.options.RandomizeCoinChests else 0) + (1 if self.options.RandomizeCoinChests == RandomizeCoinChests.option_include_escape_chest else 0) + (4 if self.options.RandomizeTrapItems else 0) + self.options.ShopDensity + (1 if self.options.HellTempleReward else 0)
 
 		item_pool_size = 126
 		if self.options.AlternateMotherAnkh:

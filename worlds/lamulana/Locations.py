@@ -94,6 +94,7 @@ def get_locations_by_region(world: Optional['LaMulanaWorld'], player: Optional[i
 			LocationData("Caltrops Location", 2359025, file_type='rcd', zones=[4], room=1, screen=0, object_type=0x2f, item_id=14, obtain_flag=0x89, obtain_value=1),
 			LocationData("Map (Spring in the Sky) Chest", 2359026, lambda state: s.attack_chest_any(state), is_cursable=True, file_type='rcd', zones=[4], room=2, screen=1, object_type=0x2c, item_id=70, original_obtain_flag=0xd5, obtain_flag=0x83f, obtain_value=2),
 			LocationData("Sacred Orb (Spring in the Sky) Chest", 2359027, lambda state: s.attack_chest_any(state) and state.has(worldstate.get_seal_name('Spring Sacred Orb Chest'), player), is_cursable=True, file_type='rcd', zones=[4], room=0, screen=0, object_type=0x2c, item_id=69, obtain_flag=0xcb, obtain_value=2),
+			LocationData("Ankh Jewel (Spring in the Sky) Chest", 2359123, lambda state: s.attack_chest(state) and (s.attack_earth_spear(state) or state.has_any({'Scalesphere', 'Sacred Orb'}, player)), is_cursable=True, file_type='rcd', zones=[4], room=7, screen=0, object_type=0x2c, item_id=19, obtain_flag=0x00, obtain_value=2),
 			LocationData("Flooded Temple of the Sun", None, lambda state: (s.attack_forward(state) and (s.state_water_swim(state, 3) or state.has('Holy Grail', player))) or (s.attack_vertical(state) and s.state_water_swim(state, 3)), True),
 			LocationData("Spring in the Sky Grail Tablet", None, lambda state: s.state_read_grail(state), True)
 		],
@@ -134,6 +135,7 @@ def get_locations_by_region(world: Optional['LaMulanaWorld'], player: Optional[i
 			LocationData("Ox-head & Horse-face Defeated", None, lambda state: combat.oxhead_horseface(state), True)
 		],
 		"Chamber of Extinction [Ankh Lower]": [
+			#LocationData('Chamber of Extinction Backup Ankh Jewel Chest', None, lambda state: state.has('Palenque Defeated', player), zone=[6], room=9, screen=0, object_type=0x2c, item_id=19, obtain_value=2),
 			LocationData('Palenque Defeated', None, lambda state: state.has('Pochette Key', player) and state.can_reach('Chamber of Extinction [Teleport]', 'Region', player) and state.can_reach('Chamber of Extinction [Left Main]', 'Region', player) and combat.palenque(state) and s.has_ankh_jewel(state, 'Palenque'), True),
 			LocationData("Hell Temple Unlocked", None, lambda state: s.hell_temple_requirements(state), True)
 		],
@@ -309,6 +311,7 @@ def get_locations_by_region(world: Optional['LaMulanaWorld'], player: Optional[i
 			LocationData("Sacred Orb (Dimensional Corridor) Chest", 2359089, lambda state: state.has_all({"Feather", "Dimensional Key", worldstate.get_seal_name("Dimensional Sacred Orb Chest"), "Angel Shield Children Defeated"}, player) and s.attack_chest(state), is_cursable=True, file_type='rcd', zones=[17], room=10, screen=0, object_type=0x2c, item_id=69, obtain_flag=0xd0, obtain_value=2),
 			LocationData("Ankh Jewel (Dimensional Corridor) Chest", 2359090, lambda state: state.has("Mushussu Defeated", player) and s.attack_chest(state), is_cursable=True, file_type='rcd', zones=[17], room=6, screen=0, object_type=0x2c, item_id=19, obtain_flag=0x95, obtain_value=2),
 			LocationData("Magatama Jewel Chest", 2359091, lambda state: state.has('Tiamat Defeated', player) and s.attack_chest(state), is_cursable=True, file_type='rcd', zones=[17], room=9, screen=0, object_type=0x2c, item_id=23, obtain_flag=0x99, obtain_value=2),
+			LocationData("beolamu.exe Scan", 2359124, lambda state: state.has_all({'Angel Shield Children Defeated', 'torude.exe'}, player), file_type='rcd', zones=[17], room=8, screen=1, object_type=0xc3, item_id=95, obtain_flag=0x00, obtain_value=1),
 			LocationData("Left Side Children Defeated", None, lambda state: combat.left_side_children(state), True),
 			LocationData("Right Side Children Defeated", None, lambda state: combat.right_side_children(state), True),
 			LocationData("Angel Shield Children Defeated", None, lambda state: combat.angel_shield_children(state), True),
@@ -333,6 +336,11 @@ def get_locations_by_region(world: Optional['LaMulanaWorld'], player: Optional[i
 	# 	locations['Surface [Ruin Path Upper]'] = [
 	# 		LocationData('Surface Underground Path Coin Chest', 2359095, lambda state: s.attack_bomb(state), is_cursable=True, file_type='rcd', zones=[1,22], room=5, screen=1, object_type=0x2c, item_id=-10)
 	# 	]
+	#	locations['Gate of Guidance'].extend([
+	#		LocationData('Gate of Guidance Coin Chest (Left)', 2359125, lambda state: s.attack_chest_any(state), is_cursable=True, file_type='rcd', zones=[0], room=2, screen=1, object_type=0x2c, item_id=-10),
+	#		LocationData('Gate of Guidance Coin Chest (Right)', 2359126, lambda state: s.attack_chest_any(state), is_cursable=True, file_type='rcd', zones=[0], room=2, screen=1, object_type=0x2c, item_id=-10),
+	#		LocationData('Gate of Guidance Trapdoor Coin Chest', 2359127, lambda state: s.attack_chest(state), is_cursable=True, file_type='rcd', zones=[0], room=6, screen=0, object_type=0x2c, item_id=-10)
+	#	])
 	# 	locations['Mausoleum of the Giants'].extend([
 	# 		LocationData('Mausoleum of the Giants Coin Chest', 2359096, lambda state: s.attack_shuriken(state) or s.attack_chakram(state) or s.attack_pistol(state) or (s.attack_main(state) and state.has('Feather', player)), is_cursable=True, file_type='rcd', zones=[2], room=0, screen=1, object_type=0x2c, item_id=-10)
 	# 	])
@@ -413,7 +421,7 @@ def get_locations_by_region(world: Optional['LaMulanaWorld'], player: Optional[i
 	# 		LocationData('Gate of Illusion Exploding Chest', 2359120, lambda state: s.attack_chest(state), is_cursable=True)
 	# 	)
 	# 	locations['Graveyard of the Giants [West]'].append(
-	# 		LocationData('Graveyard of the Giants Trap Chest', 2359121, lambda state: s.attack_chest(state), is_cursable=True)
+	# 		LocationData('Graveyard of the Giants Trap Chest', 2359121, lambda state: s.attack_chest(state), is_cursable=True, file_type='rcd', zones=[11], room=4, screen=3, object_type=0x2c)
 	# 	)
 
 	# if include_hell_temple_reward:
