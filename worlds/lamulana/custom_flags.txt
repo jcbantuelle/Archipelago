@@ -77,5 +77,20 @@
 2128 (0x850) - Diary Found Flag
 2129 (0x851) - Talisman Found
 
+2130 (0x852) - Ankh Jewel
+2131 (0x853) - Ankh Jewel (Amphisbaena)
+2132 (0x854) - Ankh Jewel (Sakit)
+2133 (0x855) - Ankh Jewel (Ellmac)
+2134 (0x856) - Ankh Jewel (Bahamut)
+2135 (0x857) - Ankh Jewel (Viy)
+2136 (0x858) - Ankh Jewel (Palenque)
+2137 (0x859) - Ankh Jewel (Baphomet)
+2138 (0x85a) - Ankh Jewel (Tiamat)
+2139 (0x85b) - Ankh Jewel (Mother)
+
+2140 (0x85c) - Medicine of the Mind
+
+2141 (0x85d) - Sacred Orb (Placeholder)
+
 3096 (0xc18) - RCD Placeholder Flags start
 3596 (0xe0c) - DAT Placeholder Flags start
