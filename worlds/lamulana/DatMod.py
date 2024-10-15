@@ -6,31 +6,47 @@ class DatMod(FileMod):
 
   def __init__(self, filename):
     super().__init__(Dat, filename)
+    self.filler_flags = 0xe0c
 
   def place_item_in_location(self, item, item_id, location) -> None:
+    params = {
+      "item_id": item_id,
+      "location": location,
+      "item": item
+    }
+    params["original_obtain_flag"] = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
+    if item.obtain_flag is not None:
+      params["new_obtain_flag"] = item.obtain_flag
+    else:
+      params["new_obtain_flag"] = self.filler_flags
+      self.filler_flags += 1
+    params["obtain_value"] = item.obtain_value if item.obtain_value is not None else location.obtain_value
+
     for card_index in location.cards:
-      entries = self.file_contents.cards[card_index].contents.entries
+      params["entries"] = self.file_contents.cards[card_index].contents.entries
 
       if location.slot is None:
-        entry_index = next((i for i,v in enumerate(entries) if v.header == HEADERS["item"] and v.contents.value == location.item_id), None)
-        entries[entry_index].contents.value = item_id
-
-        original_obtain_flag = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
-        obtain_flag = item.obtain_flag if item.obtain_flag is not None else location.obtain_flag
-        obtain_value = item.obtain_value if item.obtain_value is not None else location.obtain_value
-
-        entry_index = next((i for i,v in enumerate(entries) if v.header == HEADERS["flag"] and v.contents.address == original_obtain_flag), None)
-        entries[entry_index].contents.address = obtain_flag
-        entries[entry_index].contents.value = obtain_value
+        self.place_conversation_item(**params)
       else:
-        data_indices = [i for i,v in enumerate(entries) if v.header == HEADERS["data"]]
-        entries[data_indices[0]].contents.values[location.slot] = item_id
-        if item.cost is not None:
-          entries[data_indices[1]].contents.values[location.slot] = item.cost
-        entries[data_indices[2]].contents.values[location.slot] = item.quantity
-        entries[data_indices[3]].contents.values[location.slot] = location.obtain_flag
-        if location.obtain_value > 1:
-          entries[data_indices[6]].contents.values[location.slot] = location.obtain_flag
+        self.place_shop_item(**params)
+
+  def place_conversation_item(self, entries, item_id, location, item, original_obtain_flag, new_obtain_flag, obtain_value):
+    item_index = next((i for i,v in enumerate(entries) if v.header == HEADERS["item"] and v.contents.value == location.item_id), None)
+    entries[item_index].contents.value = item_id
+
+    flag_index = next((i for i,v in enumerate(entries) if v.header == HEADERS["flag"] and v.contents.address == original_obtain_flag), None)
+    entries[flag_index].contents.address = new_obtain_flag
+    entries[flag_index].contents.value = obtain_value
+
+  def place_shop_item(self, entries, item_id, location, item, original_obtain_flag, new_obtain_flag, obtain_value):
+    data_indices = [i for i,v in enumerate(entries) if v.header == HEADERS["data"]]
+    entries[data_indices[0]].contents.values[location.slot] = item_id
+    item_cost = item.cost if item.cost is not None else 10
+    entries[data_indices[1]].contents.values[location.slot] = item_cost
+    entries[data_indices[2]].contents.values[location.slot] = item.quantity
+    entries[data_indices[3]].contents.values[location.slot] = new_obtain_flag
+    if obtain_value > 1:
+      entries[data_indices[6]].contents.values[location.slot] = new_obtain_flag
 
   def rewrite_xelpud_flag_checks(self) -> None:
     card = self.card("xelpud_conversation_tree")

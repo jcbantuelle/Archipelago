@@ -86,7 +86,7 @@ def get_npc_checks(world: Optional['LaMulanaWorld'], player: Optional[int]) -> D
 		],
 		'Mr. Fishman (Alt)': [
 			LocationData('Mr. Fishman (Alt) Shop Item 1', 2359235, is_shop=True, file_type='dat', cards=[133], slot=0, item_id=38, obtain_flag=0x84e, obtain_value=2),
-			LocationData('Mr. Fishman (Alt) Shop Item 2', 2359236, is_shop=True, file_type='dat', cards=[133], slot=1, item_id=92, obtain_flag=0x81a, obtain_value=2),
+			LocationData('Mr. Fishman (Alt) Shop Item 2', 2359236, is_shop=True, file_type='dat', cards=[133], slot=1, item_id=92, obtain_flag=0xe9, obtain_value=2),
 			LocationData('Mr. Fishman (Alt) Shop Item 3', 2359237, is_shop=True, file_type='dat', cards=[133], slot=2, item_id=97, obtain_flag=0xee, obtain_value=2)
 		],
 		'Hot-blooded Nemesistwo': [
@@ -129,8 +129,8 @@ def get_npc_checks(world: Optional['LaMulanaWorld'], player: Optional[int]) -> D
 			LocationData('Affected Knimare Shop Item 3', 2359258, is_shop=True, file_type='dat', cards=[220], slot=2, item_id=105, obtain_flag=0x82a, obtain_value=2)
 		],
 		'Mr. Slushfund': [
-			LocationData('Mr. Slushfund Pepper Gift', 2359259, file_type='dat', cards=[245], item_id=30, original_obtain_flag=0x228, obtain_flag=0x84c, obtain_value=1),
-			LocationData('Mr. Slushfund Anchor Gift', 2359260, lambda state: state.has('Treasures', player), file_type='dat', cards=[247], item_id=50, original_obtain_flag=0x228, obtain_flag=0x84d, obtain_value=2)
+			LocationData('Mr. Slushfund Pepper Gift', 2359259, file_type='dat', cards=[245], item_id=30, obtain_flag=0x228, obtain_value=1),
+			LocationData('Mr. Slushfund Anchor Gift', 2359260, lambda state: state.has('Treasures', player), file_type='dat', cards=[247], item_id=50, obtain_flag=0x228, obtain_value=2)
 		],
 		'Priest Alest': [
 			LocationData('Priest Alest Mini Doll Gift', 2359261, file_type='dat', cards=[249], item_id=22, obtain_flag=0x98, obtain_value=2)

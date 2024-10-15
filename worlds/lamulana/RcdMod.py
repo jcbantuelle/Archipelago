@@ -38,6 +38,7 @@ class RcdMod(FileMod):
 
   def __init__(self, filename):
     super().__init__(Rcd, filename)
+    self.filler_flags = 0xc18
 
   def place_item_in_location(self, item, item_id, location) -> None:
     for zone in location.zones:
@@ -65,7 +66,11 @@ class RcdMod(FileMod):
         params["objects"] = screen.objects_without_position
 
       params["original_obtain_flag"] = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
-      params["new_obtain_flag"] = item.obtain_flag if item.obtain_flag is not None else location.obtain_flag
+      if item.obtain_flag is not None:
+        params["new_obtain_flag"] = item.obtain_flag
+      else:
+        params["new_obtain_flag"] = self.filler_flags
+        self.filler_flags += 1
       params["obtain_value"] = item.obtain_value if item.obtain_value is not None else location.obtain_value
       for location_id in location_ids:
         params["location_id"] = location_id

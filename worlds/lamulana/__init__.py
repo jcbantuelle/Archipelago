@@ -567,6 +567,11 @@ class LaMulanaWorld(World):
 		dat_mod = DatMod("script_code.dat")
 		local_config = LocalConfig(self.multiworld, self.player)
 
+		dat_mod.rewrite_xelpud_flag_checks()
+		dat_mod.rewrite_xelpud_mulana_talisman_conversation()
+		dat_mod.rewrite_xelpud_talisman_conversation()
+		dat_mod.rewrite_xelpud_pillar_conversation()
+
 		locations = self.multiworld.get_locations(self.player)
 
 		for location in locations:
@@ -586,11 +591,6 @@ class LaMulanaWorld(World):
 		rcd_mod.add_diary_chest_timer()
 		if self.options.AutoScanGrailTablets:
 			rcd_mod.create_grail_autoscans()
-
-		dat_mod.rewrite_xelpud_flag_checks()
-		dat_mod.rewrite_xelpud_mulana_talisman_conversation()
-		dat_mod.rewrite_xelpud_talisman_conversation()
-		dat_mod.rewrite_xelpud_pillar_conversation()
 
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
