@@ -327,7 +327,7 @@ class LaMulanaWorldState:
 			self.cursed_chests = set(self.multiworld.random.sample(possible_cursed_chests, curse_count))
 		else:
 			#4 vanilla cursed chests
-			self.cursed_chests = {'Crystal Skull Chest', 'Dimensional Key Chest', 'Djed Pillar Chest', 'Magatama Jewel Chest'}
+			self.cursed_chests = {'Shrine of the Mother - Crystal Skull Chest', 'Chamber of Birth - Dimensional Key Chest', 'Tower of Ruin - Djed Pillar Chest', 'Dimensional Corridor - Magatama Jewel Chest'}
 
 	def get_npc_hint_order(self):
 		npcs = ['Elder Xelpud', 'Mulbruk', 'Fairy Queen', 'Philosopher Fobos', 'Philosopher Alsedana', 'Philosopher Giltoriyo', 'Philosopher Samaranta', 'Former Mekuri Master', 'Mr. Slushfund', 'Priest Alest', 'Nebur', 'Sidro', 'Modro', 'Penadvent of Ghost', 'Greedy Charlie', 'Shalom III', 'Usas VI', 'Kingvalley I', 'Mr. Fishman (Original)', 'Mr. Fishman (Alt)', 'Hot-blooded Nemesistwo', 'Operator Combaker', 'Yiegah Kungfu', 'Yiear Kungfu', 'Arrogant Sturdy Snake', 'Arrogant Metagear', 'Affected Knimare', 'Mover Athleland', 'Giant Mopiran', 'Kingvalley II', 'Energetic Belmont', 'Mechanical Efspi', 'Mudman Qubert']

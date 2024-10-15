@@ -111,7 +111,7 @@ class RcdMod(FileMod):
                 self.file_size += 28
 
   def rewrite_diary_chest(self) -> None:
-    diary_location = next((location for _, location in enumerate(get_locations_by_region(None, None, None)["Shrine of the Mother [Main]"]) if location.name == "Diary Chest"), None)
+    diary_location = next((location for _, location in enumerate(get_locations_by_region(None, None, None)["Shrine of the Mother [Main]"]) if location.name == "Shrine of the Mother - Diary Chest"), None)
     for zone_index in diary_location.zones:
       diary_screen = self.file_contents.zones[zone_index].rooms[diary_location.room].screens[diary_location.screen]
       diary_chest = next((o for _,o in enumerate(diary_screen.objects_with_position)
