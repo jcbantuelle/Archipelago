@@ -117,7 +117,7 @@ item_table: Dict[str, ItemData] = {
 	'move.exe':                         ItemData('Software', 2359100, useful=True, game_code=99, obtain_flag=0xf0, obtain_value=2),
 	'mekuri.exe':                       ItemData('Software', 2359101, progression=True, game_code=100, obtain_flag=0xf1, obtain_value=2), #progression if key fairy combo
 	'bounce.exe':                       ItemData('Software', 2359102, game_code=101, obtain_flag=0xf2, obtain_value=2),
-	'miracle.exe':                      ItemData('Software', 2359103, progression=True, game_code=102), #progression if key fairy combo or NPC rando
+	'miracle.exe':                      ItemData('Software', 2359103, progression=True, game_code=102, obtain_flag=0xf3, obtain_value=2), #progression if key fairy combo or NPC rando
 	'mirai.exe':                        ItemData('Software', 2359104, progression=True, game_code=103, obtain_flag=0xf4, obtain_value=2),
 	'lamulana.exe':                     ItemData('Software', 2359105, useful=True, game_code=104, obtain_flag=0xf5, obtain_value=2),
 	'Map (Surface)':                    ItemData('Map', 2359106, game_code=70, obtain_flag=0xd1, obtain_value=2),
