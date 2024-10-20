@@ -5,7 +5,7 @@ from kaitaistruct import KaitaiStream
 
 class FileMod:
 
-  def __init__(self, mod_class, filename):
+  def __init__(self, mod_class, filename, local_config):
     file_path = Utils.user_path(filename)
     self.file_size = os.path.getsize(file_path)
 
@@ -13,6 +13,8 @@ class FileMod:
 
     self.file_contents = mod_class(file_io)
     self.file_contents._read()
+
+    self.local_config = local_config
 
   def write_file(self):
     write_io = KaitaiStream(io.BytesIO(bytearray(self.file_size)))

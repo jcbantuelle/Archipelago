@@ -36,8 +36,8 @@ class RcdMod(FileMod):
     ]
   )
 
-  def __init__(self, filename):
-    super().__init__(Rcd, filename)
+  def __init__(self, filename, local_config):
+    super().__init__(Rcd, filename, local_config)
     self.filler_flags = 0xc18
 
   def place_item_in_location(self, item, item_id, location) -> None:
@@ -53,6 +53,7 @@ class RcdMod(FileMod):
       params["objects"] = screen.objects_with_position
       params["object_type"] = location.object_type
       params["item_id"] = item_id
+      params["location"] = location
 
       if params["object_type"] == RCD_OBJECTS["chest"]:
         # Endless Corridor Twin Statue Chest Exists Twice
@@ -75,6 +76,7 @@ class RcdMod(FileMod):
       for location_id in location_ids:
         params["location_id"] = location_id
         self.place_item(**params)
+      self.local_config.add_item(params)
 
   def create_grail_autoscans(self) -> None:
     for zone in self.file_contents.zones:
@@ -191,7 +193,7 @@ class RcdMod(FileMod):
       self.file_size += 24
       flag_counter += 1
 
-  def place_item(self, objects, object_type, param_index, param_len, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, item_mod, iterations):
+  def place_item(self, objects, object_type, param_index, param_len, location, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, item_mod, iterations):
     for _ in range(iterations):
       location = next((o for _,o in enumerate(objects) if o.id == object_type and o.parameters[param_index] == location_id+item_mod and len(o.parameters) < param_len), None)
 

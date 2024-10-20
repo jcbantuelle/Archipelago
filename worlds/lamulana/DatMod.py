@@ -4,8 +4,8 @@ from .LmFlags import GLOBAL_FLAGS, HEADERS, CARDS
 
 class DatMod(FileMod):
 
-  def __init__(self, filename):
-    super().__init__(Dat, filename)
+  def __init__(self, filename, local_config):
+    super().__init__(Dat, filename, local_config)
     self.filler_flags = 0xe0c
 
   def place_item_in_location(self, item, item_id, location) -> None:
@@ -29,6 +29,7 @@ class DatMod(FileMod):
         self.place_conversation_item(**params)
       else:
         self.place_shop_item(**params)
+    self.local_config.add_item(params)
 
   def place_conversation_item(self, entries, item_id, location, item, original_obtain_flag, new_obtain_flag, obtain_value):
     item_index = next((i for i,v in enumerate(entries) if v.header == HEADERS["item"] and v.contents.value == location.item_id), None)

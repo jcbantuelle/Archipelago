@@ -563,9 +563,9 @@ class LaMulanaWorld(World):
 		return out
 
 	def generate_output(self, output_directory: str) -> None:
-		rcd_mod = RcdMod("script.rcd")
-		dat_mod = DatMod("script_code.dat")
 		local_config = LocalConfig(self.multiworld, self.player)
+		rcd_mod = RcdMod("script.rcd", local_config)
+		dat_mod = DatMod("script_code.dat", local_config)
 
 		dat_mod.rewrite_xelpud_flag_checks()
 		dat_mod.rewrite_xelpud_mulana_talisman_conversation()
@@ -578,7 +578,6 @@ class LaMulanaWorld(World):
 			item = item_table.get(location.item.name)
 			if (item is None and location.item.player == self.player) or location.address is None:
 				continue
-			local_config.add_item(location)
 
 			item_id = item.game_code if item is not None and location.item.player == self.player else 83
 			if location.file_type == 'rcd':

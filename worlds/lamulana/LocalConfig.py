@@ -12,13 +12,13 @@ class LocalConfig:
       "item_mapping": []
     }
 
-  def add_item(self, location):
+  def add_item(self, params):
     self.configurations["item_mapping"].append(
       {
-        "flag": location.obtain_flag,
-        "location_id": location.address,
-        "player_id": location.item.player,
-        "obtain_value": location.obtain_value
+        "flag": params["new_obtain_flag"],
+        "location_id": params["location"].address,
+        "player_id": params["location"].item.player,
+        "obtain_value": params["obtain_value"]
       }
     )
 
