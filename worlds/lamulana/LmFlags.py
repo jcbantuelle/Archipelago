@@ -55,6 +55,7 @@ CARDS = {
 
 RCD_OBJECTS = {
   "flag_timer": 0x0b,
+  "room_spawner": 0x0e,
   "hitbox_generator": 0x12,
   "lemeza_detector": 0x14,
   "chest": 0x2c,
