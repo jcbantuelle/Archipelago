@@ -213,14 +213,15 @@ class RcdMod(FileMod):
 
             # Naked Items with destructible cover need additional updates
             if object_type == RCD_OBJECTS["naked_item"]:
-              cover = next((o for _,o in enumerate(objects) if o.id == RCD_OBJECTS["hitbox_generator"] or o.id == RCD_OBJECTS["room_spawner"] and len([t for t in o.test_operations if t.flag == original_obtain_flag]) > 0), None)
-              if cover is not None:
-                for cover_test_op in cover.test_operations:
-                  if cover_test_op.flag == original_obtain_flag:
-                    cover_test_op.flag = new_obtain_flag
-                for cover_write_op in cover.write_operations:
-                  if cover_write_op.flag == original_obtain_flag:
-                    cover_write_op.flag = new_obtain_flag
+              covers = [o for _, o in enumerate(objects) if o.id == RCD_OBJECTS["hitbox_generator"] or o.id == RCD_OBJECTS["room_spawner"] and len([t for t in o.test_operations if t.flag == original_obtain_flag]) > 0]
+              for cover in covers:
+                if cover is not None:
+                  for cover_test_op in cover.test_operations:
+                    if cover_test_op.flag == original_obtain_flag:
+                      cover_test_op.flag = new_obtain_flag
+                  for cover_write_op in cover.write_operations:
+                    if cover_write_op.flag == original_obtain_flag:
+                      cover_write_op.flag = new_obtain_flag
 
       location.parameters[param_index] = item_id+item_mod
       location.parameters.append(1)
