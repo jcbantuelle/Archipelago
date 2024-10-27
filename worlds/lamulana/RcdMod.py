@@ -41,19 +41,30 @@ class RcdMod(FileMod):
     self.filler_flags = 0xc18
 
   def place_item_in_location(self, item, item_id, location) -> None:
+    object_type_params = self.RCD_OBJECT_PARAMS.get(location.object_type)
+    if object_type_params is None:
+      return
+
+    params = self.DEFAULT_PARAMS | object_type_params
+    params["object_type"] = location.object_type
+    params["item_id"] = item_id
+    params["location"] = location
+    params["original_obtain_flag"] = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
+    if item_id == 38 or item.obtain_flag is None:
+      params["new_obtain_flag"] = self.filler_flags
+      self.filler_flags += 1
+    else:
+      params["new_obtain_flag"] = item.obtain_flag
+
+    params["obtain_value"] = item.obtain_value if item.obtain_value is not None else location.obtain_value
+
+    self.local_config.add_item(params)
+
+    location_ids = [location.item_id]
+
     for zone in location.zones:
-      object_type_params = self.RCD_OBJECT_PARAMS.get(location.object_type)
-      if object_type_params is None:
-        continue
-
       screen = self.file_contents.zones[zone].rooms[location.room].screens[location.screen]
-      location_ids = [location.item_id]
-
-      params = self.DEFAULT_PARAMS | object_type_params
       params["objects"] = screen.objects_with_position
-      params["object_type"] = location.object_type
-      params["item_id"] = item_id
-      params["location"] = location
 
       if params["object_type"] == RCD_OBJECTS["chest"]:
         # Endless Corridor Twin Statue Chest Exists Twice
@@ -66,17 +77,9 @@ class RcdMod(FileMod):
       elif params["object_type"] == RCD_OBJECTS["scan"]:
         params["objects"] = screen.objects_without_position
 
-      params["original_obtain_flag"] = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
-      if item.obtain_flag is not None:
-        params["new_obtain_flag"] = item.obtain_flag
-      else:
-        params["new_obtain_flag"] = self.filler_flags
-        self.filler_flags += 1
-      params["obtain_value"] = item.obtain_value if item.obtain_value is not None else location.obtain_value
       for location_id in location_ids:
         params["location_id"] = location_id
         self.place_item(**params)
-      self.local_config.add_item(params)
 
   def create_grail_autoscans(self) -> None:
     for zone in self.file_contents.zones:
