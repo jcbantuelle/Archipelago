@@ -41,6 +41,9 @@ class DatMod(FileMod):
     entries[flag_index].contents.value = obtain_value
 
   def place_shop_item(self, entries, item_id, location, item, original_obtain_flag, new_obtain_flag, obtain_value):
+    # Override Other Player Item to Map if in a Shop to prevent quantity from selling out
+    if item_id == 83:
+      item_id = 70
     data_indices = [i for i,v in enumerate(entries) if v.header == HEADERS["data"]]
     entries[data_indices[0]].contents.values[location.slot] = item_id
     item_cost = item.cost if item.cost is not None else 10
