@@ -15,7 +15,7 @@ class DatMod(FileMod):
       "item": item
     }
     params["original_obtain_flag"] = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
-    if item_id == 38 or item_id == 83 or item.obtain_flag is None:
+    if item_id == 38 or item_id == 83 or item_id == 69 or item.obtain_flag is None:
       params["new_obtain_flag"] = self.filler_flags
       self.filler_flags += 1
     else:
