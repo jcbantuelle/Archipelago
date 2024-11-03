@@ -1,4 +1,5 @@
 GLOBAL_FLAGS = {
+  "talisman_found": 0x0a4,
   "xmailer": 0x0e3,
   "grail_tablet_guidance": 0x064,
   "grail_tablet_mausoleum": 0x065,
@@ -18,6 +19,7 @@ GLOBAL_FLAGS = {
   "grail_tablet_twin_back": 0x073,
   "grail_tablet_dimensional": 0x074,
   "grail_tablet_shrine_back": 0x075,
+  "diary_found": 0x104,
   "mulana_talisman": 0x105,
   "diary_chest_puzzle": 0x212,
   "shrine_dragon_bone": 0x218,
@@ -26,9 +28,7 @@ GLOBAL_FLAGS = {
   "cant_leave_conversation": 0x2e4,
   "xelpud_talisman": 0x327,
   "grail_tablet_surface": 0x54e,
-  "starting_items": 0x84f,
-  "diary_found": 0x850,
-  "talisman_found": 0x851
+  "starting_items": 0x84f
 }
 
 HEADERS = {

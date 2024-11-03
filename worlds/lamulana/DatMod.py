@@ -28,6 +28,8 @@ class DatMod(FileMod):
 
       if location.slot is None:
         self.place_conversation_item(**params)
+        if card_index == CARDS["xelpud_xmailer"]:
+          self.update_xelpud_xmailer_flag(params["new_obtain_flag"])
       else:
         self.place_shop_item(**params)
     self.local_config.add_item(params)
@@ -55,7 +57,6 @@ class DatMod(FileMod):
 
   def rewrite_xelpud_flag_checks(self) -> None:
     card = self.card("xelpud_conversation_tree")
-    entries = card.contents.entries
 
     entries_to_remove = [
       CARDS["xelpud_howling_wind"],
@@ -74,6 +75,15 @@ class DatMod(FileMod):
     ]
     for data_values in data_values_to_add:
       self.add_data_entry(card, data_values)
+
+  def update_xelpud_xmailer_flag(self, new_flag):
+    card = self.card("xelpud_conversation_tree")
+    entries = card.contents.entries
+
+    for entry in entries:
+      if entry.header == HEADERS["data"] and entry.contents.values[0] == GLOBAL_FLAGS["xmailer"]:
+        entry.contents.values[0] = new_flag
+        break
 
   def rewrite_xelpud_mulana_talisman_conversation(self) -> None:
     card = self.card("xelpud_mulana_talisman")

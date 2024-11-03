@@ -207,6 +207,7 @@ class RcdMod(FileMod):
         if write_op.flag == original_obtain_flag:
           write_op.flag = new_obtain_flag
           if object_type == RCD_OBJECTS["chest"]:
+            location.write_operations[0].op_value = obtain_value
             location.write_operations[3].op_value = obtain_value
           elif object_type == RCD_OBJECTS["naked_item"] or RCD_OBJECTS["instant_item"] or RCD_OBJECTS["scan"]:
             write_op.op_value = obtain_value
