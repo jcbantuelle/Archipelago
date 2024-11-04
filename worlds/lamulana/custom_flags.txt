@@ -94,5 +94,7 @@
 
 2142 (0x85e) - Ammo (Placeholder)
 
+2143 (0x85f) - Surface Map Skeleton Scan
+
 3096 (0xc18) - RCD Placeholder Flags start
 3596 (0xe0c) - DAT Placeholder Flags start
