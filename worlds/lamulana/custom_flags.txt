@@ -68,7 +68,7 @@
 2122 (0x84a) - Map (Chamber of Birth) Location
 2123 (0x84b) - Map (Dimensional Corridor) Location
 
-2124 (0x84c) - Mr. Slushfund
+2124 (0x84c) - Anchor
 
 2126 (0x84e) - Mr. Fishman (Alt) Shop 1
 
@@ -95,6 +95,8 @@
 2142 (0x85e) - Ammo (Placeholder)
 
 2143 (0x85f) - Surface Map Skeleton Scan
+
+2144 (0x860) - Slushfund conversation
 
 3096 (0xc18) - RCD Placeholder Flags start
 3596 (0xe0c) - DAT Placeholder Flags start

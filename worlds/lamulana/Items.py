@@ -77,7 +77,7 @@ item_table: Dict[str, ItemData] = {
 	'Ring':                             ItemData('Inventory', 2359060, progression=True, game_code=47, obtain_flag=0xb0, obtain_value=1),
 	'Scalesphere':                      ItemData('Inventory', 2359061, progression=True, game_code=48, obtain_flag=0xb1, obtain_value=2),
 	'Gauntlet':                         ItemData('Inventory', 2359062, useful=True, game_code=49, obtain_flag=0xb2, obtain_value=2),
-	'Anchor':                           ItemData('Inventory', 2359063, progression=True, game_code=50, obtain_flag=0x228, obtain_value=2),
+	'Anchor':                           ItemData('Inventory', 2359063, progression=True, game_code=50, obtain_flag=0x84c, obtain_value=2),
 	'Plane Model':                      ItemData('Inventory', 2359064, progression=True, game_code=51, obtain_flag=0xb4, obtain_value=2),
 	'Philosopher\'s Ocarina':           ItemData('Inventory', 2359065, progression=True, game_code=52, obtain_flag=0xb5, obtain_value=2),
 	'Feather':                          ItemData('Inventory', 2359066, progression=True, game_code=53, obtain_flag=0xb6, obtain_value=2),

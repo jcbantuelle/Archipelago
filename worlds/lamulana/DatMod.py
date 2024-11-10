@@ -131,6 +131,12 @@ class DatMod(FileMod):
   
     self.add_flag_entry(card, insert_index, GLOBAL_FLAGS["talisman_found"], 3)
 
+  def update_slushfund_flags(self) -> None:
+    card = self.card("slushfund_give_pepper")
+    self.add_flag_entry(card, len(card.contents.entries), GLOBAL_FLAGS["replacement_slushfund_conversation"], 1)
+    card = self.card("slushfund_give_anchor")
+    self.add_flag_entry(card, len(card.contents.entries), GLOBAL_FLAGS["replacement_slushfund_conversation"], 2)
+
   def card(self, card_name):
     card_index = CARDS[card_name]
     return self.file_contents.cards[card_index]

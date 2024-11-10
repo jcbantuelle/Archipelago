@@ -166,6 +166,18 @@ class RcdMod(FileMod):
     screen.objects_without_position_length += 1
     self.file_size += 20
 
+  def rewrite_slushfund_conversation_conditions(self):
+    objects = self.file_contents.zones[10].rooms[8].screens[0].objects_with_position
+    self.update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["slushfund_conversation"], GLOBAL_FLAGS["replacement_slushfund_conversation"])
+
+  def clean_up_test_operations(self):
+    # Remove Fairy Conversation Requirement from Buer Room Ladder
+    buer_objects = self.file_contents.zones[3].rooms[2].screens[1].objects_with_position
+    self.remove_operation("test_operations", buer_objects, RCD_OBJECTS["hitbox_generator"], GLOBAL_FLAGS["endless_fairyqueen"])
+		# Remove Slushfund Conversation Requirement from Pepper Puzzle
+    pepper_puzzle_objects = self.file_contents.zones[0].rooms[0].screens[0].objects_with_position
+    self.remove_operation("test_operations", pepper_puzzle_objects, RCD_OBJECTS["use_item"], GLOBAL_FLAGS["slushfund_conversation"])
+
   def give_starting_items(self, items) -> None:
     flag_counter = 0
     for item_name in items:
@@ -202,6 +214,37 @@ class RcdMod(FileMod):
       self.file_size += 28
       flag_counter += 1
 
+  def remove_operation(self, op_type, objects, object_id, flag):
+    objs = self.find_objects_by_operation(op_type, objects, object_id, flag)
+
+    for obj in objs:
+      ops = getattr(obj, op_type)
+      op_index = self.find_operation_index(ops, flag)
+      
+      del ops[op_index]
+      op_type_len = op_type + "_length"
+      old_len = getattr(obj, op_type_len)
+      setattr(obj, op_type_len, old_len-1)
+      self.file_size -= 4
+
+  def find_objects_by_operation(self, op_type, objects, object_id, flag):
+    return [o for _, o in enumerate(objects) if o.id == object_id and len([op for op in getattr(o, op_type) if op.flag == flag]) > 0]
+
+  def find_operation_index(self, ops, flag):
+    return next(i for i,op in enumerate(ops) if op.flag == flag)
+
+  def update_operation(self, op_type, objects, object_id, old_flag, new_flag, value=None):
+    objs = self.find_objects_by_operation(op_type, objects, object_id, old_flag)
+
+    for obj in objs:
+      ops = getattr(obj, op_type)
+      op_index = self.find_operation_index(ops, old_flag)
+      
+      op = getattr(obj, op_type)[op_index]
+      op.flag = new_flag
+      if value is not None:
+        op.op_value = value
+
   def place_item(self, objects, object_type, param_index, param_len, location, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, item_mod, iterations):
     for _ in range(iterations):
       location = next((o for _,o in enumerate(objects) if o.id == object_type and o.parameters[param_index] == location_id+item_mod and len(o.parameters) < param_len), None)
@@ -231,7 +274,7 @@ class RcdMod(FileMod):
                 cover_write_op.flag = new_obtain_flag
 
       # Surface Map Skeleton Scan customization
-      if original_obtain_flag == 0xd1:
+      if original_obtain_flag == GLOBAL_FLAGS["surface_map"]:
         scan = next(o for _, o in enumerate(objects) if o.id == RCD_OBJECTS["scannable"] and len([t for t in o.test_operations if t.flag == original_obtain_flag]) > 0)
         scan.test_operations[0].flag = 0x85f
         scan.write_operations[0].flag = 0x85f
@@ -243,6 +286,18 @@ class RcdMod(FileMod):
         location.write_operations.append(write_op_scan)
         location.write_operations_length += 1
         self.file_size += 4
+      
+      # Shrine of the Mother Map Crusher customization
+      if original_obtain_flag == GLOBAL_FLAGS["shrine_map"]:
+        self.update_operation("write_operations", objects, RCD_OBJECTS["crusher"], original_obtain_flag, new_obtain_flag, obtain_value)
+
+      # Mausoleum Ankh Jewel Trap customization
+      if original_obtain_flag == GLOBAL_FLAGS["ankh_jewel_mausoleum"]:
+        self.update_operation("write_operations", objects, RCD_OBJECTS["moving_texture"], original_obtain_flag, new_obtain_flag, obtain_value)
+
+      # Yagostr Dais customization
+      if original_obtain_flag == GLOBAL_FLAGS["yagostr_found"]:
+        self.update_operation("test_operations", objects, RCD_OBJECTS["trigger_dais"], original_obtain_flag, new_obtain_flag)
 
       location.parameters[param_index] = item_id+item_mod
       location.parameters.append(1)

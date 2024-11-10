@@ -15,6 +15,7 @@ from .Regions import create_regions_and_locations
 from .RcdMod import RcdMod
 from .DatMod import DatMod
 from .LocalConfig import LocalConfig
+from .LmFlags import GLOBAL_FLAGS, RCD_OBJECTS
 
 client_version = 1
 
@@ -571,6 +572,7 @@ class LaMulanaWorld(World):
 		dat_mod.rewrite_xelpud_mulana_talisman_conversation()
 		dat_mod.rewrite_xelpud_talisman_conversation()
 		dat_mod.rewrite_xelpud_pillar_conversation()
+		dat_mod.update_slushfund_flags()
 
 		locations = self.multiworld.get_locations(self.player)
 
@@ -588,6 +590,9 @@ class LaMulanaWorld(World):
 		rcd_mod.give_starting_items(self.start_inventory_as_list() + list(self.precollected_items[self.player]))
 		rcd_mod.rewrite_diary_chest()
 		rcd_mod.add_diary_chest_timer()
+		rcd_mod.rewrite_slushfund_conversation_conditions()
+		rcd_mod.clean_up_test_operations()
+
 		if self.options.AutoScanGrailTablets:
 			rcd_mod.create_grail_autoscans()
 
