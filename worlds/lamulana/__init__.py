@@ -565,14 +565,10 @@ class LaMulanaWorld(World):
 
 	def generate_output(self, output_directory: str) -> None:
 		local_config = LocalConfig(self.multiworld, self.player)
-		rcd_mod = RcdMod("script.rcd", local_config)
-		dat_mod = DatMod("script_code.dat", local_config)
+		rcd_mod = RcdMod("script.rcd", local_config, self.options, self.start_inventory_as_list() + list(self.precollected_items[self.player]))
+		dat_mod = DatMod("script_code.dat", local_config, self.options)
 
-		dat_mod.rewrite_xelpud_flag_checks()
-		dat_mod.rewrite_xelpud_mulana_talisman_conversation()
-		dat_mod.rewrite_xelpud_talisman_conversation()
-		dat_mod.rewrite_xelpud_pillar_conversation()
-		dat_mod.update_slushfund_flags()
+		dat_mod.apply_mods()
 
 		locations = self.multiworld.get_locations(self.player)
 
@@ -587,14 +583,7 @@ class LaMulanaWorld(World):
 			elif location.file_type == 'dat':
 				dat_mod.place_item_in_location(item, item_id, location)
 
-		rcd_mod.give_starting_items(self.start_inventory_as_list() + list(self.precollected_items[self.player]))
-		rcd_mod.rewrite_diary_chest()
-		rcd_mod.add_diary_chest_timer()
-		rcd_mod.rewrite_slushfund_conversation_conditions()
-		rcd_mod.clean_up_test_operations()
-
-		if self.options.AutoScanGrailTablets:
-			rcd_mod.create_grail_autoscans()
+		rcd_mod.apply_mods()
 
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
