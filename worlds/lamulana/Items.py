@@ -152,6 +152,7 @@ item_table: Dict[str, ItemData] = {
 	'30 coins':                         ItemData('Resource', 2359135, count=0, game_code=-10, quantity=30),
 	'10 coins':                         ItemData('Resource', 2359136, count=0, game_code=-10, quantity=10),
 	'1 Weight':                         ItemData('Resource', 2359137, count=0, game_code=-9, quantity=1),
+	'Holy Grail (Full)':                ItemData('Inventory', 2359138, progression=False, game_code=83, count=0), # Placeholder for Sending to Other Players
 	#Gap in IDs for other possible items in pool before trap items
 	'Bat Trap':                         ItemData('Trap', 2359160, trap=True, count=0),
 	'Explosive Trap':                   ItemData('Trap', 2359161, trap=True, count=0),

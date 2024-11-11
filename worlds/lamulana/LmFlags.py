@@ -1,5 +1,6 @@
 GLOBAL_FLAGS = {
   "talisman_found": 0xa4,
+  "crucifix_found": 0xab,
   "surface_map": 0xd1,
   "shrine_map": 0xda,
   "xmailer": 0xe3,
@@ -35,7 +36,10 @@ GLOBAL_FLAGS = {
   "xelpud_talisman": 0x327,
   "grail_tablet_surface": 0x54e,
   "starting_items": 0x84f,
-  "replacement_slushfund_conversation": 0x860
+  "replacement_surface_map_scan": 0x85f,
+  "replacement_slushfund_conversation": 0x860,
+  "rcd_filler_items": 0xc18,
+  "dat_filler_items": 0xe0c
 }
 
 HEADERS = {
@@ -72,6 +76,7 @@ RCD_OBJECTS = {
   "lemeza_detector": 0x14,
   "chest": 0x2c,
   "naked_item": 0x2f,
+  "texture_draw_animation": 0x93,
   "use_item": 0x9c,
   "scannable": 0x9e,
   "language_conversation": 0xa0,
