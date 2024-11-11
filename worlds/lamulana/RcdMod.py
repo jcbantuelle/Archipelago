@@ -79,6 +79,7 @@ class RcdMod(FileMod):
     self.__add_diary_chest_timer()
     self.__rewrite_slushfund_conversation_conditions()
     self.__rewrite_four_guardian_shop_conditions(dat_mod)
+    self.__rewrite_cog_chest()
     self.__clean_up_test_operations()
 
     if self.options.AutoScanGrailTablets:
@@ -198,7 +199,7 @@ class RcdMod(FileMod):
       diary_shawn_test.operation = TEST_OPERATIONS["eq"]
       diary_shawn_test.op_value = 1
 
-      self.__add_test_to_object(diary_chest, GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["eq"], 2)
+      self.__add_operation_to_object("test_operations", diary_chest, GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["eq"], 2)
 
   def __add_diary_chest_timer(self) -> None:
     screen = self.file_contents.zones[9].rooms[2].screens[0]
@@ -242,6 +243,13 @@ class RcdMod(FileMod):
   def __rewrite_slushfund_conversation_conditions(self):
     objects = self.file_contents.zones[10].rooms[8].screens[0].objects_with_position
     self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["slushfund_conversation"], GLOBAL_FLAGS["replacement_slushfund_conversation"])
+
+  def __rewrite_cog_chest(self):
+    objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
+    self.__update_operation("write_operations", objects, RCD_OBJECTS["chest"], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"])
+
+    stray_fairy_door = self.__find_objects_by_operation("write_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["cog_puzzle"], operation=WRITE_OPERATIONS["assign"], op_value=3)[0]
+    self.__add_operation_to_object("write_operations", stray_fairy_door, GLOBAL_FLAGS["replacement_cog_puzzle"], WRITE_OPERATIONS["assign"], 3)
 
   def __clean_up_test_operations(self):
     # Remove Fairy Conversation Requirement from Buer Room Ladder
@@ -343,12 +351,16 @@ class RcdMod(FileMod):
       setattr(obj, op_type_len, old_len-1)
       self.file_size -= 4
 
-  def __add_test_to_object(self, rcd_object, flag, operation, value):
-    test_op = Rcd.Operation()
-    test_op.flag = flag
-    test_op.operation = operation
-    test_op.op_value = value
+  def __add_operation_to_object(self, op_type, obj, flag, operation, op_value):
+    op = Rcd.Operation()
+    op.flag = flag
+    op.operation = operation
+    op.op_value = op_value
 
-    rcd_object.test_operations.append(test_op)
-    rcd_object.test_operations_length += 1
+    ops = getattr(obj, op_type)
+    ops.append(op)
+
+    op_type_len = op_type + "_length"
+    old_len = getattr(obj, op_type_len)
+    setattr(obj, op_type_len, old_len+1)
     self.file_size += 4

@@ -42,6 +42,7 @@ GLOBAL_FLAGS = {
   "starting_items": 0x84f,
   "replacement_surface_map_scan": 0x85f,
   "replacement_slushfund_conversation": 0x860,
+  "replacement_cog_puzzle": 0x861,
   "rcd_filler_items": 0xc18,
   "dat_filler_items": 0xe0c
 }
