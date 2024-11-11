@@ -1,7 +1,7 @@
 from .FileMod import FileMod
 from .Items import item_table
 from .Rcd import Rcd
-from .LmFlags import GLOBAL_FLAGS, RCD_OBJECTS, TEST_OPERATIONS, WRITE_OPERATIONS, grail_flag_by_zone
+from .LmFlags import GLOBAL_FLAGS, RCD_OBJECTS, TEST_OPERATIONS, WRITE_OPERATIONS, CARDS, grail_flag_by_zone
 from .Locations import get_locations_by_region
 
 class RcdMod(FileMod):
@@ -73,11 +73,12 @@ class RcdMod(FileMod):
         params["location_id"] = location_id
         self.__place_item(**params)
 
-  def apply_mods(self):
+  def apply_mods(self, dat_mod):
     self.__give_starting_items(self.start_inventory)
     self.__rewrite_diary_chest()
     self.__add_diary_chest_timer()
     self.__rewrite_slushfund_conversation_conditions()
+    self.__rewrite_four_guardian_shop_conditions(dat_mod)
     self.__clean_up_test_operations()
 
     if self.options.AutoScanGrailTablets:
@@ -109,11 +110,11 @@ class RcdMod(FileMod):
       
       # Shrine of the Mother Map Crusher customization
       if original_obtain_flag == GLOBAL_FLAGS["shrine_map"]:
-        self.__update_operation("write_operations", objects, RCD_OBJECTS["crusher"], original_obtain_flag, new_obtain_flag, obtain_value)
+        self.__update_operation("write_operations", objects, RCD_OBJECTS["crusher"], original_obtain_flag, new_obtain_flag, new_op_value=obtain_value)
 
       # Mausoleum Ankh Jewel Trap customization
       if original_obtain_flag == GLOBAL_FLAGS["ankh_jewel_mausoleum"]:
-        self.__update_operation("write_operations", objects, RCD_OBJECTS["moving_texture"], original_obtain_flag, new_obtain_flag, obtain_value)
+        self.__update_operation("write_operations", objects, RCD_OBJECTS["moving_texture"], original_obtain_flag, new_obtain_flag, new_op_value=obtain_value)
 
       # Yagostr Dais customization
       if original_obtain_flag == GLOBAL_FLAGS["yagostr_found"]:
@@ -231,6 +232,13 @@ class RcdMod(FileMod):
     screen.objects_without_position_length += 1
     self.file_size += 20
 
+  def __rewrite_four_guardian_shop_conditions(self, dat_mod):
+    msx2_replacement_flag = dat_mod.find_shop_flag("nebur_guardian", 0)
+    objects = self.file_contents.zones[1].rooms[2].screens[0].objects_with_position
+    self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["xelpud_msx2"], GLOBAL_FLAGS["guardians_killed"], old_op_value=0, new_op_value=3, new_operation=TEST_OPERATIONS["lteq"])
+    self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["xelpud_msx2"], GLOBAL_FLAGS["guardians_killed"], old_op_value=1, new_op_value=4)
+    self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["msx2_found"], msx2_replacement_flag)
+
   def __rewrite_slushfund_conversation_conditions(self):
     objects = self.file_contents.zones[10].rooms[8].screens[0].objects_with_position
     self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["slushfund_conversation"], GLOBAL_FLAGS["replacement_slushfund_conversation"])
@@ -291,25 +299,32 @@ class RcdMod(FileMod):
 
   # Search Methods
 
-  def __find_objects_by_operation(self, op_type, objects, object_id, flag):
-    return [o for _, o in enumerate(objects) if o.id == object_id and len([op for op in getattr(o, op_type) if op.flag == flag]) > 0]
+  def __find_objects_by_operation(self, op_type, objects, object_id, flag, operation=None, op_value=None):
+    return [o for _, o in enumerate(objects) if o.id == object_id and len([op for op in getattr(o, op_type) if self.__op_matches(op, flag, operation, op_value)]) > 0]
 
-  def __find_operation_index(self, ops, flag):
-    return next(i for i,op in enumerate(ops) if op.flag == flag)
+  def __find_operation_index(self, ops, flag, operation=None, op_value=None):
+    return next(i for i,op in enumerate(ops) if self.__op_matches(op, flag, operation, op_value))
+
+  # Conditionals
+
+  def __op_matches(self, op, flag, operation, op_value):
+    return op.flag == flag and (operation is None or op.operation == operation) and (op_value is None or op.op_value == op_value)
 
   # Write Methods
 
-  def __update_operation(self, op_type, objects, object_id, old_flag, new_flag, value=None):
-    objs = self.__find_objects_by_operation(op_type, objects, object_id, old_flag)
+  def __update_operation(self, op_type, objects, object_id, old_flag, new_flag, old_operation=None, new_operation=None, old_op_value=None, new_op_value=None):
+    objs = self.__find_objects_by_operation(op_type, objects, object_id, old_flag, old_operation, old_op_value)
 
     for obj in objs:
       ops = getattr(obj, op_type)
-      op_index = self.__find_operation_index(ops, old_flag)
+      op_index = self.__find_operation_index(ops, old_flag, old_operation, old_op_value)
       
       op = getattr(obj, op_type)[op_index]
       op.flag = new_flag
-      if value is not None:
-        op.op_value = value
+      if new_operation is not None:
+        op.operation = new_operation
+      if new_op_value is not None:
+        op.op_value = new_op_value
 
   def __remove_operation(self, op_type, objects, object_id, flag):
     objs = self.__find_objects_by_operation(op_type, objects, object_id, flag)

@@ -564,13 +564,13 @@ class LaMulanaWorld(World):
 		return out
 
 	def generate_output(self, output_directory: str) -> None:
+		locations = self.multiworld.get_locations(self.player)
+
 		local_config = LocalConfig(self.multiworld, self.player)
 		rcd_mod = RcdMod("script.rcd", local_config, self.options, self.start_inventory_as_list() + list(self.precollected_items[self.player]))
 		dat_mod = DatMod("script_code.dat", local_config, self.options)
 
 		dat_mod.apply_mods()
-
-		locations = self.multiworld.get_locations(self.player)
 
 		for location in locations:
 			item = item_table.get(location.item.name)
@@ -583,7 +583,7 @@ class LaMulanaWorld(World):
 			elif location.file_type == 'dat':
 				dat_mod.place_item_in_location(item, item_id, location)
 
-		rcd_mod.apply_mods()
+		rcd_mod.apply_mods(dat_mod)
 
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:

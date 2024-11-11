@@ -24,6 +24,7 @@ GLOBAL_FLAGS = {
   "grail_tablet_shrine_back": 0x75,
   "ankh_jewel_mausoleum": 0x8f,
   "yagostr_found": 0xe5,
+  "guardians_killed": 0x102,
   "diary_found": 0x104,
   "mulana_talisman": 0x105,
   "endless_fairyqueen": 0x1f5,
@@ -31,8 +32,10 @@ GLOBAL_FLAGS = {
   "shrine_dragon_bone": 0x218,
   "shrine_diary_chest": 0x219,
   "shrine_shawn": 0x21b,
+  "xelpud_msx2": 0x21d,
   "slushfund_conversation": 0x228,
   "cant_leave_conversation": 0x2e4,
+  "msx2_found": 0x2e6,
   "xelpud_talisman": 0x327,
   "grail_tablet_surface": 0x54e,
   "starting_items": 0x84f,
@@ -63,6 +66,7 @@ CARDS = {
   "xelpud_pillar": 370,
   "xelpud_mulana_talisman": 371,
   "xelpud_conversation_tree": 480,
+  "nebur_guardian": 490,
   "xelpud_howling_wind": 1049
 }
 
