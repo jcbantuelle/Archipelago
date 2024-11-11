@@ -256,6 +256,10 @@ class RcdMod(FileMod):
     crucifix_puzzle_objects = self.file_contents.zones[0].rooms[1].screens[1].objects_with_position
     self.__remove_operation("test_operations", crucifix_puzzle_objects, RCD_OBJECTS["texture_draw_animation"], GLOBAL_FLAGS["crucifix_found"])
 
+    # Remove Cog Puzzle Requirement from Mudmen Activation
+    mudmen_activation_objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
+    self.__remove_operation("test_operations", mudmen_activation_objects, RCD_OBJECTS["use_item"], GLOBAL_FLAGS["cog_puzzle"])
+
   def __create_grail_autoscans(self) -> None:
     for zone in self.file_contents.zones:
       for room in zone.rooms:

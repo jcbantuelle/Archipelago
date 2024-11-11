@@ -34,6 +34,7 @@ GLOBAL_FLAGS = {
   "shrine_shawn": 0x21b,
   "xelpud_msx2": 0x21d,
   "slushfund_conversation": 0x228,
+  "cog_puzzle": 0x23a,
   "cant_leave_conversation": 0x2e4,
   "msx2_found": 0x2e6,
   "xelpud_talisman": 0x327,
