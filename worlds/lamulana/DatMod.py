@@ -32,6 +32,12 @@ class DatMod(FileMod):
     self.__rewrite_xelpud_pillar_conversation()
     self.__update_slushfund_flags()
 
+  def find_shop_flag(self, card_name, slot):
+    shop_card = self.__find_card(card_name)
+    entries = shop_card.contents.entries
+    data_indices = [i for i,v in enumerate(entries) if v.header == HEADERS["data"]]
+    return entries[data_indices[3]].contents.values[slot]
+
   # DAT Mod Methods
 
   def __place_conversation_item(self, entries, item_id, location, item, original_obtain_flag, new_obtain_flag, obtain_value):
