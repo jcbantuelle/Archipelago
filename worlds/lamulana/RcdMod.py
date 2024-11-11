@@ -245,7 +245,7 @@ class RcdMod(FileMod):
     self.__remove_operation("test_operations", pepper_puzzle_objects, RCD_OBJECTS["use_item"], GLOBAL_FLAGS["slushfund_conversation"])
 
     # Remove Crucifix Check from Crucifix Puzzle Torches
-    crucifix_puzzle_objects = self.file_contents.zones[0].rooms[0].screens[0].objects_with_position
+    crucifix_puzzle_objects = self.file_contents.zones[0].rooms[1].screens[1].objects_with_position
     self.__remove_operation("test_operations", crucifix_puzzle_objects, RCD_OBJECTS["texture_draw_animation"], GLOBAL_FLAGS["crucifix_found"])
 
   def __create_grail_autoscans(self) -> None:
