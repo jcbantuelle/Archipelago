@@ -98,5 +98,7 @@
 
 2144 (0x860) - Slushfund conversation
 
+2145 (0x861) - Cog Chest Flag
+
 3096 (0xc18) - RCD Placeholder Flags start
 3596 (0xe0c) - DAT Placeholder Flags start
