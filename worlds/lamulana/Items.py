@@ -30,7 +30,7 @@ item_table: Dict[str, ItemData] = {
 	'Chakram':                          ItemData('Subweapon', 2359013, progression=True, game_code=13, obtain_flag=0x88, obtain_value=1),
 	'Caltrops':                         ItemData('Subweapon', 2359014, progression=True, game_code=14, obtain_flag=0x89, obtain_value=1),
 	'Pistol':                           ItemData('Subweapon', 2359015, progression=True, game_code=15, obtain_flag=0x8a, obtain_value=2),
-	'Buckler':                          ItemData('Subweapon', 2359016, useful=True, game_code=16, obtain_flag=0x8b, obtain_value=1),
+	'Buckler':                          ItemData('Subweapon', 2359016, useful=True, game_code=16, obtain_flag=0x862, obtain_value=1),
 	'Fake Silver Shield':               ItemData('Subweapon', 2359017, game_code=75, obtain_flag=0x82e, obtain_value=2),
 	'Silver Shield':                    ItemData('Subweapon', 2359018, progression=True, game_code=17, obtain_flag=0x8c, obtain_value=1),
 	'Angel Shield':                     ItemData('Subweapon', 2359019, progression=True, game_code=18, obtain_flag=0x8d, obtain_value=2),

@@ -69,11 +69,8 @@
 2123 (0x84b) - Map (Dimensional Corridor) Location
 
 2124 (0x84c) - Anchor
-
 2126 (0x84e) - Mr. Fishman (Alt) Shop 1
-
 2127 (0x84f) - Starting Item Givers
-
 2128 (0x850) - Diary Found Flag
 2129 (0x851) - Talisman Found
 
@@ -89,16 +86,12 @@
 2139 (0x85b) - Ankh Jewel (Mother)
 
 2140 (0x85c) - Medicine of the Mind
-
 2141 (0x85d) - Sacred Orb (Placeholder)
-
 2142 (0x85e) - Ammo (Placeholder)
-
 2143 (0x85f) - Surface Map Skeleton Scan
-
 2144 (0x860) - Slushfund conversation
-
 2145 (0x861) - Cog Chest Flag
+2146 (0x862) - Buckler
 
 3096 (0xc18) - RCD Placeholder Flags start
 3596 (0xe0c) - DAT Placeholder Flags start
