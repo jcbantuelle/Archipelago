@@ -103,8 +103,7 @@ class RcdMod(FileMod):
           elif object_type == RCD_OBJECTS["naked_item"] or RCD_OBJECTS["instant_item"] or RCD_OBJECTS["scan"]:
             write_op.op_value = obtain_value
 
-      if object_type == RCD_OBJECTS["naked_item"]:
-        self.__update_destructible_cover(objects, original_obtain_flag, new_obtain_flag)
+      self.__update_destructible_cover(objects, original_obtain_flag, new_obtain_flag)
 
       if original_obtain_flag == GLOBAL_FLAGS["surface_map"]:
         self.__fix_surface_map_scan(objects, location, original_obtain_flag)
