@@ -261,19 +261,13 @@ class RcdMod(FileMod):
     self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["fishman_shop_puzzle"], GLOBAL_FLAGS["fishman_shop_puzzle"], old_op_value=2, new_operation=TEST_OPERATIONS["gteq"])
 
     # Relocate Alt Shop
-    fishman_alt_conversation = self.__find_objects_by_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["fishman_shop_puzzle"], op_value=3)[0]
-    fishman_alt_conversation.x_pos = 9
-    fishman_alt_conversation.y_pos = 76
+    self.__update_position("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["fishman_shop_puzzle"], 9, 76, op_value=3)
 
     # Relocate Fairy Keyspot trigger
-    fairy_keyspot = self.__find_objects_by_operation("test_operations", objects, RCD_OBJECTS["fairy_keyspot"], GLOBAL_FLAGS["fishman_shop_puzzle"])[0]
-    fairy_keyspot.x_pos = 9
-    fairy_keyspot.y_pos = 74
+    self.__update_position("test_operations", objects, RCD_OBJECTS["fairy_keyspot"], GLOBAL_FLAGS["fishman_shop_puzzle"], 9, 74)
 
     # Relocate Alt Shop Explosion
-    fairy_keyspot = self.__find_objects_by_operation("test_operations", objects, RCD_OBJECTS["explosion"], GLOBAL_FLAGS["screen_00d"])[0]
-    fairy_keyspot.x_pos = 7
-    fairy_keyspot.y_pos = 76
+    self.__update_position("test_operations", objects, RCD_OBJECTS["explosion"], GLOBAL_FLAGS["screen_00d"], 7, 76)
 
     # Add Alt Shop Door Graphic
     test_op_mother = Rcd.Operation()
@@ -399,6 +393,13 @@ class RcdMod(FileMod):
     return op.flag == flag and (operation is None or op.operation == operation) and (op_value is None or op.op_value == op_value)
 
   # Write Methods
+
+  def __update_position(self, op_type, objects, object_id, flag, x_pos, y_pos, operation=None, op_value=None):
+    objs = self.__find_objects_by_operation(op_type, objects, object_id, flag, operation, op_value)
+
+    for obj in objs:
+      obj.x_pos = x_pos
+      obj.y_pos = y_pos
 
   def __update_operation(self, op_type, objects, object_id, old_flag, new_flag, old_operation=None, new_operation=None, old_op_value=None, new_op_value=None):
     objs = self.__find_objects_by_operation(op_type, objects, object_id, old_flag, old_operation, old_op_value)
