@@ -80,6 +80,7 @@ class RcdMod(FileMod):
     self.__rewrite_slushfund_conversation_conditions()
     self.__rewrite_four_guardian_shop_conditions(dat_mod)
     self.__rewrite_cog_chest()
+    self.__rewrite_fishman_alt_shop()
     self.__clean_up_test_operations()
 
     if self.options.AutoScanGrailTablets:
@@ -251,6 +252,80 @@ class RcdMod(FileMod):
 
     stray_fairy_door = self.__find_objects_by_operation("write_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["cog_puzzle"], operation=WRITE_OPERATIONS["assign"], op_value=3)[0]
     self.__add_operation_to_object("write_operations", stray_fairy_door, GLOBAL_FLAGS["replacement_cog_puzzle"], WRITE_OPERATIONS["assign"], 3)
+
+  def __rewrite_fishman_alt_shop(self):
+    screen = self.file_contents.zones[4].rooms[3].screens[3]
+    objects = screen.objects_with_position
+    
+    # Persist Main Shop after Alt is Opened
+    self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["fishman_shop_puzzle"], GLOBAL_FLAGS["fishman_shop_puzzle"], old_op_value=2, new_operation=TEST_OPERATIONS["gteq"])
+
+    # Relocate Alt Shop
+    fishman_alt_conversation = self.__find_objects_by_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["fishman_shop_puzzle"], op_value=3)[0]
+    fishman_alt_conversation.x_pos = 9
+    fishman_alt_conversation.y_pos = 76
+
+    # Relocate Fairy Keyspot trigger
+    fairy_keyspot = self.__find_objects_by_operation("test_operations", objects, RCD_OBJECTS["fairy_keyspot"], GLOBAL_FLAGS["fishman_shop_puzzle"])[0]
+    fairy_keyspot.x_pos = 9
+    fairy_keyspot.y_pos = 74
+
+    # Relocate Alt Shop Explosion
+    fairy_keyspot = self.__find_objects_by_operation("test_operations", objects, RCD_OBJECTS["explosion"], GLOBAL_FLAGS["screen_00d"])[0]
+    fairy_keyspot.x_pos = 7
+    fairy_keyspot.y_pos = 76
+
+    # Add Alt Shop Door Graphic
+    test_op_mother = Rcd.Operation()
+    test_op_mother.flag = GLOBAL_FLAGS["mother"]
+    test_op_mother.operation = TEST_OPERATIONS["neq"]
+    test_op_mother.op_value = 3
+
+    test_op_fishman_shop_puzzle = Rcd.Operation()
+    test_op_fishman_shop_puzzle.flag = GLOBAL_FLAGS["fishman_shop_puzzle"]
+    test_op_fishman_shop_puzzle.operation = TEST_OPERATIONS["eq"]
+    test_op_fishman_shop_puzzle.op_value = 3
+
+    fishman_alt_door = Rcd.ObjectWithPosition()
+    fishman_alt_door.id = RCD_OBJECTS["texture_draw_animation"]
+    fishman_alt_door.test_operations_length = 2
+    fishman_alt_door.write_operations_length = 0
+    fishman_alt_door.parameters_length = 24
+    fishman_alt_door.x_pos = 9
+    fishman_alt_door.y_pos = 76
+    fishman_alt_door.test_operations = [test_op_mother, test_op_fishman_shop_puzzle]
+    fishman_alt_door.write_operations = []
+    
+    fishman_alt_door.parameters = [
+      -1, # 0 Layer
+      0,  # 1 Image File
+      260, # 2 Imagex
+      0, # 3 Imagey
+      40, # 4 dx
+      40, # 5 dy
+      0, # 6 animation
+      1, # 7 Animation Frames
+      0, # 8 Pause Frames
+      0, # 9 Repeat Count (<1 is forever)
+      0, # 10 Hittile to fill with
+      0, # 11 Entry Effect
+      0, # 12 Exit Effect
+      0, # 13 Cycle Colors t/f
+      0, # 14 Alpha/frame
+      255, # 15 Max Alpha
+      0, # 16 R/frame
+      0, # 17 Max R
+      0, # 18 G/frame
+      0, # 19 Max G
+      0, # 20 B/frame
+      0, # 21 Max B
+      0, # 22 blend. 0=Normal 1=add 2= ... 14=
+      0, # 23 not0?
+    ]
+    objects.append(fishman_alt_door)
+    screen.objects_length += 1
+    
+    self.file_size += 64 # 2 Ops (4*2=8) + Object (8) + 24 Params (2*24=48) = 8+8+48 = 64
 
   def __clean_up_test_operations(self):
     # Remove Fairy Conversation Requirement from Buer Room Ladder

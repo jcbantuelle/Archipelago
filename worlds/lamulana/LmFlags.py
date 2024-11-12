@@ -1,4 +1,5 @@
 GLOBAL_FLAGS = {
+  "screen_00d": 0x0d,
   "talisman_found": 0xa4,
   "crucifix_found": 0xab,
   "plane_found": 0xb4,
@@ -25,9 +26,11 @@ GLOBAL_FLAGS = {
   "grail_tablet_shrine_back": 0x75,
   "ankh_jewel_mausoleum": 0x8f,
   "yagostr_found": 0xe5,
+  "mother": 0xfe,
   "guardians_killed": 0x102,
   "diary_found": 0x104,
   "mulana_talisman": 0x105,
+  "fishman_shop_puzzle": 0x197,
   "endless_fairyqueen": 0x1f5,
   "diary_chest_puzzle": 0x212,
   "shrine_dragon_bone": 0x218,
@@ -88,19 +91,38 @@ RCD_OBJECTS = {
   "use_item": 0x9c,
   "scannable": 0x9e,
   "language_conversation": 0xa0,
+  "fairy_keyspot": 0xa7,
+  "explosion": 0xb4,
   "instant_item": 0xb5,
   "scan": 0xc3
 }
 
 TEST_OPERATIONS = {
-  "eq": 0,
-  "lteq": 1,
-  "gteq": 2
+  "eq": 0x0,
+  "lteq": 0x1,
+  "gteq": 0x2,
+  "andnz": 0x3,
+  "ornz": 0x4,
+  "xornz": 0x5,
+  "zero": 0x6,
+  "neq": 0x40,
+  "gt": 0x41,
+  "lt": 0x42,
+  "andz": 0x43,
+  "orz": 0x44,
+  "xorz": 0x45,
+  "nz": 0x46
 }
 
 WRITE_OPERATIONS = {
-  "assign": 0,
-  "add": 1
+  "assign": 0x0,
+  "add": 0x1,
+  "sub": 0x2,
+  "mult": 0x3,
+  "div": 0x4,
+  "and": 0x5,
+  "or": 0x6,
+  "xor": 0x7
 }
 
 def grail_flag_by_zone(zone, frontside):
