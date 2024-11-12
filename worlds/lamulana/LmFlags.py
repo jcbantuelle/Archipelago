@@ -1,6 +1,7 @@
 GLOBAL_FLAGS = {
   "talisman_found": 0xa4,
   "crucifix_found": 0xab,
+  "plane_found": 0xb4,
   "surface_map": 0xd1,
   "shrine_map": 0xda,
   "xmailer": 0xe3,
@@ -82,6 +83,7 @@ RCD_OBJECTS = {
   "lemeza_detector": 0x14,
   "chest": 0x2c,
   "naked_item": 0x2f,
+  "vimana": 0x71,
   "texture_draw_animation": 0x93,
   "use_item": 0x9c,
   "scannable": 0x9e,

@@ -120,6 +120,11 @@ class RcdMod(FileMod):
       if original_obtain_flag == GLOBAL_FLAGS["yagostr_found"]:
         self.__update_operation("test_operations", objects, RCD_OBJECTS["trigger_dais"], original_obtain_flag, new_obtain_flag)
 
+      # Vimana customization
+      if original_obtain_flag == GLOBAL_FLAGS["plane_found"]:
+        vimana_objects = self.file_contents.zones[13].rooms[6].screens[1].objects_with_position
+        self.__update_operation("test_operations", vimana_objects, RCD_OBJECTS["vimana"], original_obtain_flag, new_obtain_flag)
+
       location.parameters[param_index] = item_id+item_mod
       location.parameters.append(1)
       location.parameters_length += 1
