@@ -30,7 +30,7 @@ class FileMod:
     item_id = params["item_id"]
     item = params["item"]
     params["original_obtain_flag"] = location.original_obtain_flag if location.original_obtain_flag is not None else location.obtain_flag
-    if item_id == item_table["Shell Horn"].game_code or item_id == item_table["Holy Grail (Full)"].game_code or item_id == item_table["Sacred Orb"].game_code or item.obtain_flag is None:
+    if item_id == item_table["Shell Horn"].game_code or item_id == item_table["Holy Grail (Full)"].game_code or item.obtain_flag is None:
       params["new_obtain_flag"] = self.filler_flags
       self.filler_flags += 1
     else:

@@ -94,5 +94,16 @@
 2146 (0x862) - Buckler
 2147 (0x863) - Leather Whip
 
+2148 (0x864) - Sacred Orb (Surface)
+2149 (0x865) - Sacred Orb (Gate of Guidance)
+2150 (0x866) - Sacred Orb (Mausoleum of the Giants)
+2151 (0x867) - Sacred Orb (Temple of the Sun)
+2152 (0x868) - Sacred Orb (Spring in the Sky)
+2153 (0x869) - Sacred Orb (Tower of Ruin)
+2154 (0x86a) - Sacred Orb (Chamber of Extinction)
+2155 (0x86b) - Sacred Orb (Twin Labyrinths)
+2156 (0x86c) - Sacred Orb (Dimensional Corridor)
+2157 (0x86d) - Sacred Orb (Shrine of the Mother)
+
 3096 (0xc18) - RCD Placeholder Flags start
 3596 (0xe0c) - DAT Placeholder Flags start
