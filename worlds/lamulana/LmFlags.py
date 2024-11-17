@@ -84,6 +84,7 @@ RCD_OBJECTS = {
   "crusher": 0x11,
   "hitbox_generator": 0x12,
   "lemeza_detector": 0x14,
+  "counterweight_platform": 0x33,
   "chest": 0x2c,
   "naked_item": 0x2f,
   "vimana": 0x71,

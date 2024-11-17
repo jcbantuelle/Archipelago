@@ -338,6 +338,13 @@ class RcdMod(FileMod):
     mudmen_activation_objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
     self.__remove_operation("test_operations", mudmen_activation_objects, RCD_OBJECTS["use_item"], GLOBAL_FLAGS["cog_puzzle"])
 
+    # Remove Plane Missing Requirement from Plane Puzzle
+    plane_platform_left_objects = self.file_contents.zones[13].rooms[7].screens[0]
+    self.__remove_operation("test_operations", plane_platform_left_objects, RCD_OBJECTS["counterweight_platform"], GLOBAL_FLAGS["plane_found"])
+    plane_platform_right_objects = self.file_contents.zones[13].rooms[7].screens[2]
+    self.__remove_operation("test_operations", plane_platform_right_objects, RCD_OBJECTS["counterweight_platform"], GLOBAL_FLAGS["plane_found"])
+
+
   def __create_grail_autoscans(self) -> None:
     for zone in self.file_contents.zones:
       for room in zone.rooms:
