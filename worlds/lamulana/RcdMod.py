@@ -339,9 +339,9 @@ class RcdMod(FileMod):
     self.__remove_operation("test_operations", mudmen_activation_objects, RCD_OBJECTS["use_item"], GLOBAL_FLAGS["cog_puzzle"])
 
     # Remove Plane Missing Requirement from Plane Puzzle
-    plane_platform_left_objects = self.file_contents.zones[13].rooms[7].screens[0]
+    plane_platform_left_objects = self.file_contents.zones[13].rooms[7].screens[0].objects_with_position
     self.__remove_operation("test_operations", plane_platform_left_objects, RCD_OBJECTS["counterweight_platform"], GLOBAL_FLAGS["plane_found"])
-    plane_platform_right_objects = self.file_contents.zones[13].rooms[7].screens[2]
+    plane_platform_right_objects = self.file_contents.zones[13].rooms[7].screens[2].objects_with_position
     self.__remove_operation("test_operations", plane_platform_right_objects, RCD_OBJECTS["counterweight_platform"], GLOBAL_FLAGS["plane_found"])
 
 
