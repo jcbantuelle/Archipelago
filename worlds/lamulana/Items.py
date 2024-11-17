@@ -14,7 +14,7 @@ class ItemData(NamedTuple):
 	obtain_value: Optional[int] = None
 
 item_table: Dict[str, ItemData] = {
-	'Leather Whip':                     ItemData('MainWeapon', 2359000, progression=True, count=0), #Cannot be sent, only as a starting item
+	'Leather Whip':                     ItemData('MainWeapon', 2359000, progression=True, game_code=0, obtain_flag=0x863, obtain_value=1, count=0), #Cannot be sent, only as a starting item
 	'Chain Whip':                       ItemData('MainWeapon', 2359001, progression=True, game_code=1, obtain_flag=0x7d, obtain_value=1),
 	'Flail Whip':                       ItemData('MainWeapon', 2359002, progression=True, game_code=2, obtain_flag=0x7e, obtain_value=1),
 	#gonna reserve 2359003 in case we ever implement progressive whips
