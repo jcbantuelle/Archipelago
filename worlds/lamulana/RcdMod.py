@@ -86,6 +86,9 @@ class RcdMod(FileMod):
     if self.options.AutoScanGrailTablets:
       self.__create_grail_autoscans()
 
+    if self.options.BossCheckpoints:
+      self.__create_boss_checkpoints()
+
   # RCD Mod Methods
 
   def __place_item(self, objects, object_type, param_index, param_len, location, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, item_mod, iterations, item):
@@ -267,11 +270,11 @@ class RcdMod(FileMod):
     self.__update_position("test_operations", objects, RCD_OBJECTS["fairy_keyspot"], GLOBAL_FLAGS["fishman_shop_puzzle"], 9, 74)
 
     # Relocate Alt Shop Explosion
-    self.__update_position("test_operations", objects, RCD_OBJECTS["explosion"], GLOBAL_FLAGS["screen_00d"], 7, 76)
+    self.__update_position("test_operations", objects, RCD_OBJECTS["explosion"], GLOBAL_FLAGS["screen_flag_0d"], 7, 76)
 
     # Add Alt Shop Door Graphic
     test_op_mother = Rcd.Operation()
-    test_op_mother.flag = GLOBAL_FLAGS["mother"]
+    test_op_mother.flag = GLOBAL_FLAGS["mother_state"]
     test_op_mother.operation = TEST_OPERATIONS["neq"]
     test_op_mother.op_value = 3
 
@@ -358,33 +361,245 @@ class RcdMod(FileMod):
               if frontside or backside:
                 grail_flag = grail_flag_by_zone(zone.zone_index, frontside)
 
-                test_op = Rcd.Operation()
-                test_op.flag = grail_flag
-                test_op.operation = TEST_OPERATIONS["eq"]
-                test_op.op_value = 0
+                test_op = self.__generate_op(grail_flag, 0, TEST_OPERATIONS["eq"])
+                write_op = self.__generate_op(grail_flag, 1, WRITE_OPERATIONS["assign"])
 
-                write_op = Rcd.Operation()
-                write_op.flag = grail_flag
-                write_op.operation = WRITE_OPERATIONS["assign"]
-                write_op.op_value = 1
-
-                lemeza_detector = Rcd.ObjectWithPosition()
-                lemeza_detector.id = RCD_OBJECTS["lemeza_detector"]
-                lemeza_detector.test_operations_length = 1
-                lemeza_detector.write_operations_length = 1
-                lemeza_detector.parameters_length = 6
-                lemeza_detector.x_pos = obj.x_pos
-                lemeza_detector.y_pos = obj.y_pos - 1
-                lemeza_detector.test_operations = [test_op]
-                lemeza_detector.write_operations = [write_op]
-                lemeza_detector.parameters = [0,0,0,0,2,3]
+                params = [0,0,0,0,2,3]
+                lemeza_detector = self.__generate_object_with_position(RCD_OBJECTS["lemeza_detector"], obj.x_pos, obj.y_pos - 1, [test_op], [write_op], params)
 
                 screen.objects_with_position.append(lemeza_detector)
                 screen.objects_length += 1
 
                 self.file_size += 28
 
+  def __create_boss_checkpoints(self) -> None:
+    # Amphisbaena
+    amphisbaena_screen = self.file_contents.zones[0].rooms[8].screens[1]
+
+    test_ops = [
+      self.__generate_op(GLOBAL_FLAGS["amphisbaena_ankh_puzzle"], 5, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["amphisbaena_state"], 2, TEST_OPERATIONS["lt"]),
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+    ]
+
+    write_ops = [
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
+    ]
+
+    params = [41, 0, 0, 1, 1, 1, 1, 506, 280]
+    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 15, 44, test_ops, write_ops, params)
+
+    amphisbaena_screen.objects_with_position.append(autosave)
+    amphisbaena_screen.objects_length += 1
+
+    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+
+    # Sakit
+    sakit_screen = self.file_contents.zones[2].rooms[8].screens[1]
+
+    test_ops = [
+      self.__generate_op(GLOBAL_FLAGS["sakit_ankh_puzzle"], 1, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["sakit_state"], 2, TEST_OPERATIONS["lt"]),
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+    ]
+
+    write_ops = [
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
+    ]
+
+    params = [75, 0, 0, 1, 1, 1, 1, 506, 280]
+    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 45, 6, test_ops, write_ops, params)
+
+    sakit_screen.objects_with_position.append(autosave)
+    sakit_screen.objects_length += 1
+
+    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+
+    # Ellmac
+    ellmac_screen = self.file_contents.zones[3].rooms[8].screens[0]
+
+    test_ops = [
+      self.__generate_op(GLOBAL_FLAGS["ellmac_ankh_puzzle"], 5, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["ellmac_state"], 2, TEST_OPERATIONS["lt"]),
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+    ]
+
+    write_ops = [
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
+    ]
+
+    params = [104, 0, 0, 1, 1, 1, 1, 506, 280]
+    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 20, 16, test_ops, write_ops, params)
+
+    ellmac_screen.objects_with_position.append(autosave)
+    ellmac_screen.objects_length += 1
+
+    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+
+    # Bahamut
+    bahamut_screen = self.file_contents.zones[4].rooms[4].screens[0]
+
+    test_ops = [
+      self.__generate_op(GLOBAL_FLAGS["bahamut_ankh_puzzle"], 1, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["bahamut_room_flooded"], 1, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["bahamut_state"], 2, TEST_OPERATIONS["lt"]),
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+    ]
+
+    write_ops = [
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
+    ]
+
+    params = [136, 0, 0, 1, 1, 1, 1, 506, 280]
+    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 19, 17, test_ops, write_ops, params)
+
+    bahamut_screen.objects_with_position.append(autosave)
+    bahamut_screen.objects_length += 1
+
+    self.file_size += 50 # 6 Ops (4*6=24) + Object (8) + 9 Params (2*9=18) = 24+8+18 = 50
+
+    # Viy
+    viy_screen = self.file_contents.zones[5].rooms[8].screens[1]
+
+    test_ops = [
+      self.__generate_op(GLOBAL_FLAGS["viy_ankh_puzzle"], 4, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["viy_state"], 2, TEST_OPERATIONS["lt"]),
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+    ]
+
+    write_ops = [
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
+    ]
+
+    params = [149, 0, 0, 1, 1, 1, 1, 506, 280]
+    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 23, 28, test_ops, write_ops, params)
+
+    viy_screen.objects_with_position.append(autosave)
+    viy_screen.objects_length += 1
+
+    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+
+    # Palenque
+    palenque_screen = self.file_contents.zones[6].rooms[9].screens[1]
+
+    test_ops = [
+      self.__generate_op(GLOBAL_FLAGS["palenque_ankh_puzzle"], 3, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["palenque_screen_mural"], 3, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["palenque_state"], 2, TEST_OPERATIONS["lt"]),
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+    ]
+
+    write_ops = [
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
+    ]
+
+    params = [170, 0, 0, 1, 1, 1, 1, 506, 280]
+    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 47, 20, test_ops, write_ops, params)
+
+    palenque_screen.objects_with_position.append(autosave)
+    palenque_screen.objects_length += 1
+
+    self.file_size += 50 # 6 Ops (4*6=24) + Object (8) + 9 Params (2*9=18) = 24+8+18 = 50
+
+    # Baphomet
+    baphomet_screen = self.file_contents.zones[7].rooms[4].screens[1]
+
+    test_ops = [
+      self.__generate_op(GLOBAL_FLAGS["baphomet_ankh_puzzle"], 2, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["baphomet_state"], 2, TEST_OPERATIONS["lt"]),
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+    ]
+
+    write_ops = [
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
+    ]
+
+    params = [188, 0, 0, 1, 1, 1, 1, 506, 280]
+    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 47, 4, test_ops, write_ops, params)
+
+    baphomet_screen.objects_with_position.append(autosave)
+    baphomet_screen.objects_length += 1
+
+    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+
+    # Tiamat
+    tiamat_screen = self.file_contents.zones[17].rooms[9].screens[0]
+
+    test_ops = [
+      self.__generate_op(GLOBAL_FLAGS["tiamat_ankh_puzzle"], 1, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["tiamat_state"], 2, TEST_OPERATIONS["lt"]),
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+    ]
+
+    write_ops = [
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
+    ]
+
+    params = [368, 0, 0, 1, 1, 1, 1, 506, 280]
+    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 15, 4, test_ops, write_ops, params)
+
+    tiamat_screen.objects_with_position.append(autosave)
+    tiamat_screen.objects_length += 1
+
+    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+
+    # Mother
+    mother_screen = self.file_contents.zones[18].rooms[3].screens[1]
+
+    test_ops = [
+      self.__generate_op(GLOBAL_FLAGS["mother_ankh_puzzle"], 1, TEST_OPERATIONS["gteq"]),
+      self.__generate_op(GLOBAL_FLAGS["mother_state"], 2, TEST_OPERATIONS["lteq"]),
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
+      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+    ]
+
+    write_ops = [
+      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
+    ]
+
+    params = [231, 0, 0, 1, 1, 1, 1, 506, 280]
+    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 33, 20, test_ops, write_ops, params)
+
+    mother_screen.objects_with_position.append(autosave)
+    mother_screen.objects_length += 1
+
+    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+
   # Utility Methods
+
+  # Generate methods
+
+  def __generate_op(self, flag, op_value, op_type):
+    op = Rcd.Operation()
+    op.flag = flag
+    op.op_value = op_value
+    op.operation = op_type
+    return op
+
+  def __generate_object_with_position(self, object_id, x_pos, y_pos, test_ops, write_ops, params):
+    obj_with_pos = Rcd.ObjectWithPosition()
+    obj_with_pos.id = object_id
+    obj_with_pos.test_operations = test_ops
+    obj_with_pos.test_operations_length = len(test_ops)
+
+    obj_with_pos.write_operations = write_ops
+    obj_with_pos.write_operations_length = len(write_ops)
+
+    obj_with_pos.parameters = params
+    obj_with_pos.parameters_length = len(params)
+
+    obj_with_pos.x_pos = x_pos
+    obj_with_pos.y_pos = y_pos
+
+    return obj_with_pos
 
   # Search Methods
 
