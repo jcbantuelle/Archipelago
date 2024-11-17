@@ -206,6 +206,11 @@ class AutoScanGrailTablets(DefaultOnToggle):
 # Otherwise, Hand Scanner and reader.exe are required to warp back to it."""
 	display_name = "Automatically Scan Grail Tablets"
 
+class BossCheckpoints(DefaultOnToggle):
+	"""Quality of life - boss ankhs will trigger a quicksave prior to fighting the boss for fast retry.
+# Otherwise, you will respawn at the last grail savepoint."""
+	display_name = "Automatically Quicksave At Boss Ankhs"
+
 class GuardianSpecificAnkhJewels(DefaultOnToggle):
 	"""If on, each guardian fight has a specific ankh jewel needed to start the fight.
 # This is currently not enforced in-game, only logically."""
@@ -275,6 +280,7 @@ class LaMulanaOptions(PerGameCommonOptions):
 	RequireKeyFairyCombo: RequireKeyFairyCombo
 	
 	AutoScanGrailTablets: AutoScanGrailTablets
+	BossCheckpoints: BossCheckpoints
 	GuardianSpecificAnkhJewels: GuardianSpecificAnkhJewels
 	AlternateMotherAnkh: AlternateMotherAnkh
 	AncientLaMulaneseLearned: AncientLaMulaneseLearned

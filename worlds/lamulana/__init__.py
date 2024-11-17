@@ -303,6 +303,7 @@ class LaMulanaWorld(World):
 			'RequireKeyFairyCombo',
 			'AutoScanGrailTablets',
 			'GuardianSpecificAnkhJewels',
+			'BossCheckpoints',
 			'AlternateMotherAnkh',
 			'AncientLaMulaneseLearned',
 			'HardCombatLogic',
