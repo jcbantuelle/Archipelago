@@ -1,8 +1,14 @@
 from .FileMod import FileMod
 from .Items import item_table
 from .Rcd import Rcd
-from .LmFlags import GLOBAL_FLAGS, RCD_OBJECTS, TEST_OPERATIONS, WRITE_OPERATIONS, CARDS, grail_flag_by_zone
+from .LmFlags import GLOBAL_FLAGS, RCD_OBJECTS, TEST_OPERATIONS, WRITE_OPERATIONS, grail_flag_by_zone
 from .Locations import get_locations_by_region
+from .rcd.FlagTimer import FlagTimer
+from .rcd.InstantItem import InstantItem
+from .rcd.Operation import Operation
+from .rcd.TextureDrawAnimation import TextureDrawAnimation
+from .rcd.LemezaDetector import LemezaDetector
+from .rcd.GrailPoint import GrailPoint
 
 class RcdMod(FileMod):
 
@@ -36,9 +42,11 @@ class RcdMod(FileMod):
     ]
   )
 
+
   def __init__(self, filename, local_config, options, start_inventory):
     super().__init__(Rcd, filename, local_config, options, GLOBAL_FLAGS["rcd_filler_items"])
     self.start_inventory = start_inventory
+
 
   def place_item_in_location(self, item, item_id, location) -> None:
     object_type_params = self.RCD_OBJECT_PARAMS.get(location.object_type)
@@ -73,6 +81,7 @@ class RcdMod(FileMod):
         params["location_id"] = location_id
         self.__place_item(**params)
 
+
   def apply_mods(self, dat_mod):
     self.__give_starting_items(self.start_inventory)
     self.__rewrite_diary_chest()
@@ -91,6 +100,7 @@ class RcdMod(FileMod):
 
     if self.options.AncientLaMulaneseLearned:
       self.__create_ancient_lamulanese_timer()
+
 
   # RCD Mod Methods
 
@@ -134,6 +144,7 @@ class RcdMod(FileMod):
       location.parameters_length += 1
       self.file_size += 2
 
+
   def __update_destructible_cover(self, objects, original_obtain_flag, new_obtain_flag):
     covers = [o for _, o in enumerate(objects) if o.id == RCD_OBJECTS["hitbox_generator"] or o.id == RCD_OBJECTS["room_spawner"] and len([t for t in o.test_operations if t.flag == original_obtain_flag]) > 0]
     for cover in covers:
@@ -145,55 +156,36 @@ class RcdMod(FileMod):
           if cover_write_op.flag == original_obtain_flag:
             cover_write_op.flag = new_obtain_flag
 
+
   def __fix_surface_map_scan(self, objects, location, obtain_flag):
     scan = next(o for _, o in enumerate(objects) if o.id == RCD_OBJECTS["scannable"] and len([t for t in o.test_operations if t.flag == obtain_flag]) > 0)
+
     surface_scan_flag = GLOBAL_FLAGS["replacement_surface_map_scan"]
     scan.test_operations[0].flag = surface_scan_flag
     scan.write_operations[0].flag = surface_scan_flag
     location.test_operations[0].flag = surface_scan_flag
-    write_op_scan = Rcd.Operation()
-    write_op_scan.flag = surface_scan_flag
-    write_op_scan.operation = WRITE_OPERATIONS["add"]
-    write_op_scan.op_value = 1
-    location.write_operations.append(write_op_scan)
-    location.write_operations_length += 1
-    self.file_size += 4
+
+    self.__add_operation_to_object("write_operations", location, surface_scan_flag, WRITE_OPERATIONS["add"], 1)
+
 
   def __give_starting_items(self, items) -> None:
     flag_counter = 0
+    starting_room = self.file_contents.zones[1].rooms[2].screens[1]
+
     for item_name in items:
       item = item_table[item_name]
-      test_op = Rcd.Operation()
-      test_op.flag = GLOBAL_FLAGS["starting_items"]
-      test_op.operation = TEST_OPERATIONS["eq"]
-      test_op.op_value = flag_counter
 
-      write_op_given = Rcd.Operation()
-      write_op_given.flag = GLOBAL_FLAGS["starting_items"]
-      write_op_given.operation = WRITE_OPERATIONS["add"]
-      write_op_given.op_value = 1
+      item_giver = InstantItem(x=0, y=0, item=item.game_code, width=160, height=120, sound=39)
+      test_ops = [Operation.create(GLOBAL_FLAGS["starting_items"], TEST_OPERATIONS["eq"], flag_counter)]
+      write_ops = [
+        Operation.create(GLOBAL_FLAGS["starting_items"], WRITE_OPERATIONS["add"], 1),
+        Operation.create(item.obtain_flag, WRITE_OPERATIONS["add"], item.obtain_value)
+      ]
+      item_giver.add_ops(test_ops, write_ops)
+      item_giver.add_to_screen(self, starting_room)
 
-      write_op_item_flag = Rcd.Operation()
-      write_op_item_flag.flag = item.obtain_flag
-      write_op_item_flag.operation = WRITE_OPERATIONS["add"]
-      write_op_item_flag.op_value = item.obtain_value
-
-      item_id = item.game_code
-      item_giver = Rcd.ObjectWithPosition()
-      item_giver.id = RCD_OBJECTS["instant_item"]
-      item_giver.test_operations_length = 1
-      item_giver.write_operations_length = 2
-      item_giver.parameters_length = 4
-      item_giver.x_pos = 0
-      item_giver.y_pos = 0
-      item_giver.test_operations = [test_op]
-      item_giver.write_operations = [write_op_given, write_op_item_flag]
-      item_giver.parameters = [item_id,160,120,39]
-      starting_room = self.file_contents.zones[1].rooms[2].screens[1]
-      starting_room.objects_with_position.append(item_giver)
-      starting_room.objects_length += 1
-      self.file_size += 28
       flag_counter += 1
+
 
   def __rewrite_diary_chest(self) -> None:
     diary_location = next((location for _, location in enumerate(get_locations_by_region(None, None, None)["Shrine of the Mother [Main]"]) if location.name == "Shrine of the Mother - Diary Chest"), None)
@@ -209,38 +201,19 @@ class RcdMod(FileMod):
 
       self.__add_operation_to_object("test_operations", diary_chest, GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["eq"], 2)
 
+
   def __add_diary_chest_timer(self) -> None:
     screen = self.file_contents.zones[9].rooms[2].screens[0]
-  
-    talisman_found_test = Rcd.Operation()
-    talisman_found_test.flag = GLOBAL_FLAGS["talisman_found"]
-    talisman_found_test.operation = TEST_OPERATIONS["gteq"]
-    talisman_found_test.op_value = 3
 
-    shrine_dragon_bone_test = Rcd.Operation()
-    shrine_dragon_bone_test.flag = GLOBAL_FLAGS["shrine_dragon_bone"]
-    shrine_dragon_bone_test.operation = TEST_OPERATIONS["gteq"]
-    shrine_dragon_bone_test.op_value = 1
+    flag_timer = FlagTimer()
+    test_ops = [
+      Operation.create(GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["gteq"], 3),
+      Operation.create(GLOBAL_FLAGS["shrine_dragon_bone"], TEST_OPERATIONS["gteq"], 1)
+    ]
+    write_ops = [Operation.create(GLOBAL_FLAGS["shrine_diary_chest"], WRITE_OPERATIONS["assign"], 2)]
+    flag_timer.add_ops(test_ops, write_ops)
+    flag_timer.add_to_screen(self, screen)
 
-    write_op = Rcd.Operation()
-    write_op.flag = GLOBAL_FLAGS["shrine_diary_chest"]
-    write_op.operation = WRITE_OPERATIONS["assign"]
-    write_op.op_value = 2
-
-    flag_timer = Rcd.ObjectWithoutPosition()
-    flag_timer.id = RCD_OBJECTS["flag_timer"]
-    flag_timer.test_operations_length = 2
-    flag_timer.write_operations_length = 1
-    flag_timer.parameters_length = 2
-    flag_timer.test_operations = [talisman_found_test, shrine_dragon_bone_test]
-    flag_timer.write_operations = [write_op]
-    flag_timer.parameters = [0,0]
-    
-    screen.objects_without_position.append(flag_timer)
-    screen.objects_length += 1
-    screen.objects_without_position_length += 1
-    
-    self.file_size += 20 # 3 Ops (4*3=12) + Object (4) + 2 Params (2*2=4) = 12+4+4 = 20
 
   def __rewrite_four_guardian_shop_conditions(self, dat_mod):
     msx2_replacement_flag = dat_mod.find_shop_flag("nebur_guardian", 0)
@@ -249,9 +222,11 @@ class RcdMod(FileMod):
     self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["xelpud_msx2"], GLOBAL_FLAGS["guardians_killed"], old_op_value=1, new_op_value=4)
     self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["msx2_found"], msx2_replacement_flag)
 
+
   def __rewrite_slushfund_conversation_conditions(self):
     objects = self.file_contents.zones[10].rooms[8].screens[0].objects_with_position
     self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["slushfund_conversation"], GLOBAL_FLAGS["replacement_slushfund_conversation"])
+
 
   def __rewrite_cog_chest(self):
     objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
@@ -259,6 +234,7 @@ class RcdMod(FileMod):
 
     stray_fairy_door = self.__find_objects_by_operation("write_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["cog_puzzle"], operation=WRITE_OPERATIONS["assign"], op_value=3)[0]
     self.__add_operation_to_object("write_operations", stray_fairy_door, GLOBAL_FLAGS["replacement_cog_puzzle"], WRITE_OPERATIONS["assign"], 3)
+
 
   def __rewrite_fishman_alt_shop(self):
     screen = self.file_contents.zones[4].rooms[3].screens[3]
@@ -277,56 +253,14 @@ class RcdMod(FileMod):
     self.__update_position("test_operations", objects, RCD_OBJECTS["explosion"], GLOBAL_FLAGS["screen_flag_0d"], 7, 76)
 
     # Add Alt Shop Door Graphic
-    test_op_mother = Rcd.Operation()
-    test_op_mother.flag = GLOBAL_FLAGS["mother_state"]
-    test_op_mother.operation = TEST_OPERATIONS["neq"]
-    test_op_mother.op_value = 3
-
-    test_op_fishman_shop_puzzle = Rcd.Operation()
-    test_op_fishman_shop_puzzle.flag = GLOBAL_FLAGS["fishman_shop_puzzle"]
-    test_op_fishman_shop_puzzle.operation = TEST_OPERATIONS["eq"]
-    test_op_fishman_shop_puzzle.op_value = 3
-
-    fishman_alt_door = Rcd.ObjectWithPosition()
-    fishman_alt_door.id = RCD_OBJECTS["texture_draw_animation"]
-    fishman_alt_door.test_operations_length = 2
-    fishman_alt_door.write_operations_length = 0
-    fishman_alt_door.parameters_length = 24
-    fishman_alt_door.x_pos = 9
-    fishman_alt_door.y_pos = 76
-    fishman_alt_door.test_operations = [test_op_mother, test_op_fishman_shop_puzzle]
-    fishman_alt_door.write_operations = []
-    
-    fishman_alt_door.parameters = [
-      -1, # 0 Layer
-      0,  # 1 Image File
-      260, # 2 Imagex
-      0, # 3 Imagey
-      40, # 4 dx
-      40, # 5 dy
-      0, # 6 animation
-      1, # 7 Animation Frames
-      0, # 8 Pause Frames
-      0, # 9 Repeat Count (<1 is forever)
-      0, # 10 Hittile to fill with
-      0, # 11 Entry Effect
-      0, # 12 Exit Effect
-      0, # 13 Cycle Colors t/f
-      0, # 14 Alpha/frame
-      255, # 15 Max Alpha
-      0, # 16 R/frame
-      0, # 17 Max R
-      0, # 18 G/frame
-      0, # 19 Max G
-      0, # 20 B/frame
-      0, # 21 Max B
-      0, # 22 blend. 0=Normal 1=add 2= ... 14=
-      0, # 23 not0?
+    fishman_alt_door = TextureDrawAnimation(x=9, y=76, layer=-1, image_x=260, image_y=0, dx=40, dy=40, animation_frames=1, max_alpha=255)
+    test_ops = [
+      Operation.create(GLOBAL_FLAGS["mother_state"], TEST_OPERATIONS["neq"], 3),
+      Operation.create(GLOBAL_FLAGS["fishman_shop_puzzle"], TEST_OPERATIONS["eq"], 3)
     ]
-    objects.append(fishman_alt_door)
-    screen.objects_length += 1
-    
-    self.file_size += 64 # 2 Ops (4*2=8) + Object (8) + 24 Params (2*24=48) = 8+8+48 = 64
+    fishman_alt_door.add_ops(test_ops, [])
+    fishman_alt_door.add_to_screen(self, screen)
+
 
   def __clean_up_test_operations(self):
     # Remove Fairy Conversation Requirement from Buer Room Ladder
@@ -365,283 +299,153 @@ class RcdMod(FileMod):
               if frontside or backside:
                 grail_flag = grail_flag_by_zone(zone.zone_index, frontside)
 
-                test_op = self.__generate_op(grail_flag, 0, TEST_OPERATIONS["eq"])
-                write_op = self.__generate_op(grail_flag, 1, WRITE_OPERATIONS["assign"])
+                lemeza_detector = LemezaDetector(x=obj.x_pos, y=obj.y_pos-1, width=2, height=3)
+                test_ops = [Operation.create(grail_flag, TEST_OPERATIONS["eq"], 0)]
+                write_ops = [Operation.create(grail_flag, WRITE_OPERATIONS["assign"], 1)]
+                lemeza_detector.add_ops(test_ops, write_ops)
+                lemeza_detector.add_to_screen(self, screen)
 
-                params = [0,0,0,0,2,3]
-                lemeza_detector = self.__generate_object_with_position(RCD_OBJECTS["lemeza_detector"], obj.x_pos, obj.y_pos - 1, [test_op], [write_op], params)
-
-                screen.objects_with_position.append(lemeza_detector)
-                screen.objects_length += 1
-
-                self.file_size += 28
 
   def __create_boss_checkpoints(self) -> None:
     # Amphisbaena
     amphisbaena_screen = self.file_contents.zones[0].rooms[8].screens[1]
-
+    amphisbaena_grail_point = GrailPoint(x=15, y=44, card=41)
     test_ops = [
-      self.__generate_op(GLOBAL_FLAGS["amphisbaena_ankh_puzzle"], 5, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["amphisbaena_state"], 2, TEST_OPERATIONS["lt"]),
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+      Operation.create(GLOBAL_FLAGS["amphisbaena_ankh_puzzle"], TEST_OPERATIONS["eq"], 5),
+      Operation.create(GLOBAL_FLAGS["amphisbaena_state"], TEST_OPERATIONS["lt"], 2),
+      Operation.create(GLOBAL_FLAGS["screen_flag_02"], TEST_OPERATIONS["eq"], 0),
+      Operation.create(GLOBAL_FLAGS["escape"], TEST_OPERATIONS["eq"], 0)
     ]
-
-    write_ops = [
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
-    ]
-
-    params = [41, 0, 0, 1, 1, 1, 1, 506, 280]
-    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 15, 44, test_ops, write_ops, params)
-
-    amphisbaena_screen.objects_with_position.append(autosave)
-    amphisbaena_screen.objects_length += 1
-
-    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+    write_ops = [Operation.create(GLOBAL_FLAGS["screen_flag_02"], WRITE_OPERATIONS["assign"], 1)]
+    amphisbaena_grail_point.add_ops(test_ops, write_ops)
+    amphisbaena_grail_point.add_to_screen(self, amphisbaena_screen)
 
     # Sakit
     sakit_screen = self.file_contents.zones[2].rooms[8].screens[1]
-
+    sakit_grail_point = GrailPoint(x=45, y=6, card=75)
     test_ops = [
-      self.__generate_op(GLOBAL_FLAGS["sakit_ankh_puzzle"], 1, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["sakit_state"], 2, TEST_OPERATIONS["lt"]),
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+      Operation.create(GLOBAL_FLAGS["sakit_ankh_puzzle"], TEST_OPERATIONS["eq"], 1),
+      Operation.create(GLOBAL_FLAGS["sakit_state"], TEST_OPERATIONS["lt"], 2),
+      Operation.create(GLOBAL_FLAGS["screen_flag_02"], TEST_OPERATIONS["eq"], 0),
+      Operation.create(GLOBAL_FLAGS["escape"], TEST_OPERATIONS["eq"], 0)
     ]
-
-    write_ops = [
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
-    ]
-
-    params = [75, 0, 0, 1, 1, 1, 1, 506, 280]
-    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 45, 6, test_ops, write_ops, params)
-
-    sakit_screen.objects_with_position.append(autosave)
-    sakit_screen.objects_length += 1
-
-    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+    write_ops = [Operation.create(GLOBAL_FLAGS["screen_flag_02"], WRITE_OPERATIONS["assign"], 1)]
+    sakit_grail_point.add_ops(test_ops, write_ops)
+    sakit_grail_point.add_to_screen(self, sakit_screen)
 
     # Ellmac
     ellmac_screen = self.file_contents.zones[3].rooms[8].screens[0]
-
+    ellmac_grail_point = GrailPoint(x=20, y=16, card=104)
     test_ops = [
-      self.__generate_op(GLOBAL_FLAGS["ellmac_ankh_puzzle"], 5, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["ellmac_state"], 2, TEST_OPERATIONS["lt"]),
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+      Operation.create(GLOBAL_FLAGS["ellmac_ankh_puzzle"], TEST_OPERATIONS["eq"], 5),
+      Operation.create(GLOBAL_FLAGS["ellmac_state"], TEST_OPERATIONS["lt"], 2),
+      Operation.create(GLOBAL_FLAGS["screen_flag_02"], TEST_OPERATIONS["eq"], 0),
+      Operation.create(GLOBAL_FLAGS["escape"], TEST_OPERATIONS["eq"], 0)
     ]
-
-    write_ops = [
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
-    ]
-
-    params = [104, 0, 0, 1, 1, 1, 1, 506, 280]
-    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 20, 16, test_ops, write_ops, params)
-
-    ellmac_screen.objects_with_position.append(autosave)
-    ellmac_screen.objects_length += 1
-
-    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+    write_ops = [Operation.create(GLOBAL_FLAGS["screen_flag_02"], WRITE_OPERATIONS["assign"], 1)]
+    ellmac_grail_point.add_ops(test_ops, write_ops)
+    ellmac_grail_point.add_to_screen(self, ellmac_screen)
 
     # Bahamut
     bahamut_screen = self.file_contents.zones[4].rooms[4].screens[0]
-
+    bahamut_grail_point = GrailPoint(x=19, y=17, card=136)
     test_ops = [
-      self.__generate_op(GLOBAL_FLAGS["bahamut_ankh_puzzle"], 1, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["bahamut_room_flooded"], 1, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["bahamut_state"], 2, TEST_OPERATIONS["lt"]),
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+      Operation.create(GLOBAL_FLAGS["bahamut_ankh_puzzle"], TEST_OPERATIONS["eq"], 1),
+      Operation.create(GLOBAL_FLAGS["bahamut_room_flooded"], TEST_OPERATIONS["eq"], 1),
+      Operation.create(GLOBAL_FLAGS["bahamut_state"], TEST_OPERATIONS["lt"], 2),
+      Operation.create(GLOBAL_FLAGS["screen_flag_02"], TEST_OPERATIONS["eq"], 0),
+      Operation.create(GLOBAL_FLAGS["escape"], TEST_OPERATIONS["eq"], 0)
     ]
-
-    write_ops = [
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
-    ]
-
-    params = [136, 0, 0, 1, 1, 1, 1, 506, 280]
-    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 19, 17, test_ops, write_ops, params)
-
-    bahamut_screen.objects_with_position.append(autosave)
-    bahamut_screen.objects_length += 1
-
-    self.file_size += 50 # 6 Ops (4*6=24) + Object (8) + 9 Params (2*9=18) = 24+8+18 = 50
+    write_ops = [Operation.create(GLOBAL_FLAGS["screen_flag_02"], WRITE_OPERATIONS["assign"], 1)]
+    bahamut_grail_point.add_ops(test_ops, write_ops)
+    bahamut_grail_point.add_to_screen(self, bahamut_screen)
 
     # Viy
     viy_screen = self.file_contents.zones[5].rooms[8].screens[1]
-
+    viy_grail_point = GrailPoint(x=23, y=28, card=149)
     test_ops = [
-      self.__generate_op(GLOBAL_FLAGS["viy_ankh_puzzle"], 4, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["viy_state"], 2, TEST_OPERATIONS["lt"]),
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+      Operation.create(GLOBAL_FLAGS["viy_ankh_puzzle"], TEST_OPERATIONS["eq"], 4),
+      Operation.create(GLOBAL_FLAGS["viy_state"], TEST_OPERATIONS["lt"], 2),
+      Operation.create(GLOBAL_FLAGS["screen_flag_02"], TEST_OPERATIONS["eq"], 0),
+      Operation.create(GLOBAL_FLAGS["escape"], TEST_OPERATIONS["eq"], 0)
     ]
-
-    write_ops = [
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
-    ]
-
-    params = [149, 0, 0, 1, 1, 1, 1, 506, 280]
-    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 23, 28, test_ops, write_ops, params)
-
-    viy_screen.objects_with_position.append(autosave)
-    viy_screen.objects_length += 1
-
-    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+    write_ops = [Operation.create(GLOBAL_FLAGS["screen_flag_02"], WRITE_OPERATIONS["assign"], 1)]
+    viy_grail_point.add_ops(test_ops, write_ops)
+    viy_grail_point.add_to_screen(self, viy_screen)
 
     # Palenque
     palenque_screen = self.file_contents.zones[6].rooms[9].screens[1]
-
+    palenque_grail_point = GrailPoint(x=47, y=20, card=170)
     test_ops = [
-      self.__generate_op(GLOBAL_FLAGS["palenque_ankh_puzzle"], 3, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["palenque_screen_mural"], 3, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["palenque_state"], 2, TEST_OPERATIONS["lt"]),
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+      Operation.create(GLOBAL_FLAGS["palenque_ankh_puzzle"], TEST_OPERATIONS["eq"], 3),
+      Operation.create(GLOBAL_FLAGS["palenque_screen_mural"], TEST_OPERATIONS["eq"], 3),
+      Operation.create(GLOBAL_FLAGS["palenque_state"], TEST_OPERATIONS["lt"], 2),
+      Operation.create(GLOBAL_FLAGS["screen_flag_02"], TEST_OPERATIONS["eq"], 0),
+      Operation.create(GLOBAL_FLAGS["escape"], TEST_OPERATIONS["eq"], 0)
     ]
-
-    write_ops = [
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
-    ]
-
-    params = [170, 0, 0, 1, 1, 1, 1, 506, 280]
-    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 47, 20, test_ops, write_ops, params)
-
-    palenque_screen.objects_with_position.append(autosave)
-    palenque_screen.objects_length += 1
-
-    self.file_size += 50 # 6 Ops (4*6=24) + Object (8) + 9 Params (2*9=18) = 24+8+18 = 50
+    write_ops = [Operation.create(GLOBAL_FLAGS["screen_flag_02"], WRITE_OPERATIONS["assign"], 1)]
+    palenque_grail_point.add_ops(test_ops, write_ops)
+    palenque_grail_point.add_to_screen(self, palenque_screen)
 
     # Baphomet
     baphomet_screen = self.file_contents.zones[7].rooms[4].screens[1]
-
+    baphomet_grail_point = GrailPoint(x=47, y=4, card=188)
     test_ops = [
-      self.__generate_op(GLOBAL_FLAGS["baphomet_ankh_puzzle"], 2, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["baphomet_state"], 2, TEST_OPERATIONS["lt"]),
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+      Operation.create(GLOBAL_FLAGS["baphomet_ankh_puzzle"], TEST_OPERATIONS["eq"], 2),
+      Operation.create(GLOBAL_FLAGS["baphomet_state"], TEST_OPERATIONS["lt"], 2),
+      Operation.create(GLOBAL_FLAGS["screen_flag_02"], TEST_OPERATIONS["eq"], 0),
+      Operation.create(GLOBAL_FLAGS["escape"], TEST_OPERATIONS["eq"], 0)
     ]
-
-    write_ops = [
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
-    ]
-
-    params = [188, 0, 0, 1, 1, 1, 1, 506, 280]
-    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 47, 4, test_ops, write_ops, params)
-
-    baphomet_screen.objects_with_position.append(autosave)
-    baphomet_screen.objects_length += 1
-
-    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+    write_ops = [Operation.create(GLOBAL_FLAGS["screen_flag_02"], WRITE_OPERATIONS["assign"], 1)]
+    baphomet_grail_point.add_ops(test_ops, write_ops)
+    baphomet_grail_point.add_to_screen(self, baphomet_screen)
 
     # Tiamat
     tiamat_screen = self.file_contents.zones[17].rooms[9].screens[0]
-
+    tiamat_grail_point = GrailPoint(x=15, y=4, card=368)
     test_ops = [
-      self.__generate_op(GLOBAL_FLAGS["tiamat_ankh_puzzle"], 1, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["tiamat_state"], 2, TEST_OPERATIONS["lt"]),
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+      Operation.create(GLOBAL_FLAGS["tiamat_ankh_puzzle"], TEST_OPERATIONS["eq"], 1),
+      Operation.create(GLOBAL_FLAGS["tiamat_state"], TEST_OPERATIONS["lt"], 2),
+      Operation.create(GLOBAL_FLAGS["screen_flag_02"], TEST_OPERATIONS["eq"], 0),
+      Operation.create(GLOBAL_FLAGS["escape"], TEST_OPERATIONS["eq"], 0)
     ]
-
-    write_ops = [
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
-    ]
-
-    params = [368, 0, 0, 1, 1, 1, 1, 506, 280]
-    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 15, 4, test_ops, write_ops, params)
-
-    tiamat_screen.objects_with_position.append(autosave)
-    tiamat_screen.objects_length += 1
-
-    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+    write_ops = [Operation.create(GLOBAL_FLAGS["screen_flag_02"], WRITE_OPERATIONS["assign"], 1)]
+    tiamat_grail_point.add_ops(test_ops, write_ops)
+    tiamat_grail_point.add_to_screen(self, tiamat_screen)
 
     # Mother
     mother_screen = self.file_contents.zones[18].rooms[3].screens[1]
-
+    mother_grail_point = GrailPoint(x=33, y=20, card=231)
     test_ops = [
-      self.__generate_op(GLOBAL_FLAGS["mother_ankh_puzzle"], 1, TEST_OPERATIONS["gteq"]),
-      self.__generate_op(GLOBAL_FLAGS["mother_state"], 2, TEST_OPERATIONS["lteq"]),
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 0, TEST_OPERATIONS["eq"]),
-      self.__generate_op(GLOBAL_FLAGS["escape"], 0, TEST_OPERATIONS["eq"])
+      Operation.create(GLOBAL_FLAGS["mother_ankh_puzzle"], TEST_OPERATIONS["eq"], 1),
+      Operation.create(GLOBAL_FLAGS["mother_state"], TEST_OPERATIONS["lteq"], 2),
+      Operation.create(GLOBAL_FLAGS["screen_flag_02"], TEST_OPERATIONS["eq"], 0),
+      Operation.create(GLOBAL_FLAGS["escape"], TEST_OPERATIONS["eq"], 0)
     ]
+    write_ops = [Operation.create(GLOBAL_FLAGS["screen_flag_02"], WRITE_OPERATIONS["assign"], 1)]
+    mother_grail_point.add_ops(test_ops, write_ops)
+    mother_grail_point.add_to_screen(self, mother_screen)
 
-    write_ops = [
-      self.__generate_op(GLOBAL_FLAGS["screen_flag_02"], 1, WRITE_OPERATIONS["assign"])
-    ]
-
-    params = [231, 0, 0, 1, 1, 1, 1, 506, 280]
-    autosave = self.__generate_object_with_position(RCD_OBJECTS["grail_point"], 33, 20, test_ops, write_ops, params)
-
-    mother_screen.objects_with_position.append(autosave)
-    mother_screen.objects_length += 1
-
-    self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
 
   def __create_ancient_lamulanese_timer(self):
     screen = self.file_contents.zones[1].rooms[2].screens[1]
 
-    ancient_lamulanese_learned_test = Rcd.Operation()
-    ancient_lamulanese_learned_test.flag = GLOBAL_FLAGS["ancient_lamulanese_learned"]
-    ancient_lamulanese_learned_test.operation = TEST_OPERATIONS["eq"]
-    ancient_lamulanese_learned_test.op_value = 0
-
-    translation_tablets_write = Rcd.Operation()
-    translation_tablets_write.flag = GLOBAL_FLAGS["translation_tablets_read"]
-    translation_tablets_write.operation = WRITE_OPERATIONS["assign"]
-    translation_tablets_write.op_value = 3
-
-    ancient_lamulanese_learned_write = Rcd.Operation()
-    ancient_lamulanese_learned_write.flag = GLOBAL_FLAGS["ancient_lamulanese_learned"]
-    ancient_lamulanese_learned_write.operation = WRITE_OPERATIONS["assign"]
-    ancient_lamulanese_learned_write.op_value = 1
-
-    flag_timer = Rcd.ObjectWithoutPosition()
-    flag_timer.id = RCD_OBJECTS["flag_timer"]
-    flag_timer.test_operations_length = 1
-    flag_timer.write_operations_length = 2
-    flag_timer.parameters_length = 2
-    flag_timer.test_operations = [ancient_lamulanese_learned_test]
-    flag_timer.write_operations = [translation_tablets_write, ancient_lamulanese_learned_write]
-    flag_timer.parameters = [0,0]
-
-    screen.objects_without_position.append(flag_timer)
-    screen.objects_length += 1
-    screen.objects_without_position_length += 1
-
-    self.file_size += 20 # 3 Ops (4*3=12) + Object (4) + 2 Params (2*2=4) = 12+4+4 = 20
+    flag_timer = FlagTimer()
+    test_ops = [Operation.create(GLOBAL_FLAGS["ancient_lamulanese_learned"], TEST_OPERATIONS["eq"], 0)]
+    write_ops = [
+      Operation.create(GLOBAL_FLAGS["translation_tablets_read"], WRITE_OPERATIONS["assign"], 3),
+      Operation.create(GLOBAL_FLAGS["ancient_lamulanese_learned"], WRITE_OPERATIONS["assign"], 1)
+    ]
+    flag_timer.add_ops(test_ops, write_ops)
+    flag_timer.add_to_screen(self, screen)
 
   # Utility Methods
-
-  # Generate methods
-
-  def __generate_op(self, flag, op_value, op_type):
-    op = Rcd.Operation()
-    op.flag = flag
-    op.op_value = op_value
-    op.operation = op_type
-    return op
-
-  def __generate_object_with_position(self, object_id, x_pos, y_pos, test_ops, write_ops, params):
-    obj_with_pos = Rcd.ObjectWithPosition()
-    obj_with_pos.id = object_id
-    obj_with_pos.test_operations = test_ops
-    obj_with_pos.test_operations_length = len(test_ops)
-
-    obj_with_pos.write_operations = write_ops
-    obj_with_pos.write_operations_length = len(write_ops)
-
-    obj_with_pos.parameters = params
-    obj_with_pos.parameters_length = len(params)
-
-    obj_with_pos.x_pos = x_pos
-    obj_with_pos.y_pos = y_pos
-
-    return obj_with_pos
 
   # Search Methods
 
   def __find_objects_by_operation(self, op_type, objects, object_id, flag, operation=None, op_value=None):
     return [o for _, o in enumerate(objects) if o.id == object_id and len([op for op in getattr(o, op_type) if self.__op_matches(op, flag, operation, op_value)]) > 0]
+
 
   def __find_operation_index(self, ops, flag, operation=None, op_value=None):
     return next(i for i,op in enumerate(ops) if self.__op_matches(op, flag, operation, op_value))
@@ -660,6 +464,7 @@ class RcdMod(FileMod):
       obj.x_pos = x_pos
       obj.y_pos = y_pos
 
+
   def __update_operation(self, op_type, objects, object_id, old_flag, new_flag, old_operation=None, new_operation=None, old_op_value=None, new_op_value=None):
     objs = self.__find_objects_by_operation(op_type, objects, object_id, old_flag, old_operation, old_op_value)
 
@@ -674,6 +479,7 @@ class RcdMod(FileMod):
       if new_op_value is not None:
         op.op_value = new_op_value
 
+
   def __remove_operation(self, op_type, objects, object_id, flag):
     objs = self.__find_objects_by_operation(op_type, objects, object_id, flag)
 
@@ -686,6 +492,7 @@ class RcdMod(FileMod):
       old_len = getattr(obj, op_type_len)
       setattr(obj, op_type_len, old_len-1)
       self.file_size -= 4
+
 
   def __add_operation_to_object(self, op_type, obj, flag, operation, op_value):
     op = Rcd.Operation()
