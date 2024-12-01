@@ -89,6 +89,9 @@ class RcdMod(FileMod):
     if self.options.BossCheckpoints:
       self.__create_boss_checkpoints()
 
+    if self.options.AncientLaMulaneseLearned:
+      self.__create_ancient_lamulanese_timer()
+
   # RCD Mod Methods
 
   def __place_item(self, objects, object_type, param_index, param_len, location, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, item_mod, iterations, item):
@@ -236,7 +239,8 @@ class RcdMod(FileMod):
     screen.objects_without_position.append(flag_timer)
     screen.objects_length += 1
     screen.objects_without_position_length += 1
-    self.file_size += 20
+    
+    self.file_size += 20 # 3 Ops (4*3=12) + Object (4) + 2 Params (2*2=4) = 12+4+4 = 20
 
   def __rewrite_four_guardian_shop_conditions(self, dat_mod):
     msx2_replacement_flag = dat_mod.find_shop_flag("nebur_guardian", 0)
@@ -572,6 +576,39 @@ class RcdMod(FileMod):
     mother_screen.objects_length += 1
 
     self.file_size += 46 # 5 Ops (4*5=20) + Object (8) + 9 Params (2*9=18) = 20+8+18 = 46
+
+  def __create_ancient_lamulanese_timer(self):
+    screen = self.file_contents.zones[1].rooms[2].screens[1]
+
+    ancient_lamulanese_learned_test = Rcd.Operation()
+    ancient_lamulanese_learned_test.flag = GLOBAL_FLAGS["ancient_lamulanese_learned"]
+    ancient_lamulanese_learned_test.operation = TEST_OPERATIONS["eq"]
+    ancient_lamulanese_learned_test.op_value = 0
+
+    translation_tablets_write = Rcd.Operation()
+    translation_tablets_write.flag = GLOBAL_FLAGS["translation_tablets_read"]
+    translation_tablets_write.operation = WRITE_OPERATIONS["assign"]
+    translation_tablets_write.op_value = 3
+
+    ancient_lamulanese_learned_write = Rcd.Operation()
+    ancient_lamulanese_learned_write.flag = GLOBAL_FLAGS["ancient_lamulanese_learned"]
+    ancient_lamulanese_learned_write.operation = WRITE_OPERATIONS["assign"]
+    ancient_lamulanese_learned_write.op_value = 1
+
+    flag_timer = Rcd.ObjectWithoutPosition()
+    flag_timer.id = RCD_OBJECTS["flag_timer"]
+    flag_timer.test_operations_length = 1
+    flag_timer.write_operations_length = 2
+    flag_timer.parameters_length = 2
+    flag_timer.test_operations = [ancient_lamulanese_learned_test]
+    flag_timer.write_operations = [translation_tablets_write, ancient_lamulanese_learned_write]
+    flag_timer.parameters = [0,0]
+
+    screen.objects_without_position.append(flag_timer)
+    screen.objects_length += 1
+    screen.objects_without_position_length += 1
+
+    self.file_size += 20 # 3 Ops (4*3=12) + Object (4) + 2 Params (2*2=4) = 12+4+4 = 20
 
   # Utility Methods
 
