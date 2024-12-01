@@ -42,7 +42,8 @@ class LaMulanaLogicShortcuts:
 
 	#Could add +1 if revive combo was on, but that would turn move.exe and randc.exe into progression
 	def get_health_count(self, state: CollectionState) -> int:
-		return state.count("Sacred Orb", self.player)
+		orb_locations = ['Surface', 'Gate of Guidance', 'Mausoleum of the Giants', 'Temple of the Sun', 'Spring in the Sky', 'Tower of Ruin', 'Chamber of Extinction', 'Twin Labyrinths', 'Dimensional Corridor', 'Shrine of the Mother']
+		return len([orb for orb in orb_locations if state.has(f'Sacred Orb ({orb})', self.player)])
 
 	def attack_whip(self, state: CollectionState) -> bool:
 		return state.has_any({"Leather Whip", "Chain Whip", "Flail Whip"}, self.player)

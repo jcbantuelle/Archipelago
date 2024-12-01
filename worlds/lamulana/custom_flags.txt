@@ -50,23 +50,7 @@
 2105 (0x839) - Tailor Dracuet Shop 2
 2106 (0x83a) - Tailor Dracuet Shop 3
 
-2107 (0x83b) - Map (Surface) Location
-2108 (0x83c) - Map (Gate of Guidance) Location
-2109 (0x83d) - Map (Mausoleum of the Giants) Location
-2110 (0x83e) - Map (Temple of the Sun) Location
-2111 (0x83f) - Map (Spring in the Sky) Location
-2112 (0x840) - Map (Inferno Cavern) Location
-2113 (0x841) - Map (Chamber of Extinction) Location
-2114 (0x842) - Map (Twin Labyrinths) Location
-2115 (0x843) - Map (Endless Corridor) Location
-2116 (0x844) - Map (Shrine of the Mother) Location
-2117 (0x845) - Map (Gate of Illusion) Location
-2118 (0x846) - Map (Graveyard of the Giants) Location
-2119 (0x847) - Map (Temple of Moonlight) Location
-2120 (0x848) - Map (Tower of the Goddess) Location
-2121 (0x849) - Map (Tower of Ruin) Location
-2122 (0x84a) - Map (Chamber of Birth) Location
-2123 (0x84b) - Map (Dimensional Corridor) Location
+# Free space available <0x83b - 0x84b>
 
 2124 (0x84c) - Anchor
 2126 (0x84e) - Mr. Fishman (Alt) Shop 1
@@ -75,15 +59,9 @@
 2129 (0x851) - Talisman Found
 
 2130 (0x852) - Ankh Jewel
-2131 (0x853) - Ankh Jewel (Amphisbaena)
-2132 (0x854) - Ankh Jewel (Sakit)
-2133 (0x855) - Ankh Jewel (Ellmac)
-2134 (0x856) - Ankh Jewel (Bahamut)
-2135 (0x857) - Ankh Jewel (Viy)
-2136 (0x858) - Ankh Jewel (Palenque)
-2137 (0x859) - Ankh Jewel (Baphomet)
-2138 (0x85a) - Ankh Jewel (Tiamat)
-2139 (0x85b) - Ankh Jewel (Mother)
+2131 (0x853) - Ankh Jewel (Mother)
+
+# Free space available <0x854 - 0x85b>
 
 2140 (0x85c) - Medicine of the Mind
 2141 (0x85d) - Sacred Orb (Placeholder)
@@ -94,5 +72,5 @@
 2146 (0x862) - Buckler
 2147 (0x863) - Leather Whip
 
-3096 (0xc18) - RCD Placeholder Flags start
-3596 (0xe0c) - DAT Placeholder Flags start
+2600 (0xa28) - RCD Placeholder Flags start
+2700 (0xa8c) - DAT Placeholder Flags start
