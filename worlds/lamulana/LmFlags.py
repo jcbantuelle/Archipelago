@@ -7,6 +7,7 @@ GLOBAL_FLAGS = {
   "surface_map": 0xd1,
   "shrine_map": 0xda,
   "xmailer": 0xe3,
+  "mekuri": 0xf1,
   "grail_tablet_guidance": 0x64,
   "grail_tablet_mausoleum": 0x65,
   "grail_tablet_sun": 0x66,

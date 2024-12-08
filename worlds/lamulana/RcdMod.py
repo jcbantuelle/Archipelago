@@ -114,47 +114,42 @@ class RcdMod(FileMod):
       for write_op in location.write_operations:
         if write_op.flag == original_obtain_flag:
           write_op.flag = new_obtain_flag
-          if object_type == RCD_OBJECTS["naked_item"] or RCD_OBJECTS["instant_item"] or RCD_OBJECTS["scan"]:
+          if object_type in (RCD_OBJECTS["naked_item"], RCD_OBJECTS["instant_item"], RCD_OBJECTS["scan"]):
             write_op.op_value = obtain_value
 
-      self.__update_destructible_cover(objects, original_obtain_flag, new_obtain_flag)
+      # Destructible Cover customization
+      for operation in ["test", "write"]:
+        self.__update_operation(operation, objects, [RCD_OBJECTS["hitbox_generator"], RCD_OBJECTS["room_spawner"]], original_obtain_flag, new_obtain_flag)
 
+      # Surface Map customization
       if original_obtain_flag == GLOBAL_FLAGS["surface_map"]:
         self.__fix_surface_map_scan(objects, location, original_obtain_flag)
       
       # Shrine of the Mother Map Crusher customization
       if original_obtain_flag == GLOBAL_FLAGS["shrine_map"]:
-        self.__update_operation("write_operations", objects, RCD_OBJECTS["crusher"], original_obtain_flag, new_obtain_flag, new_op_value=obtain_value)
+        self.__update_operation("write", objects, [RCD_OBJECTS["crusher"]], original_obtain_flag, new_obtain_flag, new_op_value=obtain_value)
 
       # Mausoleum Ankh Jewel Trap customization
       if original_obtain_flag == GLOBAL_FLAGS["ankh_jewel_mausoleum"]:
-        self.__update_operation("write_operations", objects, RCD_OBJECTS["moving_texture"], original_obtain_flag, new_obtain_flag, new_op_value=obtain_value)
+        self.__update_operation("write", objects, [RCD_OBJECTS["moving_texture"]], original_obtain_flag, new_obtain_flag, new_op_value=obtain_value)
 
       # Yagostr Dais customization
       if original_obtain_flag == GLOBAL_FLAGS["yagostr_found"]:
-        self.__update_operation("test_operations", objects, RCD_OBJECTS["trigger_dais"], original_obtain_flag, new_obtain_flag)
+        self.__update_operation("test", objects, [RCD_OBJECTS["trigger_dais"]], original_obtain_flag, new_obtain_flag)
 
       # Vimana customization
       if original_obtain_flag == GLOBAL_FLAGS["plane_found"]:
         vimana_objects = self.file_contents.zones[13].rooms[6].screens[1].objects_with_position
-        self.__update_operation("test_operations", vimana_objects, RCD_OBJECTS["vimana"], original_obtain_flag, new_obtain_flag)
+        self.__update_operation("test", vimana_objects, [RCD_OBJECTS["vimana"]], original_obtain_flag, new_obtain_flag)
+
+      # Mekuri Master customization
+      if original_obtain_flag == GLOBAL_FLAGS["mekuri"]:
+        self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"], RCD_OBJECTS["texture_draw_animation"]], original_obtain_flag, new_obtain_flag)
 
       location.parameters[param_index] = item_id+item_mod
       location.parameters.append(1)
       location.parameters_length += 1
       self.file_size += 2
-
-
-  def __update_destructible_cover(self, objects, original_obtain_flag, new_obtain_flag):
-    covers = [o for _, o in enumerate(objects) if o.id == RCD_OBJECTS["hitbox_generator"] or o.id == RCD_OBJECTS["room_spawner"] and len([t for t in o.test_operations if t.flag == original_obtain_flag]) > 0]
-    for cover in covers:
-      if cover is not None:
-        for cover_test_op in cover.test_operations:
-          if cover_test_op.flag == original_obtain_flag:
-            cover_test_op.flag = new_obtain_flag
-        for cover_write_op in cover.write_operations:
-          if cover_write_op.flag == original_obtain_flag:
-            cover_write_op.flag = new_obtain_flag
 
 
   def __fix_surface_map_scan(self, objects, location, obtain_flag):
@@ -165,7 +160,7 @@ class RcdMod(FileMod):
     scan.write_operations[0].flag = surface_scan_flag
     location.test_operations[0].flag = surface_scan_flag
 
-    self.__add_operation_to_object("write_operations", location, surface_scan_flag, WRITE_OPERATIONS["add"], 1)
+    self.__add_operation_to_object("write", location, surface_scan_flag, WRITE_OPERATIONS["add"], 1)
 
 
   def __give_starting_items(self, items) -> None:
@@ -199,7 +194,7 @@ class RcdMod(FileMod):
       diary_shawn_test.operation = TEST_OPERATIONS["eq"]
       diary_shawn_test.op_value = 1
 
-      self.__add_operation_to_object("test_operations", diary_chest, GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["eq"], 2)
+      self.__add_operation_to_object("test", diary_chest, GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["eq"], 2)
 
 
   def __add_diary_chest_timer(self) -> None:
@@ -218,22 +213,22 @@ class RcdMod(FileMod):
   def __rewrite_four_guardian_shop_conditions(self, dat_mod):
     msx2_replacement_flag = dat_mod.find_shop_flag("nebur_guardian", 0)
     objects = self.file_contents.zones[1].rooms[2].screens[0].objects_with_position
-    self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["xelpud_msx2"], GLOBAL_FLAGS["guardians_killed"], old_op_value=0, new_op_value=3, new_operation=TEST_OPERATIONS["lteq"])
-    self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["xelpud_msx2"], GLOBAL_FLAGS["guardians_killed"], old_op_value=1, new_op_value=4)
-    self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["msx2_found"], msx2_replacement_flag)
+    self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["xelpud_msx2"], GLOBAL_FLAGS["guardians_killed"], old_op_value=0, new_op_value=3, new_operation=TEST_OPERATIONS["lteq"])
+    self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["xelpud_msx2"], GLOBAL_FLAGS["guardians_killed"], old_op_value=1, new_op_value=4)
+    self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["msx2_found"], msx2_replacement_flag)
 
 
   def __rewrite_slushfund_conversation_conditions(self):
     objects = self.file_contents.zones[10].rooms[8].screens[0].objects_with_position
-    self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["slushfund_conversation"], GLOBAL_FLAGS["replacement_slushfund_conversation"])
+    self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["slushfund_conversation"], GLOBAL_FLAGS["replacement_slushfund_conversation"])
 
 
   def __rewrite_cog_chest(self):
     objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
-    self.__update_operation("write_operations", objects, RCD_OBJECTS["chest"], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"])
+    self.__update_operation("write", objects, [RCD_OBJECTS["chest"]], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"])
 
-    stray_fairy_door = self.__find_objects_by_operation("write_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["cog_puzzle"], operation=WRITE_OPERATIONS["assign"], op_value=3)[0]
-    self.__add_operation_to_object("write_operations", stray_fairy_door, GLOBAL_FLAGS["replacement_cog_puzzle"], WRITE_OPERATIONS["assign"], 3)
+    stray_fairy_door = self.__find_objects_by_operation("write", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["cog_puzzle"], operation=WRITE_OPERATIONS["assign"], op_value=3)[0]
+    self.__add_operation_to_object("write", stray_fairy_door, GLOBAL_FLAGS["replacement_cog_puzzle"], WRITE_OPERATIONS["assign"], 3)
 
 
   def __rewrite_fishman_alt_shop(self):
@@ -241,16 +236,16 @@ class RcdMod(FileMod):
     objects = screen.objects_with_position
     
     # Persist Main Shop after Alt is Opened
-    self.__update_operation("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["fishman_shop_puzzle"], GLOBAL_FLAGS["fishman_shop_puzzle"], old_op_value=2, new_operation=TEST_OPERATIONS["gteq"])
+    self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["fishman_shop_puzzle"], GLOBAL_FLAGS["fishman_shop_puzzle"], old_op_value=2, new_operation=TEST_OPERATIONS["gteq"])
 
     # Relocate Alt Shop
-    self.__update_position("test_operations", objects, RCD_OBJECTS["language_conversation"], GLOBAL_FLAGS["fishman_shop_puzzle"], 9, 76, op_value=3)
+    self.__update_position("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["fishman_shop_puzzle"], 9, 76, op_value=3)
 
     # Relocate Fairy Keyspot trigger
-    self.__update_position("test_operations", objects, RCD_OBJECTS["fairy_keyspot"], GLOBAL_FLAGS["fishman_shop_puzzle"], 9, 74)
+    self.__update_position("test", objects, [RCD_OBJECTS["fairy_keyspot"]], GLOBAL_FLAGS["fishman_shop_puzzle"], 9, 74)
 
     # Relocate Alt Shop Explosion
-    self.__update_position("test_operations", objects, RCD_OBJECTS["explosion"], GLOBAL_FLAGS["screen_flag_0d"], 7, 76)
+    self.__update_position("test", objects, [RCD_OBJECTS["explosion"]], GLOBAL_FLAGS["screen_flag_0d"], 7, 76)
 
     # Add Alt Shop Door Graphic
     fishman_alt_door = TextureDrawAnimation(x=9, y=76, layer=-1, image_x=260, image_y=0, dx=40, dy=40, animation_frames=1, max_alpha=255)
@@ -265,25 +260,25 @@ class RcdMod(FileMod):
   def __clean_up_test_operations(self):
     # Remove Fairy Conversation Requirement from Buer Room Ladder
     buer_objects = self.file_contents.zones[3].rooms[2].screens[1].objects_with_position
-    self.__remove_operation("test_operations", buer_objects, RCD_OBJECTS["hitbox_generator"], GLOBAL_FLAGS["endless_fairyqueen"])
+    self.__remove_operation("test", buer_objects, [RCD_OBJECTS["hitbox_generator"]], GLOBAL_FLAGS["endless_fairyqueen"])
 
 		# Remove Slushfund Conversation Requirement from Pepper Puzzle
     pepper_puzzle_objects = self.file_contents.zones[0].rooms[0].screens[0].objects_with_position
-    self.__remove_operation("test_operations", pepper_puzzle_objects, RCD_OBJECTS["use_item"], GLOBAL_FLAGS["slushfund_conversation"])
+    self.__remove_operation("test", pepper_puzzle_objects, [RCD_OBJECTS["use_item"]], GLOBAL_FLAGS["slushfund_conversation"])
 
     # Remove Crucifix Check from Crucifix Puzzle Torches
     crucifix_puzzle_objects = self.file_contents.zones[0].rooms[1].screens[1].objects_with_position
-    self.__remove_operation("test_operations", crucifix_puzzle_objects, RCD_OBJECTS["texture_draw_animation"], GLOBAL_FLAGS["crucifix_found"])
+    self.__remove_operation("test", crucifix_puzzle_objects, [RCD_OBJECTS["texture_draw_animation"]], GLOBAL_FLAGS["crucifix_found"])
 
     # Remove Cog Puzzle Requirement from Mudmen Activation
     mudmen_activation_objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
-    self.__remove_operation("test_operations", mudmen_activation_objects, RCD_OBJECTS["use_item"], GLOBAL_FLAGS["cog_puzzle"])
+    self.__remove_operation("test", mudmen_activation_objects, [RCD_OBJECTS["use_item"]], GLOBAL_FLAGS["cog_puzzle"])
 
     # Remove Plane Missing Requirement from Plane Puzzle
     plane_platform_left_objects = self.file_contents.zones[13].rooms[7].screens[0].objects_with_position
-    self.__remove_operation("test_operations", plane_platform_left_objects, RCD_OBJECTS["counterweight_platform"], GLOBAL_FLAGS["plane_found"])
+    self.__remove_operation("test", plane_platform_left_objects, [RCD_OBJECTS["counterweight_platform"]], GLOBAL_FLAGS["plane_found"])
     plane_platform_right_objects = self.file_contents.zones[13].rooms[7].screens[2].objects_with_position
-    self.__remove_operation("test_operations", plane_platform_right_objects, RCD_OBJECTS["counterweight_platform"], GLOBAL_FLAGS["plane_found"])
+    self.__remove_operation("test", plane_platform_right_objects, [RCD_OBJECTS["counterweight_platform"]], GLOBAL_FLAGS["plane_found"])
 
 
   def __create_grail_autoscans(self) -> None:
@@ -439,40 +434,48 @@ class RcdMod(FileMod):
     flag_timer.add_ops(test_ops, write_ops)
     flag_timer.add_to_screen(self, screen)
 
+
   # Utility Methods
+
+  def __op_type(self, op):
+    return f"{op}_operations"
+
 
   # Search Methods
 
-  def __find_objects_by_operation(self, op_type, objects, object_id, flag, operation=None, op_value=None):
-    return [o for _, o in enumerate(objects) if o.id == object_id and len([op for op in getattr(o, op_type) if self.__op_matches(op, flag, operation, op_value)]) > 0]
+  def __find_objects_by_operation(self, op_type, objects, object_ids, flag, operation=None, op_value=None):
+    return [o for _, o in enumerate(objects) if o.id in object_ids and len([op for op in getattr(o, self.__op_type(op_type)) if self.__op_matches(op, flag, operation, op_value)]) > 0]
 
 
   def __find_operation_index(self, ops, flag, operation=None, op_value=None):
     return next(i for i,op in enumerate(ops) if self.__op_matches(op, flag, operation, op_value))
+
 
   # Conditionals
 
   def __op_matches(self, op, flag, operation, op_value):
     return op.flag == flag and (operation is None or op.operation == operation) and (op_value is None or op.op_value == op_value)
 
+
   # Write Methods
 
-  def __update_position(self, op_type, objects, object_id, flag, x_pos, y_pos, operation=None, op_value=None):
-    objs = self.__find_objects_by_operation(op_type, objects, object_id, flag, operation, op_value)
+
+  def __update_position(self, op_type, objects, object_ids, flag, x_pos, y_pos, operation=None, op_value=None):
+    objs = self.__find_objects_by_operation(op_type, objects, object_ids, flag, operation, op_value)
 
     for obj in objs:
       obj.x_pos = x_pos
       obj.y_pos = y_pos
 
 
-  def __update_operation(self, op_type, objects, object_id, old_flag, new_flag, old_operation=None, new_operation=None, old_op_value=None, new_op_value=None):
-    objs = self.__find_objects_by_operation(op_type, objects, object_id, old_flag, old_operation, old_op_value)
+  def __update_operation(self, op_type, objects, object_ids, old_flag, new_flag, old_operation=None, new_operation=None, old_op_value=None, new_op_value=None):
+    objs = self.__find_objects_by_operation(op_type, objects, object_ids, old_flag, old_operation, old_op_value)
 
     for obj in objs:
-      ops = getattr(obj, op_type)
+      ops = getattr(obj, self.__op_type(op_type))
       op_index = self.__find_operation_index(ops, old_flag, old_operation, old_op_value)
       
-      op = getattr(obj, op_type)[op_index]
+      op = getattr(obj, self.__op_type(op_type))[op_index]
       op.flag = new_flag
       if new_operation is not None:
         op.operation = new_operation
@@ -480,15 +483,15 @@ class RcdMod(FileMod):
         op.op_value = new_op_value
 
 
-  def __remove_operation(self, op_type, objects, object_id, flag):
-    objs = self.__find_objects_by_operation(op_type, objects, object_id, flag)
+  def __remove_operation(self, op_type, objects, object_ids, flag):
+    objs = self.__find_objects_by_operation(op_type, objects, object_ids, flag)
 
     for obj in objs:
-      ops = getattr(obj, op_type)
+      ops = getattr(obj, self.__op_type(op_type))
       op_index = self.__find_operation_index(ops, flag)
       
       del ops[op_index]
-      op_type_len = op_type + "_length"
+      op_type_len = self.__op_type(op_type) + "_length"
       old_len = getattr(obj, op_type_len)
       setattr(obj, op_type_len, old_len-1)
       self.file_size -= 4
@@ -500,10 +503,10 @@ class RcdMod(FileMod):
     op.operation = operation
     op.op_value = op_value
 
-    ops = getattr(obj, op_type)
+    ops = getattr(obj, self.__op_type(op_type))
     ops.append(op)
 
-    op_type_len = op_type + "_length"
+    op_type_len = self.__op_type(op_type) + "_length"
     old_len = getattr(obj, op_type_len)
     setattr(obj, op_type_len, old_len+1)
     self.file_size += 4
