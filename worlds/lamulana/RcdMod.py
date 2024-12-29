@@ -280,6 +280,10 @@ class RcdMod(FileMod):
     plane_platform_right_objects = self.file_contents.zones[13].rooms[7].screens[2].objects_with_position
     self.__remove_operation("test", plane_platform_right_objects, [RCD_OBJECTS["counterweight_platform"]], GLOBAL_FLAGS["plane_found"])
 
+    # Remove Dracuet Check From Guidance Elevator Block
+    guidance_elevator_hibox_objects = self.file_contents.zones[0].rooms[6].screens[0].objects_with_position
+    self.__remove_operation("test", guidance_elevator_hibox_objects, [RCD_OBJECTS["hitbox_generator"]], GLOBAL_FLAGS["mulbruk_father"])
+
 
   def __create_grail_autoscans(self) -> None:
     for zone in self.file_contents.zones:
