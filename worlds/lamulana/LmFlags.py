@@ -65,6 +65,7 @@ GLOBAL_FLAGS = {
   "tiamat_ankh_puzzle": 0x2ed,
   "mother_ankh_puzzle": 0x2e0,
   "xelpud_talisman": 0x327,
+  "mulbruk_father": 0x34c,
   "escape": 0x382,
   "grail_tablet_surface": 0x54e,
   "starting_items": 0x84f,
