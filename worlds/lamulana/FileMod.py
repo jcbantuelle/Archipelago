@@ -2,6 +2,7 @@ import io
 import os
 import Utils
 from .Items import item_table
+from .LmFlags import RCD_OBJECTS
 from kaitaistruct import KaitaiStream
 
 class FileMod:
@@ -36,5 +37,8 @@ class FileMod:
     else:
       params["new_obtain_flag"] = item.obtain_flag
 
-    params["obtain_value"] = item.obtain_value if item.obtain_value is not None else location.obtain_value
+    if params.get("object_type") == RCD_OBJECTS["chest"]:
+      params["obtain_value"] = 2
+    else:
+      params["obtain_value"] = item.obtain_value if item.obtain_value is not None else location.obtain_value
     self.local_config.add_item(params)
