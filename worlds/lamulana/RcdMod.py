@@ -2,7 +2,7 @@ from .FileMod import FileMod
 from .Items import item_table
 from .Rcd import Rcd
 from .LmFlags import GLOBAL_FLAGS, RCD_OBJECTS, TEST_OPERATIONS, WRITE_OPERATIONS, grail_flag_by_zone
-from .Locations import LocationData
+from .Locations import get_locations_by_region
 from .rcd.FlagTimer import FlagTimer
 from .rcd.InstantItem import InstantItem
 from .rcd.Operation import Operation
@@ -43,11 +43,9 @@ class RcdMod(FileMod):
         ]
     )
 
-
     def __init__(self, filename, local_config, options, start_inventory):
         super().__init__(Rcd, filename, local_config, options, GLOBAL_FLAGS["rcd_filler_items"])
         self.start_inventory = start_inventory
-
 
     def place_item_in_location(self, item, item_id, location) -> None:
         object_type_params = self.RCD_OBJECT_PARAMS.get(location.object_type)
@@ -82,7 +80,6 @@ class RcdMod(FileMod):
                 params["location_id"] = location_id
                 self.__place_item(**params)
 
-
     def apply_mods(self, dat_mod):
         self.__give_starting_items(self.start_inventory)
         self.__rewrite_diary_chest()
@@ -102,12 +99,11 @@ class RcdMod(FileMod):
         if self.options.AncientLaMulaneseLearned:
             self.__create_ancient_lamulanese_timer()
 
-
     # RCD Mod Methods
 
     def __place_item(self, objects, object_type, param_index, param_len, location, location_id, item_id, original_obtain_flag, new_obtain_flag, obtain_value, item_mod, iterations, item):
         for _ in range(iterations):
-            location = next((o for _,o in enumerate(objects) if o.id == object_type and o.parameters[param_index] == location_id+item_mod and len(o.parameters) < param_len), None)
+            location = next((o for _, o in enumerate(objects) if o.id == object_type and o.parameters[param_index] == location_id+item_mod and len(o.parameters) < param_len), None)
 
             for test_op in location.test_operations:
                 if test_op.flag == original_obtain_flag:
@@ -152,7 +148,6 @@ class RcdMod(FileMod):
             location.parameters_length += 1
             self.file_size += 2
 
-
     def __fix_surface_map_scan(self, objects, location, obtain_flag):
         scan = next(o for _, o in enumerate(objects) if o.id == RCD_OBJECTS["scannable"] and len([t for t in o.test_operations if t.flag == obtain_flag]) > 0)
 
@@ -162,7 +157,6 @@ class RcdMod(FileMod):
         location.test_operations[0].flag = surface_scan_flag
 
         self.__add_operation_to_object("write", location, surface_scan_flag, WRITE_OPERATIONS["add"], 1)
-
 
     def __give_starting_items(self, items) -> None:
         flag_counter = 0
@@ -182,12 +176,11 @@ class RcdMod(FileMod):
 
             flag_counter += 1
 
-
     def __rewrite_diary_chest(self) -> None:
-        diary_location = LocationData("Shrine of the Mother - Diary Chest", 2359051, is_cursable=True, file_type='rcd', zones=[9], room=2, screen=1, object_type=0x2c, item_id=72, obtain_flag=0x104, obtain_value=2)
+        diary_location = next((location for _, location in enumerate(get_locations_by_region(None)["Shrine of the Mother [Main]"]) if location.name == "Shrine of the Mother - Diary Chest"))
         for zone_index in diary_location.zones:
             diary_screen = self.file_contents.zones[zone_index].rooms[diary_location.room].screens[diary_location.screen]
-            diary_chest = next((o for _,o in enumerate(diary_screen.objects_with_position)
+            diary_chest = next((o for _, o in enumerate(diary_screen.objects_with_position)
                 if o.id == RCD_OBJECTS["chest"]), None)
 
             diary_shawn_test = next((test_op for _, test_op in enumerate(diary_chest.test_operations) if test_op.flag == GLOBAL_FLAGS["shrine_shawn"]), None)
@@ -196,7 +189,6 @@ class RcdMod(FileMod):
             diary_shawn_test.op_value = 1
 
             self.__add_operation_to_object("test", diary_chest, GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["eq"], 2)
-
 
     def __add_diary_chest_timer(self) -> None:
         screen = self.file_contents.zones[9].rooms[2].screens[0]
@@ -210,7 +202,6 @@ class RcdMod(FileMod):
         flag_timer.add_ops(test_ops, write_ops)
         flag_timer.add_to_screen(self, screen)
 
-
     def __rewrite_four_guardian_shop_conditions(self, dat_mod):
         msx2_replacement_flag = dat_mod.find_shop_flag("nebur_guardian", 0)
         objects = self.file_contents.zones[1].rooms[2].screens[0].objects_with_position
@@ -218,11 +209,9 @@ class RcdMod(FileMod):
         self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["xelpud_msx2"], GLOBAL_FLAGS["guardians_killed"], old_op_value=1, new_op_value=4)
         self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["msx2_found"], msx2_replacement_flag)
 
-
     def __rewrite_slushfund_conversation_conditions(self):
         objects = self.file_contents.zones[10].rooms[8].screens[0].objects_with_position
         self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["slushfund_conversation"], GLOBAL_FLAGS["replacement_slushfund_conversation"])
-
 
     def __rewrite_cog_chest(self):
         objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
@@ -230,7 +219,6 @@ class RcdMod(FileMod):
 
         stray_fairy_door = self.__find_objects_by_operation("write", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["cog_puzzle"], operation=WRITE_OPERATIONS["assign"], op_value=3)[0]
         self.__add_operation_to_object("write", stray_fairy_door, GLOBAL_FLAGS["replacement_cog_puzzle"], WRITE_OPERATIONS["assign"], 3)
-
 
     def __rewrite_fishman_alt_shop(self):
         screen = self.file_contents.zones[4].rooms[3].screens[3]
@@ -256,7 +244,6 @@ class RcdMod(FileMod):
         ]
         fishman_alt_door.add_ops(test_ops, [])
         fishman_alt_door.add_to_screen(self, screen)
-
 
     def __clean_up_test_operations(self):
         # Remove Fairy Conversation Requirement from Buer Room Ladder
@@ -285,7 +272,6 @@ class RcdMod(FileMod):
         guidance_elevator_hibox_objects = self.file_contents.zones[0].rooms[6].screens[0].objects_with_position
         self.__remove_operation("test", guidance_elevator_hibox_objects, [RCD_OBJECTS["hitbox_generator"]], GLOBAL_FLAGS["mulbruk_father"])
 
-
     def __create_grail_autoscans(self) -> None:
         for zone in self.file_contents.zones:
             for room in zone.rooms:
@@ -304,7 +290,6 @@ class RcdMod(FileMod):
                                 write_ops = [Operation.create(grail_flag, WRITE_OPERATIONS["assign"], 1)]
                                 lemeza_detector.add_ops(test_ops, write_ops)
                                 lemeza_detector.add_to_screen(self, screen)
-
 
     def __create_boss_checkpoints(self) -> None:
         # Amphisbaena
@@ -426,7 +411,6 @@ class RcdMod(FileMod):
         mother_grail_point.add_ops(test_ops, write_ops)
         mother_grail_point.add_to_screen(self, mother_screen)
 
-
     def __create_ancient_lamulanese_timer(self):
         screen = self.file_contents.zones[1].rooms[2].screens[1]
 
@@ -439,31 +423,25 @@ class RcdMod(FileMod):
         flag_timer.add_ops(test_ops, write_ops)
         flag_timer.add_to_screen(self, screen)
 
-
     # Utility Methods
 
     def __op_type(self, op):
         return f"{op}_operations"
-
 
     # Search Methods
 
     def __find_objects_by_operation(self, op_type, objects, object_ids, flag, operation=None, op_value=None):
         return [o for _, o in enumerate(objects) if o.id in object_ids and len([op for op in getattr(o, self.__op_type(op_type)) if self.__op_matches(op, flag, operation, op_value)]) > 0]
 
-
     def __find_operation_index(self, ops, flag, operation=None, op_value=None):
-        return next(i for i,op in enumerate(ops) if self.__op_matches(op, flag, operation, op_value))
-
+        return next(i for i, op in enumerate(ops) if self.__op_matches(op, flag, operation, op_value))
 
     # Conditionals
 
     def __op_matches(self, op, flag, operation, op_value):
         return op.flag == flag and (operation is None or op.operation == operation) and (op_value is None or op.op_value == op_value)
 
-
     # Write Methods
-
 
     def __update_position(self, op_type, objects, object_ids, flag, x_pos, y_pos, operation=None, op_value=None):
         objs = self.__find_objects_by_operation(op_type, objects, object_ids, flag, operation, op_value)
@@ -471,7 +449,6 @@ class RcdMod(FileMod):
         for obj in objs:
             obj.x_pos = x_pos
             obj.y_pos = y_pos
-
 
     def __update_operation(self, op_type, objects, object_ids, old_flag, new_flag, old_operation=None, new_operation=None, old_op_value=None, new_op_value=None):
         objs = self.__find_objects_by_operation(op_type, objects, object_ids, old_flag, old_operation, old_op_value)
@@ -487,7 +464,6 @@ class RcdMod(FileMod):
             if new_op_value is not None:
                 op.op_value = new_op_value
 
-
     def __remove_operation(self, op_type, objects, object_ids, flag):
         objs = self.__find_objects_by_operation(op_type, objects, object_ids, flag)
 
@@ -500,7 +476,6 @@ class RcdMod(FileMod):
             old_len = getattr(obj, op_type_len)
             setattr(obj, op_type_len, old_len-1)
             self.file_size -= 4
-
 
     def __add_operation_to_object(self, op_type, obj, flag, operation, op_value):
         op = Rcd.Operation()

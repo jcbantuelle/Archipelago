@@ -154,42 +154,45 @@ WRITE_OPERATIONS = {
 
 
 def grail_flag_by_zone(zone, frontside):
-    if zone == 0:
-        return GLOBAL_FLAGS["grail_tablet_guidance"]
-    if zone == 1:
-        return GLOBAL_FLAGS["grail_tablet_surface"]
-    if zone == 2:
-        return GLOBAL_FLAGS["grail_tablet_mausoleum"]
-    if zone == 3:
-        return GLOBAL_FLAGS["grail_tablet_sun"]
-    if zone == 4:
-        return GLOBAL_FLAGS["grail_tablet_spring"]
-    if zone == 5:
-        return GLOBAL_FLAGS["grail_tablet_inferno"]
-    if zone == 6:
-        return GLOBAL_FLAGS["grail_tablet_extinction"]
-    if zone == 7:
-        if frontside:
-            return GLOBAL_FLAGS["grail_tablet_twin_front"]
-        return GLOBAL_FLAGS["grail_tablet_twin_back"]
-    if zone == 8:
-        return GLOBAL_FLAGS["grail_tablet_endless"]
-    if zone == 9:
-        return GLOBAL_FLAGS["grail_tablet_shrine_front"]
-    if zone == 10:
-        return GLOBAL_FLAGS["grail_tablet_illusion"]
-    if zone == 11:
-        return GLOBAL_FLAGS["grail_tablet_graveyard"]
-    if zone == 12:
-        return GLOBAL_FLAGS["grail_tablet_moonlight"]
-    if zone == 13:
-        return GLOBAL_FLAGS["grail_tablet_goddess"]
-    if zone == 14:
-        return GLOBAL_FLAGS["grail_tablet_ruin"]
-    if zone == 15 or zone == 16:
-        return GLOBAL_FLAGS["grail_tablet_birth"]
-    if zone == 17:
-        return GLOBAL_FLAGS["grail_tablet_dimensional"]
-    if zone == 18:
-        return GLOBAL_FLAGS["grail_tablet_shrine_back"]
-    return 0xacf
+    match zone:
+        case 0:
+            return GLOBAL_FLAGS["grail_tablet_guidance"]
+        case 1:
+            return GLOBAL_FLAGS["grail_tablet_surface"]
+        case 2:
+            return GLOBAL_FLAGS["grail_tablet_mausoleum"]
+        case 3:
+            return GLOBAL_FLAGS["grail_tablet_sun"]
+        case 4:
+            return GLOBAL_FLAGS["grail_tablet_spring"]
+        case 5:
+            return GLOBAL_FLAGS["grail_tablet_inferno"]
+        case 6:
+            return GLOBAL_FLAGS["grail_tablet_extinction"]
+        case 7:
+            if frontside:
+                return GLOBAL_FLAGS["grail_tablet_twin_front"]
+            else:
+                return GLOBAL_FLAGS["grail_tablet_twin_back"]
+        case 8:
+            return GLOBAL_FLAGS["grail_tablet_endless"]
+        case 9:
+            return GLOBAL_FLAGS["grail_tablet_shrine_front"]
+        case 10:
+            return GLOBAL_FLAGS["grail_tablet_illusion"]
+        case 11:
+            return GLOBAL_FLAGS["grail_tablet_graveyard"]
+        case 12:
+            return GLOBAL_FLAGS["grail_tablet_moonlight"]
+        case 13:
+            return GLOBAL_FLAGS["grail_tablet_goddess"]
+        case 14:
+            return GLOBAL_FLAGS["grail_tablet_ruin"]
+        case 15|16:
+            return GLOBAL_FLAGS["grail_tablet_birth"]
+        case 17:
+            return GLOBAL_FLAGS["grail_tablet_dimensional"]
+        case 18:
+            return GLOBAL_FLAGS["grail_tablet_shrine_back"]
+        case _:
+            return 0xacf
