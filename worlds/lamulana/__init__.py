@@ -354,9 +354,10 @@ class LaMulanaWorld(World):
 		item_list: list[Item] = []
 
 		starting_weapon = starting_weapon_names[self.options.StartingWeapon.value]
+		subweapon_options = {'Shuriken', 'Rolling Shuriken', 'Flare Gun', 'Earth Spear', 'Bomb', 'Chakram', 'Caltrops', 'Pistol'}
 
-		if starting_weapon in {'Shuriken', 'Rolling Shuriken', 'Flare Gun', 'Earth Spear', 'Bomb', 'Chakram', 'Caltrops', 'Pistol'}:
-			required_subweapon_ammo = starting_weapon + ' Ammo'
+		if starting_weapon in subweapon_options:
+			required_subweapon_ammo = f'{starting_weapon} Ammo'
 		else:
 			required_subweapon_ammo = None
 
@@ -393,7 +394,7 @@ class LaMulanaWorld(World):
 							if loc.name in shop_locations:
 								surface_shop_slots.append(loc.name)
 			else:
-				surface_shop_slots = ['Nebur Shop Item 1', 'Nebur Shop Item 2', 'Nebur Shop Item 3', 'Sidro Shop Item 1', 'Sidro Shop Item 2', 'Sidro Shop Item 3', 'Modro Shop Item 1', 'Modro Shop Item 2', 'Modro Shop Item 3']
+				surface_shop_slots = ['Modro Shop Item 1', 'Modro Shop Item 2', 'Modro Shop Item 3']
 			if len(surface_shop_slots) > 0:
 				weight_slot = self.random.choice(surface_shop_slots)
 				self.place_locked_item(weight_slot, '5 Weights')
@@ -425,7 +426,7 @@ class LaMulanaWorld(World):
 
 		# Guaranteed minimum amounts per ammo type and weights
 		shop_items: list[str] = ['5 Weights', '5 Weights']
-		ammo_types = ['Shuriken Ammo', 'Rolling Shuriken Ammo', 'Earth Spear Ammo', 'Flare Gun Ammo', 'Bomb Ammo', 'Chakram Ammo', 'Caltrops Ammo', 'Pistol Ammo']
+		ammo_types = [f'{subweapon} Ammo' for subweapon in subweapon_options]
 		for ammo_name in ammo_types:
 			shop_items.extend([ammo_name, ammo_name])
 		if slot_amount >= 19:
