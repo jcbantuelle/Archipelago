@@ -22,7 +22,7 @@ class SavMod(FileMod):
 
         if weapon != "Leather Whip":
             # Remove Default Leather Whip
-            self.file_contents.inventory[0] = 0xff
+            self.file_contents.inventory[0] = 0xffff
 
             if weapon == "Knife":
                 self.file_contents.flags[GLOBAL_FLAGS["knife_found"]] = 2

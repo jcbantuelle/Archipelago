@@ -495,7 +495,7 @@ class RcdMod(FileMod):
             sakit_grail_point.add_to_screen(self, sakit_screen)
 
         if self.options.GuardianSpecificAnkhJewels:
-            sakit_ankhs = self.__find_objects_by_id(amphisbaena_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
+            sakit_ankhs = self.__find_objects_by_id(sakit_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
             for ankh in sakit_ankhs:
                 self.__add_operation_to_object("test", ankh, GLOBAL_FLAGS["sakit_ankh_jewel_found"], TEST_OPERATIONS["gteq"], 1)
 
@@ -514,7 +514,7 @@ class RcdMod(FileMod):
             ellmac_grail_point.add_to_screen(self, ellmac_screen)
 
         if self.options.GuardianSpecificAnkhJewels:
-            ellmac_ankhs = self.__find_objects_by_id(amphisbaena_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
+            ellmac_ankhs = self.__find_objects_by_id(ellmac_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
             for ankh in ellmac_ankhs:
                 self.__add_operation_to_object("test", ankh, GLOBAL_FLAGS["ellmac_ankh_jewel_found"], TEST_OPERATIONS["gteq"], 1)
 
@@ -534,7 +534,7 @@ class RcdMod(FileMod):
             bahamut_grail_point.add_to_screen(self, bahamut_screen)
 
         if self.options.GuardianSpecificAnkhJewels:
-            bahamut_ankhs = self.__find_objects_by_id(amphisbaena_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
+            bahamut_ankhs = self.__find_objects_by_id(bahamut_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
             for ankh in bahamut_ankhs:
                 self.__add_operation_to_object("test", ankh, GLOBAL_FLAGS["bahamut_ankh_jewel_found"], TEST_OPERATIONS["gteq"], 1)
 
@@ -553,7 +553,7 @@ class RcdMod(FileMod):
             viy_grail_point.add_to_screen(self, viy_screen)
 
         if self.options.GuardianSpecificAnkhJewels:
-            viy_ankhs = self.__find_objects_by_id(amphisbaena_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
+            viy_ankhs = self.__find_objects_by_id(viy_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
             for ankh in viy_ankhs:
                 self.__add_operation_to_object("test", ankh, GLOBAL_FLAGS["viy_ankh_jewel_found"], TEST_OPERATIONS["gteq"], 1)
 
@@ -573,7 +573,7 @@ class RcdMod(FileMod):
             palenque_grail_point.add_to_screen(self, palenque_screen)
 
         if self.options.GuardianSpecificAnkhJewels:
-            palenque_ankhs = self.__find_objects_by_id(amphisbaena_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
+            palenque_ankhs = self.__find_objects_by_id(palenque_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
             for ankh in palenque_ankhs:
                 self.__add_operation_to_object("test", ankh, GLOBAL_FLAGS["palenque_ankh_jewel_found"], TEST_OPERATIONS["gteq"], 1)
 
@@ -592,7 +592,7 @@ class RcdMod(FileMod):
             baphomet_grail_point.add_to_screen(self, baphomet_screen)
 
         if self.options.GuardianSpecificAnkhJewels:
-            baphomet_ankhs = self.__find_objects_by_id(amphisbaena_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
+            baphomet_ankhs = self.__find_objects_by_id(baphomet_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
             for ankh in baphomet_ankhs:
                 self.__add_operation_to_object("test", ankh, GLOBAL_FLAGS["baphomet_ankh_jewel_found"], TEST_OPERATIONS["gteq"], 1)
 
@@ -611,7 +611,7 @@ class RcdMod(FileMod):
             tiamat_grail_point.add_to_screen(self, tiamat_screen)
 
         if self.options.GuardianSpecificAnkhJewels:
-            tiamat_ankhs = self.__find_objects_by_id(amphisbaena_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
+            tiamat_ankhs = self.__find_objects_by_id(tiamat_screen.objects_with_position, [RCD_OBJECTS["ankh"]])
             for ankh in tiamat_ankhs:
                 self.__add_operation_to_object("test", ankh, GLOBAL_FLAGS["tiamat_ankh_jewel_found"], TEST_OPERATIONS["gteq"], 1)
 
