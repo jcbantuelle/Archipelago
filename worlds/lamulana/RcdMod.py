@@ -106,6 +106,7 @@ class RcdMod(FileMod):
         self.__add_chain_whip_lockout_fix()
         self.__add_flail_whip_lockout_fix()
         self.__add_angel_shield_lockout_fix()
+        self.__add_sun_map_lockout_fix()
         self.__add_hardmode_toggle()
         self.__add_sacred_orb_timers()
         self.__add_new_game_kill_timer()
@@ -314,6 +315,17 @@ class RcdMod(FileMod):
         right_dais_write_ops = [Operation.create(GLOBAL_FLAGS["screen_flag_01"], WRITE_OPERATIONS["assign"], 1)]
         right_dais_flag_timer.add_ops(right_dais_test_ops, right_dais_write_ops)
         right_dais_flag_timer.add_to_screen(self, screen)
+
+    def __add_sun_map_lockout_fix(self):
+        objects = self.file_contents.zones[3].rooms[0].screens[1].objects_with_position
+
+        self.__remove_operation("write", objects, [RCD_OBJECTS["lemeza_detector"]], GLOBAL_FLAGS["sun_map_chest_ladder_despawned"])
+
+        lemeza_detector = self.__find_objects_by_operation("write", objects, [RCD_OBJECTS["lemeza_detector"]], GLOBAL_FLAGS["sun_map_chest_ladder_restored"])[0]
+        self.__add_operation_to_object("write", lemeza_detector, GLOBAL_FLAGS["sun_map_chest_ladder_despawned"], WRITE_OPERATIONS["assign"], 1)
+
+        room_spawner = self.__find_objects_by_operation("test", objects, [RCD_OBJECTS["room_spawner"]], GLOBAL_FLAGS["sun_map_chest_ladder_despawned"])[0]
+        self.__add_operation_to_object("test", room_spawner, GLOBAL_FLAGS["screen_flag_0c"], TEST_OPERATIONS["eq"], 0)
 
     def __add_dimensional_orb_ladder(self) -> None:
         screen = self.file_contents.zones[17].rooms[10].screens[0]
