@@ -250,8 +250,8 @@ class DatMod(FileMod):
         data_entry.header = HEADERS["data"]
         data_entry.contents = data
 
-        entries.append(break_entry)
-        entries.append(data_entry)
+        entries.insert(0, break_entry)
+        entries.insert(0, data_entry)
 
         file_mod = (6 + (data.num_values * 2))
         self.file_size += file_mod
