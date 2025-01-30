@@ -84,7 +84,7 @@ class RcdMod(FileMod):
                 params["location_id"] = location_id
                 self.__place_item(**params)
 
-    def apply_mods(self, dat_mod):
+    def apply_mods(self, dat_mod, locations):
         self.__give_starting_items(self.start_inventory)
 
         # Xelpud/Diary Interactions
@@ -96,6 +96,7 @@ class RcdMod(FileMod):
 
         self.__rewrite_slushfund_conversation_conditions()
         self.__rewrite_four_guardian_shop_conditions(dat_mod)
+        self.__rewrite_mekuri_door(locations)
         self.__rewrite_cog_chest()
         self.__rewrite_fishman_alt_shop()
         self.__rewrite_boss_ankhs()
@@ -170,10 +171,6 @@ class RcdMod(FileMod):
                 vimana_objects = self.file_contents.zones[13].rooms[6].screens[1].objects_with_position
                 self.__update_operation("test", vimana_objects, [RCD_OBJECTS["vimana"]], original_obtain_flag, new_obtain_flag)
 
-            # Mekuri Master customization
-            if original_obtain_flag == GLOBAL_FLAGS["mekuri"]:
-                self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"], RCD_OBJECTS["texture_draw_animation"]], original_obtain_flag, new_obtain_flag)
-
             item_location.parameters[param_index] = item_id+item_mod
             item_location.parameters.append(1)
             item_location.parameters_length += 1
@@ -232,6 +229,11 @@ class RcdMod(FileMod):
         write_ops = [Operation.create(GLOBAL_FLAGS["shrine_diary_chest"], WRITE_OPERATIONS["assign"], 2)]
         flag_timer.add_ops(test_ops, write_ops)
         flag_timer.add_to_screen(self, screen)
+
+    def __rewrite_mekuri_door(self, locations):
+        objects = self.file_contents.zones[1].rooms[7].screens[0].objects_with_position
+        mekuri_replacement_flag = next(item_table.get(location.item.name).obtain_flag for location in locations if location.name == "Former Mekuri Master mekuri.exe Gift")
+        self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"], RCD_OBJECTS["texture_draw_animation"]], GLOBAL_FLAGS["mekuri"], mekuri_replacement_flag)
 
     def __rewrite_mulbruk_doors(self) -> None:
         screen = self.file_contents.zones[3].rooms[3].screens[0]
