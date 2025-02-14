@@ -401,7 +401,7 @@ class RcdMod(FileMod):
             ]
             write_ops = [
                 Operation.create(GLOBAL_FLAGS["orb_count_incremented_guidance"]+i, WRITE_OPERATIONS["assign"], 1),
-                Operation.create(GLOBAL_FLAGS["guidance_orb_found"]+i, WRITE_OPERATIONS["add"], 1)
+                Operation.create(GLOBAL_FLAGS["sacred_orb_count"], WRITE_OPERATIONS["add"], 1)
             ]
             timer.add_ops(test_ops, write_ops)
             timer.add_to_screen(self, screen)

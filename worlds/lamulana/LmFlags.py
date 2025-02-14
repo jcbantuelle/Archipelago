@@ -108,6 +108,7 @@ GLOBAL_FLAGS = {
     "end_start_animation": 0x338,
     "hell_dlc": 0x34a,
     "mulbruk_father": 0x34c,
+    "sacred_orb_count": 0x354,
     "orb_count_incremented_guidance": 0x355,
     "mulbruk_conversation_unknown": 0x36a,
     "escape": 0x382,
