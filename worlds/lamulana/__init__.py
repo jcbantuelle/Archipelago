@@ -339,7 +339,7 @@ class LaMulanaWorld(World):
 		self.precollected_items[self.player].add(item_name)
 
 	def assign_event_items(self):
-		for location in self.get_locations():
+		for location in self.multiworld.get_locations(self.player):
 			if location.address is None:
 				item_name = location.name
 				if 'Lamp Recharge' in location.name:
@@ -577,7 +577,7 @@ class LaMulanaWorld(World):
 		return out
 
 	def generate_output(self, output_directory: str) -> None:
-		locations = self.get_locations()
+		locations = self.multiworld.get_locations(self.player)
 
 		local_config = LocalConfig(self)
 		rcd_mod = RcdMod(self.RCD_FILENAME, local_config, self.options, self.start_inventory_as_list() + list(self.precollected_items[self.player]), self.cursed_chests)
