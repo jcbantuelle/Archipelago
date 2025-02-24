@@ -232,7 +232,7 @@ class RcdMod(FileMod):
 
     def __rewrite_mekuri_door(self, locations):
         objects = self.file_contents.zones[1].rooms[7].screens[0].objects_with_position
-        mekuri_replacement_flag = next(item_table.get(location.item.name).obtain_flag for location in locations if location.name == "Former Mekuri Master mekuri.exe Gift")
+        mekuri_replacement_flag = next(item_table.get(location.item.name).obtain_flag for location in locations if location and location.name == "Former Mekuri Master mekuri.exe Gift")
         self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"], RCD_OBJECTS["texture_draw_animation"]], GLOBAL_FLAGS["mekuri"], mekuri_replacement_flag)
 
     def __rewrite_mulbruk_doors(self) -> None:

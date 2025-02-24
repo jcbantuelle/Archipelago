@@ -92,13 +92,15 @@ class DatMod(FileMod):
         entries[data_indices[0]].contents.values[location.slot] = item_id
         item_cost = item.cost if item and item.cost is not None else 10
         item_quantity = item.quantity if item and item.quantity is not None else 1
+        item_category = item.category if item and item.category is not None else "Unknown"
+        item_name = location.item.name if location.item and location.item.name is not None else "Unknown"
 
-        if item.category == 'ShopInventory' and location.item:
+        if item_category == 'ShopInventory' and location.item:
             # Subweapon Start - make ammo for starting subweapon free and max out in 1 purchase. Same behavior for subweapon only across all subweapons
             max_quantities = {'Shuriken Ammo': 150, 'Rolling Shuriken Ammo': 100, 'Earth Spear Ammo': 80, 'Flare Gun Ammo': 80, 'Bomb Ammo': 30, 'Chakram Ammo': 10, 'Caltrops Ammo': 80, 'Pistol Ammo': 3}
-            if location.item.name == f'{starting_weapon_names[self.options.StartingWeapon.value]} Ammo' or (self.options.SubweaponOnly and location.item.name in max_quantities.keys()):
+            if item_name == f'{starting_weapon_names[self.options.StartingWeapon.value]} Ammo' or (self.options.SubweaponOnly and item_name in max_quantities.keys()):
                 item_cost = 0
-                item_quantity = max_quantities[location.item.name]
+                item_quantity = max_quantities[item_name]
 
         entries[data_indices[1]].contents.values[location.slot] = item_cost
         entries[data_indices[2]].contents.values[location.slot] = item_quantity
@@ -117,7 +119,6 @@ class DatMod(FileMod):
         item_name_start_index = color_indices[0] + 1
 
         # Encode the new item name as Entries
-        item_name = location.item.name if location.item and location.item.name is not None else "Unknown"
         item_name_entries = [self.__char_entry(codepoint) for codepoint in self.__encode(item_name)]
 
         # Remove the old item name
