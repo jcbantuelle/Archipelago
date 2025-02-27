@@ -597,8 +597,7 @@ class LaMulanaWorld(World):
 			elif location.file_type == 'dat':
 				dat_mod.place_item_in_location(item, item_id, location)
 
-		rcd_mod.apply_mods(dat_mod, locations)
-
+		rcd_mod.apply_mods()
 		sav_mod.apply_mods()
 
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
