@@ -456,6 +456,10 @@ class RcdMod(FileMod):
         anubis_objects = self.file_contents.zones[12].rooms[10].screens[0].objects_with_position
         self.__remove_operation("write", anubis_objects, [RCD_OBJECTS["big_anubis"]], GLOBAL_FLAGS["mulbruk_book_of_the_dead"])
 
+        # Remove Ankh Jewel Check From Temple of the Sun Ankh Jewel Chest Puzzle
+        dais_objects = self.file_contents.zones[3].rooms[7].screens[0].objects_with_position
+        self.__remove_operation("test", dais_objects, [RCD_OBJECTS["trigger_dais"]], GLOBAL_FLAGS["ankh_jewel_sun"])
+
     def __create_grail_autoscans(self) -> None:
         for zone in self.file_contents.zones:
             for room in zone.rooms:

@@ -54,6 +54,7 @@ GLOBAL_FLAGS = {
     "grail_tablet_shrine_back": 0x75,
     "score": 0x7b,
     "ankh_jewel_mausoleum": 0x8f,
+    "ankh_jewel_sun": 0x90,
     "yagostr_found": 0xe5,
     "amphisbaena_state": 0xf6,
     "sakit_state": 0xf7,
