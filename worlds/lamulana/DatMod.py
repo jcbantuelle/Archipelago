@@ -105,8 +105,7 @@ class DatMod(FileMod):
         entries[data_indices[1]].contents.values[location.slot] = item_cost
         entries[data_indices[2]].contents.values[location.slot] = item_quantity
         entries[data_indices[3]].contents.values[location.slot] = new_obtain_flag
-        if obtain_value > 1:
-            entries[data_indices[6]].contents.values[location.slot] = new_obtain_flag
+        entries[data_indices[6]].contents.values[location.slot] = new_obtain_flag if obtain_value > 1 else 0
 
         # Set New Item Name In Shop Description
 
