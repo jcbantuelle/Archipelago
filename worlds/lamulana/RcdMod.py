@@ -444,7 +444,7 @@ class RcdMod(FileMod):
         self.__remove_operation("test", guidance_elevator_hibox_objects, [RCD_OBJECTS["hitbox_generator"]], GLOBAL_FLAGS["mulbruk_father"])
 
         # Remove Shrine Chest Check from Xelpud Conversations
-        xelpud_conversation_objects = self.file_contents.zones[0].rooms[6].screens[0].objects_with_position
+        xelpud_conversation_objects = self.file_contents.zones[1].rooms[2].screens[1].objects_with_position
         self.__remove_operation("test", xelpud_conversation_objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["shrine_diary_chest"])
 
         # Remove Unknown Test from Mulbruk Conversations
