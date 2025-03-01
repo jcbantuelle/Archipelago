@@ -22,5 +22,8 @@ class LocalConfig:
             }
         )
 
+    def find_item_by_location_id(self, location_id):
+        return next(i for i in self.configurations["item_mapping"] if i["location_id"] == location_id)
+
     def write_file(self):
         return toml.dumps(self.configurations)

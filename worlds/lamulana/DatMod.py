@@ -42,6 +42,7 @@ class DatMod(FileMod):
 
     def __init__(self, filename, local_config, options):
         super().__init__(Dat, filename, local_config, options, GLOBAL_FLAGS["dat_filler_items"])
+        self.shops = {}
 
     def place_item_in_location(self, item, item_id, location) -> None:
         params = {
@@ -52,6 +53,7 @@ class DatMod(FileMod):
         super().set_params(params)
         for card_index in location.cards:
             params["card"] = self.file_contents.cards[card_index]
+            params["card_index"] = card_index
             params["entries"] = self.file_contents.cards[card_index].contents.entries
 
             if location.slot is None:
@@ -60,6 +62,27 @@ class DatMod(FileMod):
                     self.__update_xelpud_xmailer_flag(params["new_obtain_flag"])
             else:
                 self.__place_shop_item(**params)
+
+    def update_shop_bunemon_text(self):
+        for card_index, items in self.shops.items():
+            card = self.file_contents.cards[card_index]
+            entries = card.contents.entries
+
+            # The bunemon text is always from the final break to a newline
+            break_index = [i for i, v in enumerate(entries) if v.header == HEADERS["break"]][-1]
+            newline_index = [i for i, v in enumerate(entries) if v.header == HEADERS["newline"]][-1]
+
+            del entries[break_index+1:newline_index]
+            old_text_size = 2 * (newline_index - break_index - 1)
+            card.len_contents -= old_text_size
+            self.file_size -= old_text_size
+
+            bunemon_text = "　,　".join(items)
+            bunemon_text_entries = [self.__char_entry(codepoint) for codepoint in self.__encode(bunemon_text)]
+            entries[break_index+1:break_index+1] = bunemon_text_entries
+            new_text_size = 2 * len(bunemon_text_entries)
+            card.len_contents += new_text_size
+            self.file_size += new_text_size
 
     def apply_mods(self):
         self.__rewrite_xelpud_flag_checks()
@@ -76,7 +99,7 @@ class DatMod(FileMod):
 
     # DAT Mod Methods
 
-    def __place_conversation_item(self, card, entries, item_id, location, item, original_obtain_flag, new_obtain_flag, obtain_value):
+    def __place_conversation_item(self, card, card_index, entries, item_id, location, item, original_obtain_flag, new_obtain_flag, obtain_value):
         item_index = next((i for i, v in enumerate(entries) if v.header == HEADERS["item"] and v.contents.value == location.item_id), None)
         entries[item_index].contents.value = item_id
 
@@ -84,7 +107,10 @@ class DatMod(FileMod):
         entries[flag_index].contents.address = new_obtain_flag
         entries[flag_index].contents.value = obtain_value
 
-    def __place_shop_item(self, card, entries, item_id, location, item, original_obtain_flag, new_obtain_flag, obtain_value):
+    def __place_shop_item(self, card, card_index, entries, item_id, location, item, original_obtain_flag, new_obtain_flag, obtain_value):
+        if card_index not in self.shops:
+            self.shops[card_index] = [None, None, None]
+
         # Override Other Player Item to Map if in a Shop to prevent quantity from selling out
         if item_id == item_table["Holy Grail (Full)"].game_code:
             item_id = item_table["Map (Surface)"].game_code
@@ -94,6 +120,7 @@ class DatMod(FileMod):
         item_quantity = item.quantity if item and item.quantity is not None else 1
         item_category = item.category if item and item.category is not None else "Unknown"
         item_name = location.item.name if location.item and location.item.name is not None else "Unknown"
+        self.shops[card_index][location.slot] = item_name
 
         if item_category == 'ShopInventory' and location.item:
             # Subweapon Start - make ammo for starting subweapon free and max out in 1 purchase. Same behavior for subweapon only across all subweapons
@@ -105,13 +132,12 @@ class DatMod(FileMod):
         entries[data_indices[1]].contents.values[location.slot] = item_cost
         entries[data_indices[2]].contents.values[location.slot] = item_quantity
         entries[data_indices[3]].contents.values[location.slot] = new_obtain_flag
-        if obtain_value > 1:
-            entries[data_indices[6]].contents.values[location.slot] = new_obtain_flag
+        entries[data_indices[6]].contents.values[location.slot] = new_obtain_flag if obtain_value > 1 else 0
 
+        break_indices = [i for i, v in enumerate(entries) if v.header == HEADERS["break"]]
         # Set New Item Name In Shop Description
 
         # The item descriptions in a shop are always the 7th, 8th, and 9th lines, so we want to start from the 6th break
-        break_indices = [i for i, v in enumerate(entries) if v.header == HEADERS["break"]]
         item_description_start_index = break_indices[6+location.slot]
 
         # The item name always appears between color entries
@@ -127,7 +153,7 @@ class DatMod(FileMod):
         card.len_contents -= removed_name_size
         self.file_size -= removed_name_size
 
-        # Add thew new item name
+        # Add the new item name
         entries[item_name_start_index:item_name_start_index] = item_name_entries
         added_name_size = 2 * len(item_name_entries)
         card.len_contents += added_name_size

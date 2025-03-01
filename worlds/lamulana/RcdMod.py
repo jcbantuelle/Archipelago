@@ -84,7 +84,7 @@ class RcdMod(FileMod):
                 params["location_id"] = location_id
                 self.__place_item(**params)
 
-    def apply_mods(self, dat_mod, locations):
+    def apply_mods(self):
         self.__give_starting_items(self.start_inventory)
 
         # Xelpud/Diary Interactions
@@ -95,8 +95,8 @@ class RcdMod(FileMod):
         self.__rewrite_mulbruk_doors()
 
         self.__rewrite_slushfund_conversation_conditions()
-        self.__rewrite_four_guardian_shop_conditions(dat_mod)
-        self.__rewrite_mekuri_door(locations)
+        self.__rewrite_four_guardian_shop_conditions()
+        self.__rewrite_mekuri_door()
         self.__rewrite_cog_chest()
         self.__rewrite_fishman_alt_shop()
         self.__rewrite_boss_ankhs()
@@ -230,10 +230,10 @@ class RcdMod(FileMod):
         flag_timer.add_ops(test_ops, write_ops)
         flag_timer.add_to_screen(self, screen)
 
-    def __rewrite_mekuri_door(self, locations):
+    def __rewrite_mekuri_door(self):
         objects = self.file_contents.zones[1].rooms[7].screens[0].objects_with_position
-        mekuri_replacement_flag = next(item_table.get(location.item.name).obtain_flag for location in locations if location and location.name == "Former Mekuri Master mekuri.exe Gift")
-        self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"], RCD_OBJECTS["texture_draw_animation"]], GLOBAL_FLAGS["mekuri"], mekuri_replacement_flag)
+        mekuri_item = self.local_config.find_item_by_location_id(2359215)
+        self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"], RCD_OBJECTS["texture_draw_animation"]], GLOBAL_FLAGS["mekuri"], mekuri_item["flag"])
 
     def __rewrite_mulbruk_doors(self) -> None:
         screen = self.file_contents.zones[3].rooms[3].screens[0]
@@ -244,12 +244,13 @@ class RcdMod(FileMod):
         swimsuit_reaction_door = self.__find_objects_by_operation("test", screen.objects_with_position, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["swimsuit_found"])[0]
         self.__add_operation_to_object("test", swimsuit_reaction_door, GLOBAL_FLAGS["mulbruk_father"], TEST_OPERATIONS["neq"], 9)
 
-    def __rewrite_four_guardian_shop_conditions(self, dat_mod):
-        msx2_replacement_flag = dat_mod.find_shop_flag("nebur_guardian", 0)
+    def __rewrite_four_guardian_shop_conditions(self):
+        four_guardian_item = self.local_config.find_item_by_location_id(2359208)
+
         objects = self.file_contents.zones[1].rooms[2].screens[0].objects_with_position
         self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["xelpud_msx2"], GLOBAL_FLAGS["guardians_killed"], old_op_value=0, new_op_value=3, new_operation=TEST_OPERATIONS["lteq"])
         self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["xelpud_msx2"], GLOBAL_FLAGS["guardians_killed"], old_op_value=1, new_op_value=4)
-        self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["msx2_found"], msx2_replacement_flag)
+        self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["msx2_found"], four_guardian_item["flag"])
 
     def __rewrite_slushfund_conversation_conditions(self):
         objects = self.file_contents.zones[10].rooms[8].screens[0].objects_with_position
@@ -443,7 +444,7 @@ class RcdMod(FileMod):
         self.__remove_operation("test", guidance_elevator_hibox_objects, [RCD_OBJECTS["hitbox_generator"]], GLOBAL_FLAGS["mulbruk_father"])
 
         # Remove Shrine Chest Check from Xelpud Conversations
-        xelpud_conversation_objects = self.file_contents.zones[0].rooms[6].screens[0].objects_with_position
+        xelpud_conversation_objects = self.file_contents.zones[1].rooms[2].screens[1].objects_with_position
         self.__remove_operation("test", xelpud_conversation_objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["shrine_diary_chest"])
 
         # Remove Unknown Test from Mulbruk Conversations
@@ -454,6 +455,10 @@ class RcdMod(FileMod):
         # Remove Book of the Dead Write Flag from Anubis Kill
         anubis_objects = self.file_contents.zones[12].rooms[10].screens[0].objects_with_position
         self.__remove_operation("write", anubis_objects, [RCD_OBJECTS["big_anubis"]], GLOBAL_FLAGS["mulbruk_book_of_the_dead"])
+
+        # Remove Ankh Jewel Check From Temple of the Sun Ankh Jewel Chest Puzzle
+        dais_objects = self.file_contents.zones[3].rooms[7].screens[0].objects_with_position
+        self.__remove_operation("test", dais_objects, [RCD_OBJECTS["trigger_dais"]], GLOBAL_FLAGS["ankh_jewel_sun"])
 
     def __create_grail_autoscans(self) -> None:
         for zone in self.file_contents.zones:
