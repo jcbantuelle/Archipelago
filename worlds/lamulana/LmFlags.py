@@ -157,6 +157,7 @@ HEADERS = {
     "flag": 0x0040,
     "flag2": 0x0041,
     "item": 0x0042,
+    "newline": 0x0045,
     "pose": 0x0046,
     "mantra": 0x0047,
     "color": 0x004a,

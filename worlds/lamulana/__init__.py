@@ -597,6 +597,7 @@ class LaMulanaWorld(World):
 			elif location.file_type == 'dat':
 				dat_mod.place_item_in_location(item, item_id, location)
 
+		dat_mod.update_shop_bunemon_text()
 		rcd_mod.apply_mods()
 		sav_mod.apply_mods()
 
