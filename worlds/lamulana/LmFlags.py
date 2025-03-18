@@ -122,8 +122,8 @@ GLOBAL_FLAGS = {
     "replacement_cog_puzzle": 0x861,
     "mother_ankh_jewel_recovery": 0x862,
     "randomizer_save_loaded": 0x863,
-    "rcd_filler_items": 0xc18,
-    "dat_filler_items": 0xe0c
+    "rcd_filler_items": 0x9f6,
+    "dat_filler_items": 0xa8c
 }
 
 INVENTORY = {
