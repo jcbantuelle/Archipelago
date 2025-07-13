@@ -61,6 +61,7 @@ class RcdMod(FileMod):
         params["item_id"] = item_id
         params["location"] = location
         params["item"] = item
+        params["obtain_value"] = 2
         super().set_params(params)
 
         location_ids = [location.item_id]
@@ -87,19 +88,15 @@ class RcdMod(FileMod):
     def apply_mods(self):
         self.__give_starting_items(self.start_inventory)
 
-        # Xelpud/Diary Interactions
-        self.__rewrite_diary_chest()
-        self.__add_diary_chest_timer()
-        self.__remove_xelpud_door()
-
+        self.__rewrite_diary_events()
         self.__rewrite_mulbruk_doors()
-
         self.__rewrite_slushfund_conversation_conditions()
         self.__rewrite_four_guardian_shop_conditions()
         self.__rewrite_mekuri_door()
-        self.__rewrite_cog_chest()
+        self.__rewrite_stray_fairy_screen()
         self.__rewrite_fishman_alt_shop()
         self.__rewrite_boss_ankhs()
+        self.__rewrite_anubis_seen()
 
         self.__add_dimensional_orb_ladder()
         self.__add_true_shrine_doors()
@@ -207,20 +204,23 @@ class RcdMod(FileMod):
 
             flag_counter += 1
 
-    def __remove_xelpud_door(self) -> None:
+    def __rewrite_diary_events(self) -> None:
+        # Remove Diary conversation door from Xelpud conversations
         screen = self.file_contents.zones[1].rooms[2].screens[1]
         self.__remove_objects_by_operation(screen, "test", screen.objects_with_position, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["shrine_diary_chest"], TEST_OPERATIONS["eq"], 2)
 
-    def __rewrite_diary_chest(self) -> None:
+        # Update Diary Chest flags
         objects = self.file_contents.zones[9].rooms[2].screens[1].objects_with_position
         diary_chest = self.__find_objects_by_operation("write", objects, [RCD_OBJECTS["chest"]], GLOBAL_FLAGS["diary_chest_puzzle"])[0]
 
         self.__update_operation("test", objects, [RCD_OBJECTS["chest"]], GLOBAL_FLAGS["shrine_shawn"], GLOBAL_FLAGS["shrine_dragon_bone"])
-        self.__add_operation_to_object("test", diary_chest, GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["eq"], 2)
+        self.__add_operation_to_object("test", diary_chest, GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["gteq"], 2)
 
-    def __add_diary_chest_timer(self) -> None:
         screen = self.file_contents.zones[9].rooms[2].screens[0]
+        # Remove old Diary Puzzle Timer
+        self.__remove_objects_by_operation(screen, "write", screen.objects_without_position, [RCD_OBJECTS["flag_timer"]], GLOBAL_FLAGS["diary_chest_puzzle"], has_position=False)
 
+        # Add new Diary Puzzle Timer
         flag_timer = FlagTimer()
         test_ops = [
             Operation.create(GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["gteq"], 3),
@@ -256,9 +256,15 @@ class RcdMod(FileMod):
         objects = self.file_contents.zones[10].rooms[8].screens[0].objects_with_position
         self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["slushfund_conversation"], GLOBAL_FLAGS["replacement_slushfund_conversation"])
 
-    def __rewrite_cog_chest(self):
+    def __rewrite_stray_fairy_screen(self):
         objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
         self.__update_operation("write", objects, [RCD_OBJECTS["chest"]], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"])
+
+        solved_spawner = self.__find_objects_by_operation("test", objects, [RCD_OBJECTS["room_spawner"]], GLOBAL_FLAGS["cog_puzzle"], operation=TEST_OPERATIONS["eq"], op_value=3)[0]
+        solved_spawner.x_pos -= 3
+        solved_spawner.test_operations[0].operation = TEST_OPERATIONS["lteq"]
+
+        self.__update_operation("test", objects, [RCD_OBJECTS["room_spawner"]], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"], old_op_value=2)
 
         stray_fairy_door = self.__find_objects_by_operation("write", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["cog_puzzle"], operation=WRITE_OPERATIONS["assign"], op_value=3)[0]
         self.__add_operation_to_object("write", stray_fairy_door, GLOBAL_FLAGS["replacement_cog_puzzle"], WRITE_OPERATIONS["assign"], 3)
@@ -331,7 +337,7 @@ class RcdMod(FileMod):
         self.__add_operation_to_object("test", room_spawner, GLOBAL_FLAGS["screen_flag_0c"], TEST_OPERATIONS["eq"], 0)
 
     def __add_dimensional_orb_ladder(self) -> None:
-        screen = self.file_contents.zones[17].rooms[10].screens[0]
+        screen = self.file_contents.zones[17].rooms[10].screens[1]
 
         ladder = Ladder(28, 31, 0, 8, 2, 660, 0, 0, 1)
         test_ops = [Operation.create(GLOBAL_FLAGS["ushumgallu_state"], TEST_OPERATIONS["eq"], 2)]
@@ -428,10 +434,6 @@ class RcdMod(FileMod):
         # Remove Crucifix Check from Crucifix Puzzle Torches
         crucifix_puzzle_objects = self.file_contents.zones[0].rooms[1].screens[1].objects_with_position
         self.__remove_operation("test", crucifix_puzzle_objects, [RCD_OBJECTS["texture_draw_animation"]], GLOBAL_FLAGS["crucifix_found"])
-
-        # Remove Cog Puzzle Requirement from Mudmen Activation
-        mudmen_activation_objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
-        self.__remove_operation("test", mudmen_activation_objects, [RCD_OBJECTS["use_item"]], GLOBAL_FLAGS["cog_puzzle"])
 
         # Remove Plane Missing Requirement from Plane Puzzle
         plane_platform_left_objects = self.file_contents.zones[13].rooms[7].screens[0].objects_with_position
@@ -653,6 +655,11 @@ class RcdMod(FileMod):
             for ankh in mother_ankhs:
                 self.__add_operation_to_object("test", ankh, GLOBAL_FLAGS["mother_ankh_jewel_found"], TEST_OPERATIONS["gteq"], 1)
 
+    def __rewrite_anubis_seen(self):
+        screen = self.file_contents.zones[12].rooms[10].screens[0]
+        self.__update_operation("test", screen.objects_without_position, [RCD_OBJECTS["flag_timer"]], GLOBAL_FLAGS["mulbruk_book_of_the_dead"], GLOBAL_FLAGS["replacement_mulbruk_book_of_the_dead"])
+        self.__update_operation("write", screen.objects_without_position, [RCD_OBJECTS["flag_timer"]], GLOBAL_FLAGS["mulbruk_book_of_the_dead"], GLOBAL_FLAGS["replacement_mulbruk_book_of_the_dead"])
+
     def __create_ancient_lamulanese_timer(self):
         screen = self.file_contents.zones[1].rooms[2].screens[1]
 
@@ -742,23 +749,28 @@ class RcdMod(FileMod):
             object_index = self.__find_object_index_by_id(objects, object_ids)
             self.__remove_object(screen, objects, object_index)
 
-    def __remove_objects_by_operation(self, screen, op_type, objects, object_ids, flag, operation=None, op_value=None):
+    def __remove_objects_by_operation(self, screen, op_type, objects, object_ids, flag, operation=None, op_value=None, has_position=True):
         for _ in self.__find_objects_by_operation(op_type, objects, object_ids, flag, operation, op_value):
             object_index = self.__find_object_index_by_operation(op_type, objects, object_ids, flag, operation, op_value)
-            self.__remove_object(screen, objects, object_index)
+            self.__remove_object(screen, objects, object_index, has_position)
 
     def __remove_objects_by_parameter(self, screen, objects, object_ids, param_index, param_value):
         for _ in self.__find_objects_by_parameter(objects, object_ids, param_index, param_value):
             object_index = self.__find_object_index_by_parameter(objects, object_ids, param_index, param_value)
             self.__remove_object(screen, objects, object_index)
 
-    def __remove_object(self, screen, objects, object_index):
+    def __remove_object(self, screen, objects, object_index, has_position=True):
         obj = objects[object_index]
 
         screen.objects_length -= 1
 
-        # id (2) + test_operations_length (.5) + write_operations_length (.5) + parameters_length (1) + x_pos (2) + y_pos (2)
-        object_size = 8
+        # id (2) + test_operations_length (.5) + write_operations_length (.5) + parameters_length (1)
+        object_size = 4
+        if has_position:
+            # x_pos (2) + y_pos (2)
+            object_size += 4
+        else:
+            screen.objects_without_position_length -= 1
 
         # test_operations (4*len) + write_operations(4*len) + parameters (2*len)
         object_size += ((obj.test_operations_length + obj.write_operations_length) * 4) + (obj.parameters_length * 2)
