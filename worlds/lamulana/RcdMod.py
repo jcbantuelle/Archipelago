@@ -257,17 +257,23 @@ class RcdMod(FileMod):
         self.__update_operation("test", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["slushfund_conversation"], GLOBAL_FLAGS["replacement_slushfund_conversation"])
 
     def __rewrite_stray_fairy_screen(self):
-        objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
-        self.__update_operation("write", objects, [RCD_OBJECTS["chest"]], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"])
+        position_objects = self.file_contents.zones[10].rooms[0].screens[1].objects_with_position
+        positionless_objects = self.file_contents.zones[10].rooms[0].screens[1].objects_without_position
+        # Update Door Graphic to use Custom Cog Puzzle Flag
+        self.__update_operation("test", position_objects, [RCD_OBJECTS["room_spawner"]], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"], old_op_value=3, old_operation=TEST_OPERATIONS["eq"])
+        # Update Test and Write Operations for the Chest and Stray Fairy Conversations to use Custom Cog Puzzle Flag
+        self.__update_operation("test", position_objects, [RCD_OBJECTS["chest"], RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"])
+        self.__update_operation("write", position_objects, [RCD_OBJECTS["chest"], RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"])
 
-        solved_spawner = self.__find_objects_by_operation("test", objects, [RCD_OBJECTS["room_spawner"]], GLOBAL_FLAGS["cog_puzzle"], operation=TEST_OPERATIONS["eq"], op_value=3)[0]
-        solved_spawner.x_pos -= 3
-        solved_spawner.test_operations[0].operation = TEST_OPERATIONS["lteq"]
+        # Update Test and Write Operations for Screen Timer to Use Custom Cog Puzzle Flag
+        self.__update_operation("test", positionless_objects, [RCD_OBJECTS["flag_timer"]], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"])
+        self.__update_operation("write", positionless_objects, [RCD_OBJECTS["flag_timer"]], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"])
 
-        self.__update_operation("test", objects, [RCD_OBJECTS["room_spawner"]], GLOBAL_FLAGS["cog_puzzle"], GLOBAL_FLAGS["replacement_cog_puzzle"], old_op_value=2)
-
-        stray_fairy_door = self.__find_objects_by_operation("write", objects, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["cog_puzzle"], operation=WRITE_OPERATIONS["assign"], op_value=3)[0]
-        self.__add_operation_to_object("write", stray_fairy_door, GLOBAL_FLAGS["replacement_cog_puzzle"], WRITE_OPERATIONS["assign"], 3)
+        # Shift Cog Tablet and On Use Cog Detector To Left To Allow Access to Door 
+        cog_use_objects = self.__find_objects_by_operation("test", position_objects, [RCD_OBJECTS["room_spawner"], RCD_OBJECTS["use_item"]], GLOBAL_FLAGS["cog_puzzle"], operation=TEST_OPERATIONS["eq"], op_value=3)
+        for cog_object in cog_use_objects:
+            cog_object.x_pos -= 3
+            cog_object.test_operations[0].operation = TEST_OPERATIONS["lteq"]
 
     def __rewrite_fishman_alt_shop(self):
         screen = self.file_contents.zones[4].rooms[3].screens[3]
