@@ -89,6 +89,7 @@ class DatMod(FileMod):
         self.__rewrite_xelpud_mulana_talisman_conversation()
         self.__rewrite_xelpud_talisman_conversation()
         self.__rewrite_xelpud_pillar_conversation()
+        self.__rewrite_mulbruk_book_of_the_dead_conversation()
         self.__update_slushfund_flags()
 
     def find_shop_flag(self, card_name, slot):
@@ -105,7 +106,7 @@ class DatMod(FileMod):
 
         flag_index = next((i for i, v in enumerate(entries) if v.header == HEADERS["flag"] and v.contents.address == original_obtain_flag), None)
         entries[flag_index].contents.address = new_obtain_flag
-        entries[flag_index].contents.value = obtain_value
+        entries[flag_index].contents.value = 2
 
     def __place_shop_item(self, card, card_index, entries, item_id, location, item, original_obtain_flag, new_obtain_flag, obtain_value):
         if card_index not in self.shops:
@@ -132,7 +133,10 @@ class DatMod(FileMod):
         entries[data_indices[1]].contents.values[location.slot] = item_cost
         entries[data_indices[2]].contents.values[location.slot] = item_quantity
         entries[data_indices[3]].contents.values[location.slot] = new_obtain_flag
-        entries[data_indices[6]].contents.values[location.slot] = new_obtain_flag if obtain_value > 1 else 0
+        if card_index == 185 and item_id == item_table["5 Weights"].game_code:
+            entries[data_indices[6]].contents.values[location.slot] = GLOBAL_FLAGS["little_brother_purchase_counter"]
+        else:
+            entries[data_indices[6]].contents.values[location.slot] = new_obtain_flag
 
         break_indices = [i for i, v in enumerate(entries) if v.header == HEADERS["break"]]
         # Set New Item Name In Shop Description
@@ -234,6 +238,18 @@ class DatMod(FileMod):
         ])
     
         self.__add_flag_entry(card, insert_index, GLOBAL_FLAGS["talisman_found"], 3)
+
+    def __rewrite_mulbruk_book_of_the_dead_conversation(self) -> None:
+        card = self.__find_card("mulbruk_conversation_tree")
+        entries = card.contents.entries
+
+        for entry in entries:
+            if entry.header == HEADERS["data"] and entry.contents.values[0] == GLOBAL_FLAGS["mulbruk_book_of_the_dead"]:
+                entry.contents.values[0] = GLOBAL_FLAGS["replacement_mulbruk_book_of_the_dead"]
+                break
+
+        card = self.__find_card("mulbruk_book_of_the_dead_conversation")
+        self.__add_flag_entry(card, len(card.contents.entries), GLOBAL_FLAGS["replacement_mulbruk_book_of_the_dead"], 2)
 
     def __update_slushfund_flags(self) -> None:
         card = self.__find_card("slushfund_give_pepper")

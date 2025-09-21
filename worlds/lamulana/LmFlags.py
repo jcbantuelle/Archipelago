@@ -84,6 +84,7 @@ GLOBAL_FLAGS = {
     "palenque_ankh_puzzle": 0x1c3,
     "palenque_screen_mural": 0x1ca,
     "baphomet_ankh_puzzle": 0x1e0,
+    "little_brother_purchase_counter": 0x1ea,
     "endless_fairyqueen": 0x1f5,
     "diary_chest_puzzle": 0x212,
     "shrine_dragon_bone": 0x218,
@@ -122,6 +123,7 @@ GLOBAL_FLAGS = {
     "replacement_cog_puzzle": 0x861,
     "mother_ankh_jewel_recovery": 0x862,
     "randomizer_save_loaded": 0x863,
+    "replacement_mulbruk_book_of_the_dead": 0x864,
     "rcd_filler_items": 0x9f6,
     "dat_filler_items": 0xa8c
 }
@@ -173,7 +175,9 @@ CARDS = {
     "xelpud_talisman": 369,
     "xelpud_pillar": 370,
     "xelpud_mulana_talisman": 371,
+    "mulbruk_book_of_the_dead_conversation": 397,
     "xelpud_conversation_tree": 480,
+    "mulbruk_conversation_tree": 486,
     "nebur_guardian": 490,
     "xelpud_howling_wind": 1049
 }
