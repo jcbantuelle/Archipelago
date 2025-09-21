@@ -124,8 +124,8 @@ GLOBAL_FLAGS = {
     "mother_ankh_jewel_recovery": 0x862,
     "randomizer_save_loaded": 0x863,
     "replacement_mulbruk_book_of_the_dead": 0x864,
-    "rcd_filler_items": 0xc18,
-    "dat_filler_items": 0xe0c
+    "rcd_filler_items": 0x9f6,
+    "dat_filler_items": 0xa8c
 }
 
 INVENTORY = {
