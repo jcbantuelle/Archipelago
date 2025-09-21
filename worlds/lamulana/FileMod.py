@@ -37,9 +37,5 @@ class FileMod:
             self.filler_flags += 1
         else:
             params["new_obtain_flag"] = item.obtain_flag
-
-        if params.get("object_type") == RCD_OBJECTS["chest"]:
-            params["obtain_value"] = 2
-        else:
-            params["obtain_value"] = item.obtain_value if item and item.obtain_value is not None else location.obtain_value
+        params["obtain_value"] = 2
         self.local_config.add_item(params)

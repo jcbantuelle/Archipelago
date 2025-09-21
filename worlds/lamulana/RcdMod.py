@@ -61,7 +61,6 @@ class RcdMod(FileMod):
         params["item_id"] = item_id
         params["location"] = location
         params["item"] = item
-        params["obtain_value"] = 2
         super().set_params(params)
 
         location_ids = [location.item_id]
