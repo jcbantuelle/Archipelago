@@ -53,6 +53,7 @@ GLOBAL_FLAGS = {
     "grail_tablet_dimensional": 0x74,
     "grail_tablet_shrine_back": 0x75,
     "score": 0x7b,
+    "xelpud_conversation_general": 0x7c,
     "ankh_jewel_mausoleum": 0x8f,
     "ankh_jewel_sun": 0x90,
     "yagostr_found": 0xe5,
@@ -124,6 +125,8 @@ GLOBAL_FLAGS = {
     "mother_ankh_jewel_recovery": 0x862,
     "randomizer_save_loaded": 0x863,
     "replacement_mulbruk_book_of_the_dead": 0x864,
+    "xelpud_conversation_talisman_found": 0x865,
+    "xelpud_conversation_diary_found": 0x866,
     "rcd_filler_items": 0xc18,
     "dat_filler_items": 0xe0c
 }
@@ -175,8 +178,10 @@ CARDS = {
     "xelpud_talisman": 369,
     "xelpud_pillar": 370,
     "xelpud_mulana_talisman": 371,
+    "xelpud_score_howling_wind": 373,
     "mulbruk_book_of_the_dead_conversation": 397,
     "xelpud_conversation_tree": 480,
+    "xelpud_score_tree": 482,
     "mulbruk_conversation_tree": 486,
     "nebur_guardian": 490,
     "xelpud_howling_wind": 1049

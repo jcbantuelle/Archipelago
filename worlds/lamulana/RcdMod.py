@@ -206,14 +206,14 @@ class RcdMod(FileMod):
     def __rewrite_diary_events(self) -> None:
         # Remove Diary conversation door from Xelpud conversations
         screen = self.file_contents.zones[1].rooms[2].screens[1]
-        self.__remove_objects_by_operation(screen, "test", screen.objects_with_position, [RCD_OBJECTS["language_conversation"]], GLOBAL_FLAGS["shrine_diary_chest"], TEST_OPERATIONS["eq"], 2)
+        self.__remove_objects_by_parameter(screen, screen.objects_with_position, [RCD_OBJECTS["language_conversation"]], 4, 913)
 
         # Update Diary Chest flags
         objects = self.file_contents.zones[9].rooms[2].screens[1].objects_with_position
         diary_chest = self.__find_objects_by_operation("write", objects, [RCD_OBJECTS["chest"]], GLOBAL_FLAGS["diary_chest_puzzle"])[0]
 
         self.__update_operation("test", objects, [RCD_OBJECTS["chest"]], GLOBAL_FLAGS["shrine_shawn"], GLOBAL_FLAGS["shrine_dragon_bone"])
-        self.__add_operation_to_object("test", diary_chest, GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["gteq"], 2)
+        self.__add_operation_to_object("test", diary_chest, GLOBAL_FLAGS["xelpud_conversation_talisman_found"], TEST_OPERATIONS["gteq"], 2)
 
         screen = self.file_contents.zones[9].rooms[2].screens[0]
         # Remove old Diary Puzzle Timer
@@ -222,7 +222,7 @@ class RcdMod(FileMod):
         # Add new Diary Puzzle Timer
         flag_timer = FlagTimer()
         test_ops = [
-            Operation.create(GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["gteq"], 3),
+            Operation.create(GLOBAL_FLAGS["xelpud_conversation_talisman_found"], TEST_OPERATIONS["gteq"], 3),
             Operation.create(GLOBAL_FLAGS["shrine_dragon_bone"], TEST_OPERATIONS["gteq"], 1)
         ]
         write_ops = [Operation.create(GLOBAL_FLAGS["shrine_diary_chest"], WRITE_OPERATIONS["assign"], 2)]

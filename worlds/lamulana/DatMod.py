@@ -86,9 +86,10 @@ class DatMod(FileMod):
 
     def apply_mods(self):
         self.__rewrite_xelpud_flag_checks()
-        self.__rewrite_xelpud_mulana_talisman_conversation()
+        self.__rewrite_xelpud_xmailer_conversation()
         self.__rewrite_xelpud_talisman_conversation()
         self.__rewrite_xelpud_pillar_conversation()
+        self.__rewrite_xelpud_mulana_talisman_conversation()
         self.__rewrite_mulbruk_book_of_the_dead_conversation()
         self.__update_slushfund_flags()
 
@@ -168,18 +169,16 @@ class DatMod(FileMod):
 
         entries_to_remove = [
             CARDS["xelpud_howling_wind"],
-            CARDS["xelpud_xmailer"],
-            CARDS["xelpud_pillar"],
-            CARDS["xelpud_mulana_talisman"]
+            CARDS["xelpud_mulana_talisman"],
+            CARDS["xelpud_pillar"]
         ]
         for entry_value in entries_to_remove:
             self.__remove_data_entry_by_value(card, entry_value)
 
         data_values_to_add = [
-            [GLOBAL_FLAGS["diary_found"], 1, CARDS["xelpud_mulana_talisman"], 0],
-            [GLOBAL_FLAGS["talisman_found"], 2, CARDS["xelpud_pillar"], 0],
-            [GLOBAL_FLAGS["talisman_found"], 1, CARDS["xelpud_talisman"], 0],
-            [GLOBAL_FLAGS["xmailer"], 0, CARDS["xelpud_xmailer"], 0]
+            [GLOBAL_FLAGS["xelpud_conversation_diary_found"], 1, CARDS["xelpud_mulana_talisman"], 0],
+            [GLOBAL_FLAGS["xelpud_conversation_talisman_found"], 2, CARDS["xelpud_pillar"], 0],
+            [GLOBAL_FLAGS["xelpud_conversation_talisman_found"], 1, CARDS["xelpud_talisman"], 0]
         ]
         for data_values in data_values_to_add:
             self.__add_data_entry(card, data_values)
@@ -193,24 +192,14 @@ class DatMod(FileMod):
                 entry.contents.values[0] = new_flag
                 break
 
-    def __rewrite_xelpud_mulana_talisman_conversation(self) -> None:
-        card = self.__find_card("xelpud_mulana_talisman")
+    def __rewrite_xelpud_xmailer_conversation(self):
+        card = self.__find_card("xelpud_xmailer")
         entries = card.contents.entries
 
-        talisman_flag_entries = [(i, entry) for i, entry in enumerate(entries)
-            if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["mulana_talisman"]
-        ]
-        for _, flag_entry in talisman_flag_entries:
-            flag_entry.contents.address = GLOBAL_FLAGS["diary_found"]
-            flag_entry.contents.value = 2
-
-        insert_index = max([i for i, _ in talisman_flag_entries])
-        self.__add_flag_entry(card, insert_index, GLOBAL_FLAGS["mulana_talisman"], 2)
-
-        diary_puzzle_index = next((i for i, entry in enumerate(entries)
-            if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["diary_chest_puzzle"]
-        ), None)
-        self.__remove_flag_entry(card, diary_puzzle_index)
+        for entry in entries:
+            if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["xmailer"]:
+                entry.contents.value = 2
+                break
 
     def __rewrite_xelpud_talisman_conversation(self) -> None:
         card = self.__find_card("xelpud_talisman")
@@ -220,24 +209,28 @@ class DatMod(FileMod):
             if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["cant_leave_conversation"]
         ])
 
-        self.__add_flag_entry(card, insert_index, GLOBAL_FLAGS["talisman_found"], 2)
+        self.__add_flag_entry(card, insert_index, GLOBAL_FLAGS["xelpud_conversation_talisman_found"], 2)
         self.__add_flag_entry(card, insert_index, GLOBAL_FLAGS["xelpud_talisman"], 1)
 
     def __rewrite_xelpud_pillar_conversation(self) -> None:
         card = self.__find_card("xelpud_pillar")
         entries = card.contents.entries
 
-        diary_chest_flag_index = next((i for i, entry in enumerate(entries)
-            if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["shrine_diary_chest"]
-        ), None)
-    
-        self.__remove_flag_entry(card, diary_chest_flag_index)
+        for entry in entries:
+            if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["shrine_diary_chest"]:
+                entry.contents.address = GLOBAL_FLAGS["xelpud_conversation_talisman_found"]
+                entry.contents.value = 3
+                break
 
-        insert_index = max([i for i, entry in enumerate(entries)
-            if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["cant_leave_conversation"]
-        ])
-    
-        self.__add_flag_entry(card, insert_index, GLOBAL_FLAGS["talisman_found"], 3)
+    def __rewrite_xelpud_mulana_talisman_conversation(self) -> None:
+        card = self.__find_card("xelpud_mulana_talisman")
+        entries = card.contents.entries
+
+        for entry in entries:
+            if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["diary_chest_puzzle"]:
+                entry.contents.address = GLOBAL_FLAGS["xelpud_conversation_diary_found"]
+                entry.contents.value = 2
+                break
 
     def __rewrite_mulbruk_book_of_the_dead_conversation(self) -> None:
         card = self.__find_card("mulbruk_conversation_tree")
@@ -249,7 +242,12 @@ class DatMod(FileMod):
                 break
 
         card = self.__find_card("mulbruk_book_of_the_dead_conversation")
-        self.__add_flag_entry(card, len(card.contents.entries), GLOBAL_FLAGS["replacement_mulbruk_book_of_the_dead"], 2)
+        entries = card.contents.entries
+        insert_index = max([i for i, entry in enumerate(entries)
+            if entry.header == HEADERS["flag"] and entry.contents.address == GLOBAL_FLAGS["cant_leave_conversation"]
+        ])
+
+        self.__add_flag_entry(card, insert_index, GLOBAL_FLAGS["replacement_mulbruk_book_of_the_dead"], 2)
 
     def __update_slushfund_flags(self) -> None:
         card = self.__find_card("slushfund_give_pepper")
