@@ -205,8 +205,29 @@ class RcdMod(FileMod):
 
     def __rewrite_diary_events(self) -> None:
         # Remove Diary conversation door from Xelpud conversations
-        screen = self.file_contents.zones[1].rooms[2].screens[1]
-        self.__remove_objects_by_parameter(screen, screen.objects_with_position, [RCD_OBJECTS["language_conversation"]], 4, 913)
+        xelpud_screen = self.file_contents.zones[1].rooms[2].screens[1]
+        self.__remove_objects_by_parameter(xelpud_screen, xelpud_screen.objects_with_position, [RCD_OBJECTS["language_conversation"]], 4, 913)
+
+        # Add new Talisman Xelpud Timer
+        talisman_flag_timer = FlagTimer()
+        talisman_test_ops = [
+            Operation.create(GLOBAL_FLAGS["talisman_found"], TEST_OPERATIONS["eq"], 2),
+            Operation.create(GLOBAL_FLAGS["xelpud_conversation_talisman_found"], TEST_OPERATIONS["eq"], 0),
+            Operation.create(GLOBAL_FLAGS["xelpud_conversation_general"], TEST_OPERATIONS["gteq"], 1)
+        ]
+        talisman_write_ops = [Operation.create(GLOBAL_FLAGS["xelpud_conversation_talisman_found"], WRITE_OPERATIONS["assign"], 1)]
+        talisman_flag_timer.add_ops(talisman_test_ops, talisman_write_ops)
+        talisman_flag_timer.add_to_screen(self, xelpud_screen)
+
+        # Add new Talisman Diary Timer
+        diary_flag_timer = FlagTimer()
+        diary_test_ops = [
+            Operation.create(GLOBAL_FLAGS["diary_found"], TEST_OPERATIONS["eq"], 2),
+            Operation.create(GLOBAL_FLAGS["xelpud_conversation_diary_found"], TEST_OPERATIONS["eq"], 0)
+        ]
+        diary_write_ops = [Operation.create(GLOBAL_FLAGS["xelpud_conversation_diary_found"], WRITE_OPERATIONS["assign"], 1)]
+        diary_flag_timer.add_ops(diary_test_ops, diary_write_ops)
+        diary_flag_timer.add_to_screen(self, xelpud_screen)
 
         # Update Diary Chest flags
         objects = self.file_contents.zones[9].rooms[2].screens[1].objects_with_position
@@ -215,19 +236,19 @@ class RcdMod(FileMod):
         self.__update_operation("test", objects, [RCD_OBJECTS["chest"]], GLOBAL_FLAGS["shrine_shawn"], GLOBAL_FLAGS["shrine_dragon_bone"])
         self.__add_operation_to_object("test", diary_chest, GLOBAL_FLAGS["xelpud_conversation_talisman_found"], TEST_OPERATIONS["gteq"], 2)
 
-        screen = self.file_contents.zones[9].rooms[2].screens[0]
+        diary_puzzle_screen = self.file_contents.zones[9].rooms[2].screens[0]
         # Remove old Diary Puzzle Timer
-        self.__remove_objects_by_operation(screen, "write", screen.objects_without_position, [RCD_OBJECTS["flag_timer"]], GLOBAL_FLAGS["diary_chest_puzzle"], has_position=False)
+        self.__remove_objects_by_operation(diary_puzzle_screen, "write", diary_puzzle_screen.objects_without_position, [RCD_OBJECTS["flag_timer"]], GLOBAL_FLAGS["diary_chest_puzzle"], has_position=False)
 
         # Add new Diary Puzzle Timer
-        flag_timer = FlagTimer()
-        test_ops = [
+        diary_puzzle_flag_timer = FlagTimer()
+        diary_puzzle_test_ops = [
             Operation.create(GLOBAL_FLAGS["xelpud_conversation_talisman_found"], TEST_OPERATIONS["gteq"], 3),
             Operation.create(GLOBAL_FLAGS["shrine_dragon_bone"], TEST_OPERATIONS["gteq"], 1)
         ]
-        write_ops = [Operation.create(GLOBAL_FLAGS["shrine_diary_chest"], WRITE_OPERATIONS["assign"], 2)]
-        flag_timer.add_ops(test_ops, write_ops)
-        flag_timer.add_to_screen(self, screen)
+        diary_puzzle_write_ops = [Operation.create(GLOBAL_FLAGS["shrine_diary_chest"], WRITE_OPERATIONS["assign"], 2)]
+        diary_puzzle_flag_timer.add_ops(diary_puzzle_test_ops, diary_puzzle_write_ops)
+        diary_puzzle_flag_timer.add_to_screen(self, diary_puzzle_screen)
 
     def __rewrite_mekuri_door(self):
         objects = self.file_contents.zones[1].rooms[7].screens[0].objects_with_position
