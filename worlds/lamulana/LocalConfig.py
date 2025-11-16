@@ -8,6 +8,7 @@ class LocalConfig:
             "password": "",
             "log_file_name": "lamulanamw.txt",
             "local_player_id": world.player,
+            "log_level": "DEBUG",
             "players": [{"id": player_id, "name": world.multiworld.player_name[player_id]} for player_id in world.multiworld.player_ids],
             "item_mapping": []
         }
