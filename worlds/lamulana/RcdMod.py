@@ -223,7 +223,8 @@ class RcdMod(FileMod):
         diary_flag_timer = FlagTimer()
         diary_test_ops = [
             Operation.create(GLOBAL_FLAGS["diary_found"], TEST_OPERATIONS["eq"], 2),
-            Operation.create(GLOBAL_FLAGS["xelpud_conversation_diary_found"], TEST_OPERATIONS["eq"], 0)
+            Operation.create(GLOBAL_FLAGS["xelpud_conversation_diary_found"], TEST_OPERATIONS["eq"], 0),
+            Operation.create(GLOBAL_FLAGS["xelpud_conversation_general"], TEST_OPERATIONS["gteq"], 1)
         ]
         diary_write_ops = [Operation.create(GLOBAL_FLAGS["xelpud_conversation_diary_found"], WRITE_OPERATIONS["assign"], 1)]
         diary_flag_timer.add_ops(diary_test_ops, diary_write_ops)
