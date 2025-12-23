@@ -127,6 +127,8 @@ GLOBAL_FLAGS = {
     "replacement_mulbruk_book_of_the_dead": 0x864,
     "xelpud_conversation_talisman_found": 0x865,
     "xelpud_conversation_diary_found": 0x866,
+    "received_items_index_1": 0x867,
+    "received_items_index_2": 0x868,
     "rcd_filler_items": 0x9f6,
     "dat_filler_items": 0xa8c
 }
