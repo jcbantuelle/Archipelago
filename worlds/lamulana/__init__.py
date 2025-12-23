@@ -1,4 +1,5 @@
 import zipfile
+import json
 import os
 import Utils
 from typing import TextIO
@@ -606,6 +607,12 @@ class LaMulanaWorld(World):
 		sav_mod.apply_mods()
 		graphics_mod.apply_mods()
 
+		manifest = {
+			"game": "La-Mulana",
+			"player": self.player,
+			"patch_file_ending": ".zip"
+		}
+
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
 			output_zip.writestr(f"data/mapdata/{self.RCD_FILENAME}", rcd_mod.write_file())
@@ -613,3 +620,4 @@ class LaMulanaWorld(World):
 			output_zip.writestr(f"data/save/{self.SAV_FILENAME}", sav_mod.write_file())
 			output_zip.writestr(f"data/graphics/00/{self.GRAPHICS_FILENAME}", graphics_mod.write_file())
 			output_zip.writestr(self.CONFIG_FILENAME, local_config.write_file())
+			output_zip.writestr("archipelago.json", json.dumps(manifest).encode("utf-8"))
