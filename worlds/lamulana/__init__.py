@@ -15,6 +15,7 @@ from .Regions import create_regions_and_locations
 from .RcdMod import RcdMod
 from .DatMod import DatMod
 from .SavMod import SavMod
+from .GraphicsMod import GraphicsMod
 from .LocalConfig import LocalConfig
 
 
@@ -47,6 +48,8 @@ class LaMulanaWorld(World):
 	RCD_FILENAME = "script.rcd"
 	DAT_FILENAME = "script_code.dat"
 	SAV_FILENAME = "lm_00.sav"
+	GRAPHICS_FILENAME = "01effect.png"
+	CONFIG_FILENAME = "lamulana-config.toml"
 
 	item_name_to_id = {name: data.code for name, data in item_table.items() if data.code is not None}
 	location_name_to_id = {location.name: location.code for locations in get_locations_by_region(None).values() for location in locations if location.code is not None}
@@ -583,6 +586,7 @@ class LaMulanaWorld(World):
 		rcd_mod = RcdMod(self.RCD_FILENAME, local_config, self.options, self.start_inventory_as_list() + list(self.precollected_items[self.player]), self.cursed_chests)
 		dat_mod = DatMod(self.DAT_FILENAME, local_config, self.options)
 		sav_mod = SavMod(self.options)
+		graphics_mod = GraphicsMod(self.options)
 
 		dat_mod.apply_mods()
 
@@ -600,10 +604,12 @@ class LaMulanaWorld(World):
 		dat_mod.update_shop_bunemon_text()
 		rcd_mod.apply_mods()
 		sav_mod.apply_mods()
+		graphics_mod.apply_mods()
 
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
 			output_zip.writestr(self.RCD_FILENAME, rcd_mod.write_file())
 			output_zip.writestr(self.DAT_FILENAME, dat_mod.write_file())
 			output_zip.writestr(self.SAV_FILENAME, sav_mod.write_file())
-			output_zip.writestr("lamulana-config.toml", local_config.write_file())
+			output_zip.writestr(self.GRAPHICS_FILENAME, graphics_mod.write_file())
+			output_zip.writestr(self.CONFIG_FILENAME, local_config.write_file())
