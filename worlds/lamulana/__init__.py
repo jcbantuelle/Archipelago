@@ -608,8 +608,8 @@ class LaMulanaWorld(World):
 
 		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
 		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
-			output_zip.writestr(self.RCD_FILENAME, rcd_mod.write_file())
-			output_zip.writestr(self.DAT_FILENAME, dat_mod.write_file())
-			output_zip.writestr(self.SAV_FILENAME, sav_mod.write_file())
-			output_zip.writestr(self.GRAPHICS_FILENAME, graphics_mod.write_file())
+			output_zip.writestr(f"data/mapdata/{self.RCD_FILENAME}", rcd_mod.write_file())
+			output_zip.writestr(f"data/language/en/{self.DAT_FILENAME}", dat_mod.write_file())
+			output_zip.writestr(f"data/save/{self.SAV_FILENAME}", sav_mod.write_file())
+			output_zip.writestr(f"data/graphics/00/{self.GRAPHICS_FILENAME}", graphics_mod.write_file())
 			output_zip.writestr(self.CONFIG_FILENAME, local_config.write_file())
