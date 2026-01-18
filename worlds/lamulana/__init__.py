@@ -295,7 +295,8 @@ class LaMulanaWorld(World):
 					spoiler_handle.write(f'    - {source}{arrows(source,dest,40,requirement)}{dest}\n')
 
 	def fill_slot_data(self) -> dict[str, object]:
-		slot_data: dict[str, object] = self.options.as_dict(
+		slot_data: dict[str, object] = {}
+		slot_data['options'] = self.options.as_dict(
 			'ShopDensity',
 			'RandomizeCoinChests',
 			'RandomizeTrapItems',
@@ -328,6 +329,9 @@ class LaMulanaWorld(World):
 			'LampGlitchInLogic'
 		)
 		slot_data['cursed_chests'] = self.worldstate.cursed_chests
+		slot_data['start_inventory'] = self.start_inventory_as_list() + list(self.precollected_items[self.player])
+		slot_data['locations'] = [self.export_location(location) for location in self.multiworld.get_locations(self.player)]
+		slot_data['item_table'] = item_table
 		if self.worldstate.npc_rando:
 			slot_data['npc_locations'] = self.worldstate.npc_mapping
 		if self.options.RandomizeSeals:
@@ -337,6 +341,21 @@ class LaMulanaWorld(World):
 		if self.worldstate.door_rando:
 			slot_data['door_data'] = self.worldstate.door_map
 		return slot_data
+
+	def export_location(self, location):
+		export_location = {
+			'address': location.address,
+			'cards': location.cards,
+			'item': {'name': location.item.name, 'player': location.item.player},
+			'item_id': location.item_id,
+			'name': location.name,
+			'object_type': location.object_type,
+			'room': location.room,
+			'screen': location.screen,
+			'slot': location.slot,
+			'zones': location.zones
+		}
+		return export_location
 
 	def set_starting_item(self, item_name: str):
 		self.multiworld.push_precollected(self.create_item(item_name))
