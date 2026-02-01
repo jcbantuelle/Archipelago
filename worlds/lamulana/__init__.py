@@ -296,6 +296,7 @@ class LaMulanaWorld(World):
 
 	def fill_slot_data(self) -> dict[str, object]:
 		slot_data: dict[str, object] = {}
+		slot_data['seed'] = self.multiworld.seed_name
 		slot_data['options'] = self.options.as_dict(
 			'ShopDensity',
 			'RandomizeCoinChests',
