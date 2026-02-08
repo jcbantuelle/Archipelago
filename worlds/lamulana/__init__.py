@@ -333,6 +333,8 @@ class LaMulanaWorld(World):
 		slot_data['start_inventory'] = self.start_inventory_as_list() + list(self.precollected_items[self.player])
 		slot_data['locations'] = [self.export_location(location) for location in self.multiworld.get_locations(self.player)]
 		slot_data['item_table'] = item_table
+		slot_data['player_id'] = self.player
+		slot_data['players'] = [{"id": player_id, "name": self.multiworld.player_name[player_id]} for player_id in self.multiworld.player_ids]
 		if self.worldstate.npc_rando:
 			slot_data['npc_locations'] = self.worldstate.npc_mapping
 		if self.options.RandomizeSeals:
@@ -354,7 +356,11 @@ class LaMulanaWorld(World):
 			'room': location.room,
 			'screen': location.screen,
 			'slot': location.slot,
-			'zones': location.zones
+			'zones': location.zones,
+			'is_shop': location.is_shop,
+			'file_type': location.file_type,
+			'original_obtain_flag': location.original_obtain_flag,
+			'obtain_flag': location.obtain_flag
 		}
 		return export_location
 
