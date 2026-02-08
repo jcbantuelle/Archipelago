@@ -357,7 +357,6 @@ class LaMulanaWorld(World):
 			'screen': location.screen,
 			'slot': location.slot,
 			'zones': location.zones,
-			'is_shop': location.is_shop,
 			'file_type': location.file_type,
 			'original_obtain_flag': location.original_obtain_flag,
 			'obtain_flag': location.obtain_flag
