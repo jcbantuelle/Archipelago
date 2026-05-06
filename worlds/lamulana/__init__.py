@@ -1,5 +1,3 @@
-import zipfile
-import json
 import os
 import Utils
 from typing import TextIO
@@ -7,17 +5,12 @@ from BaseClasses import MultiWorld, Tutorial, Item, ItemClassification
 from Options import Accessibility
 from worlds.AutoWorld import World, WebWorld
 from worlds.generic.Rules import add_item_rule
-from .Options import starting_weapon_names, LaMulanaOptions, StartingLocation, StartingWeapon, RandomizeCoinChests
+from .Options import starting_weapon_names, LaMulanaOptions, StartingLocation, RandomizeCoinChests
 from .WorldState import LaMulanaWorldState
 from .NPCs import get_npc_checks, get_npc_entrance_room_names
 from .Items import item_table, get_items_by_category, item_exclusion_order
 from .Locations import get_locations_by_region
 from .Regions import create_regions_and_locations
-from .RcdMod import RcdMod
-from .DatMod import DatMod
-from .SavMod import SavMod
-from .GraphicsMod import GraphicsMod
-from .LocalConfig import LocalConfig
 
 
 class LaMulanaWebWorld(WebWorld):
@@ -46,12 +39,6 @@ class LaMulanaWorld(World):
 
 	worldstate: LaMulanaWorldState
 
-	RCD_FILENAME = "script.rcd"
-	DAT_FILENAME = "script_code.dat"
-	SAV_FILENAME = "lm_00.sav"
-	GRAPHICS_FILENAME = "01effect.png"
-	CONFIG_FILENAME = "lamulana-config.toml"
-
 	item_name_to_id = {name: data.code for name, data in item_table.items() if data.code is not None}
 	location_name_to_id = {location.name: location.code for locations in get_locations_by_region(None).values() for location in locations if location.code is not None}
 	location_name_to_id |= {location.name: location.code for locations in get_npc_checks(None).values() for location in locations if location.code is not None}
@@ -63,16 +50,6 @@ class LaMulanaWorld(World):
 		super().__init__(multiworld, player)
 		self.precollected_items[self.player] = set()
 		self.cursed_chests: set[str] = set()
-
-	@classmethod
-	def stage_assert_generate(cls, multiworld: MultiWorld):
-		rcd_file = Utils.user_path("script.rcd")
-		if not os.path.exists(rcd_file):
-			raise FileNotFoundError(rcd_file)
-
-		dat_file = Utils.user_path("script_code.dat")
-		if not os.path.exists(dat_file):
-			raise FileNotFoundError(dat_file)
 
 	def generate_early(self) -> None:
 		# Do stuff that can still modify settings
@@ -436,7 +413,7 @@ class LaMulanaWorld(World):
 		else:
 			starting_shop_slots = ['Starting Shop Item 1', 'Starting Shop Item 2', 'Starting Shop Item 3']
 			weight_slot = self.random.choice(starting_shop_slots)
-			
+
 			self.place_locked_item(weight_slot, '5 Weights')
 			starting_shop_slots.remove(weight_slot)
 			shop_locations.remove(weight_slot)
@@ -604,45 +581,3 @@ class LaMulanaWorld(World):
 			for _ in range(count):
 				out.append(item_name)
 		return out
-
-	def generate_output(self, output_directory: str) -> None:
-		locations = self.multiworld.get_locations(self.player)
-
-		local_config = LocalConfig(self)
-		rcd_mod = RcdMod(self.RCD_FILENAME, local_config, self.options, self.start_inventory_as_list() + list(self.precollected_items[self.player]), self.cursed_chests)
-		dat_mod = DatMod(self.DAT_FILENAME, local_config, self.options)
-		sav_mod = SavMod(self.options)
-		graphics_mod = GraphicsMod(self.options)
-
-		dat_mod.apply_mods()
-
-		for location in locations:
-			item = item_table.get(location.item.name)
-			if (item is None and location.item.player == self.player) or location.address is None:
-				continue
-
-			item_id = item.game_code if item is not None and location.item.player == self.player else 83
-			if location.file_type == 'rcd':
-				rcd_mod.place_item_in_location(item, item_id, location)
-			elif location.file_type == 'dat':
-				dat_mod.place_item_in_location(item, item_id, location)
-
-		dat_mod.update_shop_bunemon_text()
-		rcd_mod.apply_mods()
-		sav_mod.apply_mods()
-		graphics_mod.apply_mods()
-
-		manifest = {
-			"game": "La-Mulana",
-			"player": self.player,
-			"patch_file_ending": ".zip"
-		}
-
-		output_path = os.path.join(output_directory, f"AP-{self.multiworld.seed_name}-P{self.player}-{self.multiworld.get_file_safe_player_name(self.player)}_{Utils.__version__}.zip")
-		with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, True, 9) as output_zip:
-			output_zip.writestr(f"data/mapdata/{self.RCD_FILENAME}", rcd_mod.write_file())
-			output_zip.writestr(f"data/language/en/{self.DAT_FILENAME}", dat_mod.write_file())
-			output_zip.writestr(f"data/save/{self.SAV_FILENAME}", sav_mod.write_file())
-			output_zip.writestr(f"data/graphics/00/{self.GRAPHICS_FILENAME}", graphics_mod.write_file())
-			output_zip.writestr(self.CONFIG_FILENAME, local_config.write_file())
-			output_zip.writestr("archipelago.json", json.dumps(manifest).encode("utf-8"))
