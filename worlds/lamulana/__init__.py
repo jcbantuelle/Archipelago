@@ -564,13 +564,7 @@ class LaMulanaWorld(World):
 		return item
 
 	def get_filler_item(self, k: int | None):
-		# Temporary placeholder for filler items until more involved RCD edits can be implemented and tested
 		return 'Shell Horn'
-		if k == 0:
-			return '200 coins'
-		elif k and k <= 2:
-			return '100 coins'
-		return self.random.choices(['50 coins', '30 coins', '10 coins', '1 Weight'], weights=[1, 4, 6, 2], k=1)[0]
 
 	def place_locked_item(self, location_name: str, item_name: str):
 		self.get_location(location_name).place_locked_item(self.create_item(item_name))
