@@ -312,29 +312,26 @@ def create_regions_and_locations(world: 'LaMulanaWorld'):
 		combat = LaMulanaCombatLogic(world, shortcuts)
 		connect(multiworld, player, 'Hell Temple [Shop]', 'Hell Temple [Dracuet]', lambda state: shortcuts.state_literacy(state) and shortcuts.state_key_fairy_access(state, False) and state.has_all({"Hermes' Boots", 'Grapple Claw', 'guild.exe'}, player) and combat.hell_temple_bosses(state) and (shortcuts.attack_chakram(state) or shortcuts.attack_pistol(state)))
 
-	if not worldstate.door_rando:
-		get_and_connect_doors(multiworld, player, worldstate, s)
+	connect_doors_and_transitions(multiworld, player, worldstate, shortcuts)
 
-	if worldstate.transition_rando:
-		transition_entrances = None
-		success = False
-		simulated_state = worldstate.build_simulated_state()
-		while not success:
-			remove_entrances(multiworld, player, transition_entrances)
-			worldstate.randomize_transitions(s)
-			transition_entrances = get_and_connect_transitions(multiworld, player, worldstate, s)
+def connect_doors_and_transitions(multiworld: MultiWorld, player: int, worldstate: LaMulanaWorldState, shortcuts: LaMulanaLogicShortcuts):
+	randomized_entrances = None
+	success = False
 
-			if worldstate.door_rando:
-				worldstate.randomize_doors(s)
-				transition_entrances.update(get_and_connect_doors(multiworld, player, worldstate, s))
+	simulated_state = worldstate.build_simulated_state()
 
-			success = worldstate.layout_fulfills_accessibility(simulated_state)
-	else:
+	while not success:
+		remove_entrances(multiworld, player, randomized_entrances)
+		if worldstate.transition_rando:
+			worldstate.randomize_transitions(shortcuts)
+		randomized_entrances = get_and_connect_transitions(multiworld, player, worldstate, shortcuts)
+
 		if worldstate.door_rando:
-			worldstate.randomize_doors(s)
-			get_and_connect_doors(multiworld, player, worldstate, s)
-		get_and_connect_transitions(multiworld, player, worldstate, s)
+			worldstate.randomize_doors(shortcuts)
+		door_entrances = get_and_connect_doors(multiworld, player, worldstate, shortcuts)
+		randomized_entrances.update(door_entrances)
 
+		success = worldstate.layout_fulfills_accessibility(simulated_state)
 
 def remove_entrances(multiworld: MultiWorld, player: int, to_remove: set[Entrance] | None):
 	if not to_remove:
@@ -445,11 +442,20 @@ def connect(multiworld: MultiWorld, player: int, source: str, target: str, logic
 
 	connection = Entrance(player, source + ' -> ' + target, source_region)
 
-	if logic:
-		connection.access_rule = logic
-	source_region.exits.append(connection)
-	connection.connect(target_region)
-	return connection
+	existing_connection = next((exit for exit in source_region.exits if exit.name == connection.name), None)
+	if existing_connection:
+		old_access_rule = existing_connection.access_rule
+		if old_access_rule and logic:
+			existing_connection.access_rule = lambda state: old_access_rule(state) or logic(state)
+		else:
+			existing_connection.access_rule = None
+		return existing_connection
+	else:
+		if logic:
+			connection.access_rule = logic
+		source_region.exits.append(connection)
+		connection.connect(target_region)
+		return connection
 
 
 def create_location(player: int, location_data: LocationData, region: Region, additional_logic: Callable[[CollectionState], bool] | None = None):
